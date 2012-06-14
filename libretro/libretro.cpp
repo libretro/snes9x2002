@@ -366,6 +366,7 @@ static void report_buttons (void)
 
 void retro_run (void)
 {
+   IPPU.RenderThisFrame = TRUE;
    S9xMainLoop();
    S9xMixSamples(audio_buf, avail * 2);
    audio_batch_cb((int16_t *) audio_buf, avail);
