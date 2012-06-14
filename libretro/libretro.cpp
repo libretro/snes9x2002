@@ -167,7 +167,8 @@ void retro_get_system_info(struct retro_system_info *info)
 }
 
 static int16 audio_buf[0x10000];
-int avail = 534;
+static int avail;
+static int samplerate = 32000;
 
 void S9xGenerateSound()
 {
@@ -194,7 +195,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
       info->timing.fps = 21477272.0 / 357366.0;
    else
       info->timing.fps = 21281370.0 / 425568.0;
-   info->timing.sample_rate = 32040.5;
+   info->timing.sample_rate = samplerate;
    info->geometry.aspect_ratio = 4.0f / 3.0f;
 }
 
@@ -202,7 +203,7 @@ static void snes_init (void)
 {
    memset(&Settings, 0, sizeof(Settings));
 	Settings.JoystickEnabled = FALSE;
-	Settings.SoundPlaybackRate = 32000;
+	Settings.SoundPlaybackRate = samplerate;
 	Settings.Stereo = TRUE;
 	Settings.SoundBufferSize = 0;
 	Settings.CyclesPercentage = 100;
@@ -425,12 +426,17 @@ bool retro_load_game(const struct retro_game_info *game)
 
    //S9xGraphicsInit();
    S9xReset();
+   Settings.asmspc700 = true;
    CPU.APU_APUExecuting = Settings.APUEnabled = 3;
    Settings.SixteenBitSound = true;
    so.stereo = Settings.Stereo;
    so.playback_rate = Settings.SoundPlaybackRate;
    S9xSetPlaybackRate(so.playback_rate);
    S9xSetSoundMute(FALSE);
+
+   avail = samplerate / (Settings.PAL ? 50 : 60);
+
+   ZeroMemory(audio_buf, sizeof(audio_buf));
 
    return TRUE;
 }
@@ -537,7 +543,7 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size) {
 	//so.sixteen_bit = 1;
 	so.stereo = TRUE;
 	//so.buffer_size = 534;
-	so.playback_rate = 32000;
+	so.playback_rate = samplerate;
 	return TRUE;
 }
 
