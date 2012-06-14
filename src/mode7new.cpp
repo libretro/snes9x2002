@@ -127,6 +127,8 @@ void DrawBGMode7Background16NewR3 (uint8 *Screen)
 	//fprintf(f, "AA:%d, CC:%d, daa: %d, dcc: %d, MA: %d, MB: %d, MC: %d, MD: %d\n", AA, CC, aa, cc, l->MatrixA, l->MatrixB, l->MatrixC, l->MatrixD); 
 
 
+		if (dir == 1)
+		{
 		asm volatile (
 		"1:						\n"
 		"	mov	r3, %[AA], asr #18		\n" 
@@ -149,7 +151,7 @@ void DrawBGMode7Background16NewR3 (uint8 *Screen)
 		"	add	%[AA], %[AA], %[daa]		\n"
 		"	movs	r0, r0, lsl #2			\n"		
 		"	ldrne	r1, [%[colors], r0]		\n"	
-		"	add	%[xx3], %[xx3], %[dir]		\n"
+		"	add	%[xx3], %[xx3], #1		\n"
 		"	strneh	r1, [%[p]]			\n"		
 		"						\n"
 		"	add	%[CC], %[CC], %[dcc]		\n"
@@ -166,7 +168,7 @@ void DrawBGMode7Background16NewR3 (uint8 *Screen)
 		"	add	%[AA], %[AA], %[daa]		\n"
 		"	movs	r0, r0, lsl #2			\n"		
 		"	ldrne	r1, [%[colors], r0]		\n"	
-		"	add	%[xx3], %[xx3], %[dir]		\n"
+		"	add	%[xx3], %[xx3], #1		\n"
 		"	strneh	r1, [%[p]]			\n"		
 		"						\n"
 		"	add	%[CC], %[CC], %[dcc]		\n"
@@ -183,10 +185,74 @@ void DrawBGMode7Background16NewR3 (uint8 *Screen)
 		  [daa] "r" (aa),
 		  [dcc] "r" (cc),
 		  [VRAM] "r" (Memory.VRAM),
-		  [colors] "r" (GFX.ScreenColors),
-		  [dir] "r" (dir) 	
+		  [colors] "r" (GFX.ScreenColors)
+		  //[dir] "r" (dir) 	
 		: "r0", "r1", "r3", "cc"
 		);
+		}
+		else
+		{
+		asm volatile (
+		"1:						\n"
+		"	mov	r3, %[AA], asr #18		\n" 
+		"	orrs	r3, r3, %[CC], asr #18		\n"			
+		"	bne	2f				\n" 
+		"						\n"
+		"	mov	r3, %[CC], asr #11		\n"  
+		"	mov	r1, %[AA], asr #11		\n" 
+		"	add	r3, r1, r3, lsl #7		\n" 
+		"	mov	r3, r3, lsl #1			\n"
+		"	ldrb	r3, [%[VRAM], r3]		\n"
+		"						\n"
+		"	and	r1, %[CC], #(7 << 8)		\n"
+		"	add	r3, %[VRAM], r3, lsl #7		\n"
+		"	and	r0, %[AA], #(7 << 8)		\n"
+		"	add	r3, r3, r1, asr #4 		\n"
+		"	add	r3, r3, r0, asr #7		\n"
+		"						\n"
+		"	ldrb	r0, [r3, #1]			\n"
+		"	add	%[AA], %[AA], %[daa]		\n"
+		"	movs	r0, r0, lsl #2			\n"		
+		"	ldrne	r1, [%[colors], r0]		\n"	
+		"	add	%[xx3], %[xx3], #-1		\n"
+		"	strneh	r1, [%[p]]			\n"		
+		"						\n"
+		"	add	%[CC], %[CC], %[dcc]		\n"
+		"	add	%[p], %[p], #2			\n"
+		"	subs	%[x], %[x], #1			\n"
+		"	bne	1b				\n"
+		"	b	3f				\n"
+		"2:						\n" 
+		"	and	r0, %[xx3], #7			\n"
+		"	add	r3, %[yy3], r0, lsl #1 		\n"
+		"						\n"
+		"	add	r3, %[VRAM], r3			\n"
+		"	ldrb	r0, [r3, #1]			\n"
+		"	add	%[AA], %[AA], %[daa]		\n"
+		"	movs	r0, r0, lsl #2			\n"		
+		"	ldrne	r1, [%[colors], r0]		\n"	
+		"	add	%[xx3], %[xx3], #-1		\n"
+		"	strneh	r1, [%[p]]			\n"		
+		"						\n"
+		"	add	%[CC], %[CC], %[dcc]		\n"
+		"	add	%[p], %[p], #2			\n"
+		"	subs	%[x], %[x], #1			\n"
+		"	bne	1b				\n"
+		"3:						\n"
+		: [xx3] "+r" (xx3),
+		  [x] "+r" (width),
+		  [p] "+r" (p),
+		  [AA] "+r" (AA),
+		  [CC] "+r" (CC)
+		: [yy3] "r" (yy3),
+		  [daa] "r" (aa),
+		  [dcc] "r" (cc),
+		  [VRAM] "r" (Memory.VRAM),
+		  [colors] "r" (GFX.ScreenColors)
+		  //[dir] "r" (dir) 	
+		: "r0", "r1", "r3", "cc"
+		);
+		}
 	} 
     }
 
@@ -436,4 +502,5 @@ uint8 *z;
     }
 
 }
+
 

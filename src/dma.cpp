@@ -127,7 +127,7 @@ void S9xDoDMA (uint8 Channel)
 		}
 		else
 		{
-	#if defined (__GP2X__) || defined (__GIZ__) || defined (__WIZ__)
+	#if 1
 			void *ptr = bsearch (&address, Memory.SDD1Index, 
 					 Memory.SDD1Entries, 12, S9xCompareSDD1IndexEntries);
 			if (ptr)

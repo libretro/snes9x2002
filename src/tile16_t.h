@@ -210,7 +210,8 @@ DEC_DRAWNOZ(ROPNAME)
 										\
 			"	cmp	r8, #1				\n"\
 			"	blo	4f				\n"\
-			"	ldrneh	r8, [%[screen], %[delta]]	\n"\
+			"	mov	r8, #0x200000			\n"\
+			"	ldrneh	r8, [%[screen], r8]		\n"\
 			"	moveq	r8, %[fixedcolour]		\n"\
 										\
 			ROP \
@@ -243,7 +244,8 @@ DEC_DRAWNOZ(ROPNAME)
 										\
 			"	cmp	r8, #1				\n"\
 			"	blo	4f				\n"\
-			"	ldrneh	r8, [%[screen], %[delta]]	\n"\
+			"	mov	r8, #0x200000			\n"\
+			"	ldrneh	r8, [%[screen], r8]		\n"\
 			"	moveq	r8, %[fixedcolour]		\n"\
 										\
 			ROP \
@@ -282,7 +284,7 @@ DEC_DRAW(ROPNAME)
 		: [gfx_z1] "r" (GFX.Z1),
 		  [gfx_z2] "r" (GFX.Z2),
 		  [colors] "r" (GFX.ScreenColors),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "r" (GFX.FixedColour),
 		  [screen] "r" ((uint16 *) GFX.S + Offset),
 		  [depth] "r" (GFX.ZBuffer + Offset),
@@ -306,7 +308,7 @@ DEC_DRAW(ROPNAME)
 		: [gfx_z1] "r" (GFX.Z1),
 		  [gfx_z2] "r" (GFX.Z2),
 		  [colors] "r" (GFX.ScreenColors),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "r" (GFX.FixedColour),
 		  [screen] "r" ((uint16 *) GFX.S + Offset),
 		  [depth] "r" (GFX.ZBuffer + Offset),
@@ -332,7 +334,7 @@ DEC_DRAW(ROPNAME)
 		: [gfx_z1] "r" (GFX.Z1),
 		  [gfx_z2] "r" (GFX.Z2),
 		  [colors] "r" (GFX.ScreenColors),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "r" (GFX.FixedColour),
 		  [screen] "r" ((uint16 *) GFX.S + Offset),
 		  [depth] "r" (GFX.ZBuffer + Offset),
@@ -358,7 +360,7 @@ DEC_DRAW(ROPNAME)
 		: [gfx_z1] "r" (GFX.Z1),
 		  [gfx_z2] "r" (GFX.Z2),
 		  [colors] "r" (GFX.ScreenColors),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "r" (GFX.FixedColour),
 		  [screen] "r" ((uint16 *) GFX.S + Offset),
 		  [depth] "r" (GFX.ZBuffer + Offset),
@@ -405,7 +407,7 @@ if (Tile & V_FLIP){
 		: [gfx_z1] "r" (GFX.Z1),
 		  [gfx_z2] "r" (GFX.Z2),
 		  [colors] "r" (GFX.ScreenColors),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "r" (GFX.FixedColour),
 		  [width] "r" (Width),
 		  [screen] "r" ((uint16 *) GFX.S + Offset),
@@ -437,7 +439,7 @@ if (Tile & V_FLIP){
 		: [gfx_z1] "r" (GFX.Z1),
 		  [gfx_z2] "r" (GFX.Z2),
 		  [colors] "r" (GFX.ScreenColors),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "r" (GFX.FixedColour),
 		  [width] "r" (Width),
 		  [screen] "r" ((uint16 *) GFX.S + Offset),
@@ -471,7 +473,7 @@ if (Tile & V_FLIP){
 		: [gfx_z1] "r" (GFX.Z1),
 		  [gfx_z2] "r" (GFX.Z2),
 		  [colors] "r" (GFX.ScreenColors),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "r" (GFX.FixedColour),
 		  [width] "r" (Width),
 		  [screen] "r" ((uint16 *) GFX.S + Offset),
@@ -503,7 +505,7 @@ if (Tile & V_FLIP){
 		: [gfx_z1] "r" (GFX.Z1),
 		  [gfx_z2] "r" (GFX.Z2),
 		  [colors] "r" (GFX.ScreenColors),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "r" (GFX.FixedColour),
 		  [width] "r" (Width),
 		  [screen] "r" ((uint16 *) GFX.S + Offset),
@@ -517,3 +519,4 @@ if (Tile & V_FLIP){
 	}
    }
 }
+

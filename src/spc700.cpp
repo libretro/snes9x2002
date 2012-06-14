@@ -239,6 +239,7 @@ APUSetZN8 ((uint8) Int16);
     IAPU.Address = *(IAPU.DirectPage + OP1) + \
 		  (*(IAPU.DirectPage + OP1 + 1) << 8) + \
 		  IAPU.YA.B.Y;
+#endif
 
 void Apu00 ()
 {
@@ -2505,5 +2506,4 @@ void (*S9xApuOpcodes[256]) (void) =
 	ApuF8, ApuF9, ApuFA, ApuFB, ApuFC, ApuFD, ApuFE, ApuFF
 };
 
-#endif
 

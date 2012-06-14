@@ -57,7 +57,7 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
 **  _SNESPPC DEFINES
 */
 
-#ifdef __GIZ__
+#if 1
 
 //Title
 #define TITLE "Snes9x"
@@ -72,6 +72,7 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
 typedef unsigned char	bool8;
 typedef unsigned char	uint8;
 typedef unsigned short	uint16;
+typedef unsigned int	bool32;
 typedef unsigned int	uint32;
 typedef signed char		int8;
 typedef short			int16;
@@ -105,8 +106,8 @@ typedef short			int16_32;
 #define _MAX_DRIVE 1
 #define _MAX_FNAME PATH_MAX
 #define _MAX_EXT PATH_MAX
-#define PATH_MAX 1024
-#define _MAX_PATH (1024)
+//#define PATH_MAX 1024
+#define _MAX_PATH PATH_MAX
 
 //True/False Defines
 #define TRUE 1
@@ -122,7 +123,7 @@ typedef short			int16_32;
 #define LSB_FIRST
 #define STATIC static
 #define FASTCALL
-#define PIXEL_FORMAT RGB565
+#define PIXEL_FORMAT RGB555
 #define CHECK_SOUND()
 #define VOID void
 #define CPU_SHUTDOWN
@@ -132,6 +133,7 @@ typedef short			int16_32;
 #define ALIGN_BY_ONE  __attribute__ ((aligned (1), packed))
 #define LSB_FIRST
 #undef  FAST_LSB_WORD_ACCESS
+#define SUPER_FX
 #ifdef ASMCPU
 	#define ASM_SPC700
 #endif

@@ -127,7 +127,8 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg, int depth)
 									\
 		"	cmp	r3, #1				\n"\
 		"	blo	11f				\n"\
-		"	ldrneh	r3, [%[p], %[delta]]		\n"\
+		"	mov	r3, #0x200000			\n"\
+		"	ldrneh	r3, [%[p], r3]			\n"\
 		"	ldreq	r3, %[fixedcolour]		\n"\
 									\
 		ROP\
@@ -159,7 +160,8 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg, int depth)
 									\
 		"	cmp	r3, #1				\n"\
 		"	blo	12f				\n"\
-		"	ldrneh	r3, [%[p], %[delta]]		\n"\
+		"	mov	r3, #0x200000			\n"\
+		"	ldrneh	r3, [%[p], r3]			\n"\
 		"	ldreq	r3, %[fixedcolour]		\n"\
 									\
 		ROP\
@@ -186,7 +188,6 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg, int depth)
 		  [colors] "r" (GFX.ScreenColors),\
 		  [depth] "r" (depth),\
 		  [yy3] "m" (yy3), \
-		  [delta] "r" (GFX.Delta << 1),\
 		  [fixedcolour] "m" (fixedColour)\
 		: "r0", "r1", "r3", "cc"\
 		);
@@ -317,7 +318,8 @@ static void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg, int depth)
 
 		"	cmp	r3, #1				\n"
 		"	blo	11f				\n"
-		"	ldrneh	r3, [%[p], %[delta]]		\n"
+		"	mov	r3, #0x200000			\n"
+		"	ldrneh	r3, [%[p], r3]			\n"
 		"	ldreq	r3, %[fixedcolour]		\n"
 										
 		ROP
@@ -342,7 +344,7 @@ static void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg, int depth)
 		  [colors] "r" (GFX.ScreenColors),
 		  [depth] "r" (depth),
 		  //[zdelta] "r" (GFX.DepthDelta),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "m" (fixedColour),
 		  [AndByX] "m" (AndByX),
 		  [AndByY] "m" (AndByY)
@@ -463,7 +465,8 @@ static void DrawBGMode7Background16R0 (uint8 *Screen, int bg, int depth)
 
 		"	cmp	r3, #1				\n"
 		"	blo	11f				\n"
-		"	ldrneh	r3, [%[p], %[delta]]			\n"
+		"	mov	r3, #0x200000			\n"
+		"	ldrneh	r3, [%[p], r3]			\n"
 		"	ldreq	r3, %[fixedcolour]		\n"
 										
 		ROP
@@ -487,7 +490,7 @@ static void DrawBGMode7Background16R0 (uint8 *Screen, int bg, int depth)
 		  [VRAM] "r" (Memory.VRAM),
 		  [colors] "r" (GFX.ScreenColors), 
 		  //[zdelta] "r" (GFX.DepthDelta),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "m" (fixedColour),
 		  [depth] "r" (depth),
 		  [AndByY] "m" (AndByY)
@@ -524,3 +527,4 @@ DEC_FMODE7(ROPNAME)
 			return;
 	} 
 }
+

@@ -61,7 +61,15 @@
 
 #define ROM_NAME_LEN 23
 
-#ifdef ZLIB
+#ifdef __LIBRETRO__
+#include "../libretro/memstream.h"
+#define STREAM memstream_t *
+#define READ_STREAM(p, l, s)     memstream_read(s, p, l)
+#define WRITE_STREAM(p, l, s)    memstream_write(s, p, l)
+#define OPEN_STREAM(f, m)        memstream_open()
+#define CLOSE_STREAM(s)          memstream_close(s)
+#define SEEK_STREAM(p,r,s)   memstream_seek(p,r,s)
+#elif defined(ZLIB)
 //#ifndef __WIN32__
 #include "zlib.h"
 //#endif

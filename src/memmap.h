@@ -46,8 +46,11 @@
 #ifdef FAST_LSB_WORD_ACCESS
 #define READ_WORD(s) (*(uint16 *) (s))
 #define READ_DWORD(s) (*(uint32 *) (s))
-#define WRITE_WORD(s, d) (*(uint16 *) (s) = (d)
-#define WRITE_DWORD(s, d) (*(uint32 *) (s) = (d)
+#define WRITE_WORD(s, d) *(uint16 *) (s) = (d)
+#define WRITE_DWORD(s, d) *(uint32 *) (s) = (d)
+#define READ_3WORD(s) ((*(uint32 *) (s)) & 0x00FFFFFF)
+#define WRITE_3WORD(s, d) *(uint16 *) (s) = (uint16) (d), \
+		          *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
 #else
 #define READ_WORD(s) ( *(uint8 *) (s) |\
 		      (*((uint8 *) (s) + 1) << 8))

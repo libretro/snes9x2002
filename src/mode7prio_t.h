@@ -128,7 +128,8 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg)
 										
 		"	cmp	r3, #1				\n"
 		"	blo	11f				\n"
-		"	addne	r0, %[delta], %[delta]	\n"
+		"	mov	r3, #0x200000			\n"
+		"	addne	r0, r3, r3			\n"
 		"	ldreq	r3, %[fixedcolour]		\n"
 										
 		ROP
@@ -170,7 +171,8 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg)
 												
 		"	cmp	r3, #1				\n"
 		"	blo	12f				\n"
-		"	ldrneh	r3, [%[p], %[delta]]		\n"
+		"	mov	r3, #0x200000			\n"
+		"	ldrneh	r3, [%[p], r3]			\n"
 		"	ldreq	r3, %[fixedcolour]		\n"
 										
 		ROP
@@ -201,7 +203,7 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg)
 		  [dir] "m" (dir),
 		  [yy3] "m" (yy3), 
 		  //[zdelta] "r" (GFX.DepthDelta),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "m" (fixedColour),
 		  [xx3] "r" (xx3)
 		: "r0", "r1", "r3", "cc"
@@ -324,7 +326,8 @@ static void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg)
 										
 		"	cmp	r3, #1				\n"
 		"	blo	11f				\n"
-		"	ldrneh	r3, [%[p], %[delta]]			\n"
+		"	mov	r3, #0x200000			\n"
+		"	ldrneh	r3, [%[p], r3]			\n"
 		"	ldreq	r3, %[fixedcolour]		\n"
 										
 		ROP
@@ -349,7 +352,7 @@ static void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg)
 		  [d] "r" (d-1),
 		  [depth] "r" (depth),
 		  //[zdelta] "r" (GFX.DepthDelta),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "m" (fixedColour),
 		  [AndByX] "m" (AndByX),
 		  [AndByY] "m" (AndByY)
@@ -469,7 +472,8 @@ static void DrawBGMode7Background16R0 (uint8 *Screen, int bg)
 										
 		"	cmp	r3, #1				\n"
 		"	blo	11f				\n"
-		"	ldrneh	r3, [%[p], %[delta]]			\n"
+		"	mov	r3, #0x200000			\n"
+		"	ldrneh	r3, [%[p], r3]			\n"
 		"	ldreq	r3, %[fixedcolour]		\n"
 										
 		ROP
@@ -495,7 +499,7 @@ static void DrawBGMode7Background16R0 (uint8 *Screen, int bg)
 		  [p] "r" (p),
 		  [d] "r" (d-1), 
 		  //[zdelta] "r" (GFX.DepthDelta),
-		  [delta] "r" (GFX.Delta << 1),
+		  //[delta] "r" (GFX.Delta << 1),
 		  [fixedcolour] "m" (fixedColour),
 		  [depth] "r" (depth),
 		  [AndByY] "m" (AndByY)
@@ -532,4 +536,5 @@ DEC_FMODE7(ROPNAME)
 			return;
 	} 
 }
+
 
