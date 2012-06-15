@@ -167,8 +167,8 @@ void retro_get_system_info(struct retro_system_info *info)
 }
 
 static int16 audio_buf[0x10000];
-static int avail;
-static int samplerate = 32000;
+static unsigned avail;
+static float samplerate = 32040.5f;
 
 void S9xGenerateSound()
 {
@@ -368,8 +368,8 @@ void retro_run (void)
 {
    IPPU.RenderThisFrame = TRUE;
    S9xMainLoop();
-   S9xMixSamples(audio_buf, avail * 2);
-   audio_batch_cb((int16_t *) audio_buf, avail);
+   S9xMixSamples(audio_buf, avail);
+   audio_batch_cb((int16_t *) audio_buf, avail >> 1);
 
    poll_cb();
 
@@ -427,15 +427,15 @@ bool retro_load_game(const struct retro_game_info *game)
 
    //S9xGraphicsInit();
    S9xReset();
-   Settings.asmspc700 = true;
-   CPU.APU_APUExecuting = Settings.APUEnabled = 3;
+   Settings.asmspc700 = false;
+   CPU.APU_APUExecuting = Settings.APUEnabled = 1;
    Settings.SixteenBitSound = true;
    so.stereo = Settings.Stereo;
    so.playback_rate = Settings.SoundPlaybackRate;
    S9xSetPlaybackRate(so.playback_rate);
    S9xSetSoundMute(FALSE);
 
-   avail = samplerate / (Settings.PAL ? 50 : 60);
+   avail = (samplerate / (Settings.PAL ? 50 : 60)) << 1;
 
    ZeroMemory(audio_buf, sizeof(audio_buf));
 

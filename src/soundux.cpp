@@ -1145,7 +1145,7 @@ void S9xSetPlaybackRate (uint32 playback_rate)
 
 	if(playback_rate) {
 		// notaz: calclulate a value (let's call it freqbase) to simplify channel freq calculations later.
-		so.freqbase = (FIXED_POINT<<11) / playback_rate;
+		so.freqbase = (FIXED_POINT<<11) / (playback_rate * 33 / 32);
 		// now precalculate env rates for S9xSetEnvRate
 		static int steps [] =
 		{
