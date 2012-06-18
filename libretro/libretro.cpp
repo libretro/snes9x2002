@@ -435,7 +435,7 @@ bool retro_load_game(const struct retro_game_info *game)
    S9xSetPlaybackRate(so.playback_rate);
    S9xSetSoundMute(FALSE);
 
-   avail = (samplerate / (Settings.PAL ? 50 : 60)) << 1;
+   avail = (int) (samplerate / (Settings.PAL ? 50 : 60)) << 1;
 
    ZeroMemory(audio_buf, sizeof(audio_buf));
 
