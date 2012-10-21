@@ -123,7 +123,7 @@ typedef short			int16_32;
 #define LSB_FIRST
 #define STATIC static
 #define FASTCALL
-#define PIXEL_FORMAT RGB555
+#define PIXEL_FORMAT RGB565
 #define CHECK_SOUND()
 #define VOID void
 #define CPU_SHUTDOWN

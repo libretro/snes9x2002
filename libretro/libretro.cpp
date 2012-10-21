@@ -415,6 +415,13 @@ bool retro_load_game(const struct retro_game_info *game)
 {
    bool8 loaded;
 
+   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+   if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+   {
+      fprintf(stderr, "[libretro]: RGB565 is not supported.\n");
+      return false;
+   }
+
    /* Hack. S9x cannot do stuff from RAM. <_< */
    memstream_set_buffer((uint8_t*)game->data, game->size);
 
@@ -422,7 +429,7 @@ bool retro_load_game(const struct retro_game_info *game)
    if (!loaded)
    {
       fprintf(stderr, "[libretro]: Rom loading failed...\n");
-      return FALSE;
+      return false;
    }
 
    //S9xGraphicsInit();
@@ -439,7 +446,7 @@ bool retro_load_game(const struct retro_game_info *game)
 
    ZeroMemory(audio_buf, sizeof(audio_buf));
 
-   return TRUE;
+   return true;
 }
 
 bool retro_load_game_special(
