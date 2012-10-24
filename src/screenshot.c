@@ -17,7 +17,7 @@ void getScreenShot(unsigned short *screen) {
 	screen += 32;
 
 	if (!screenShot) {
-		screenShot = gCreateBitmap(SS_WIDTH, SS_HEIGHT, 32);
+		screenShot = 0;//gCreateBitmap(SS_WIDTH, SS_HEIGHT, 32);
 		if (!screenShot) return;
 		}
 
@@ -40,7 +40,7 @@ int saveScreenShot() {
 	if (!screenShot) return -1;
 	
 	// get filename of last loaded ROM (the running one)	
-	getConfigValue(CONFIG_LASTLOADED, fn, sizeof(fn));
+	//getConfigValue(CONFIG_LASTLOADED, fn, sizeof(fn));
 	// set file ext to .png
 	ext = strrchr(fn, '.');
 	if (!ext) ext = &fn[strlen(fn)];
@@ -48,7 +48,7 @@ int saveScreenShot() {
 	// compose screenshot file's full path
 	sprintf(png_fn, "%s%s", getScreenShotsDir(), strrchr(fn, '/'));
 
-	ret = save_png(screenShot, png_fn);
+	ret = 0;//save_png(screenShot, png_fn);
 	sync();
 	
 	return ret;
@@ -66,6 +66,6 @@ const char *getScreenShotsDir() {
 }
 
 void destroyScreenShot() {
-	gDestroyBitmap(screenShot);
+	//gDestroyBitmap(screenShot);
 	screenShot = NULL;
 }

@@ -1049,9 +1049,9 @@ bool8_32 CMemory::SaveSRAM (const char *filename)
 	{
 	    fwrite ((char *) ::SRAM, size, 1, file);
 	    fclose (file);
-		sync();
+		//sync();
 #if defined(__linux)
-	    chown (filename, getuid (), getgid ());
+	    //chown (filename, getuid (), getgid ());
 #endif
 	    return (TRUE);
 	}

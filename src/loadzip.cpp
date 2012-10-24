@@ -65,7 +65,7 @@
 bool8 LoadZip(const char* zipname,
 	      int32 *TotalFileSize,
 	      int32 *headers)
-{
+{/*
     *TotalFileSize = 0;
     *headers = 0;
     
@@ -216,5 +216,7 @@ bool8 LoadZip(const char* zipname,
     
     unzClose(file);
     return (TRUE);
+    */
+    return (FALSE);
 }
 #endif

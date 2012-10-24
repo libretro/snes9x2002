@@ -110,7 +110,7 @@ void S9xSDD1SaveLoggedData ()
 		    Memory.SDD1LoggedDataCount, fs);
 	    fclose (fs);
 #if defined(__linux)
-	    chown (S9xGetFilename (".dat"), getuid (), getgid ());
+	    //chown (S9xGetFilename (".dat"), getuid (), getgid ());
 #endif
 	}
 	Memory.SDD1LoggedDataCountPrev = Memory.SDD1LoggedDataCount;
