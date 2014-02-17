@@ -231,7 +231,7 @@ static void snes_init (void)
 	Settings.NetPlay = FALSE;
 	Settings.ServerName [0] = 0;
 	Settings.AutoSaveDelay = 30;
-	Settings.ApplyCheats = FALSE;
+	Settings.ApplyCheats = TRUE;
 	Settings.TurboMode = FALSE;
 	Settings.TurboSkipFrames = 15;
 	Settings.ThreadSound = FALSE;
@@ -406,10 +406,46 @@ bool retro_unserialize(const void * data, size_t size)
 }
 
 void retro_cheat_reset(void)
-{}
+{
+    S9xDeleteCheats();
+}
 
-void retro_cheat_set(unsigned unused, bool unused1, const char* unused2)
-{}
+void retro_cheat_set(unsigned index, bool enable, const char* in_code)
+{
+    // clean input
+    char clean_code[strlen(in_code)];
+    int i,j =0;
+    for (i = 0; i<strlen(in_code); i++)          
+    {
+        switch (in_code[i])
+        {
+            case 'a': case 'A':
+            case 'b': case 'B':
+            case 'c': case 'C':
+            case 'd': case 'D':
+            case 'e': case 'E':
+            case 'f': case 'F':
+            
+            case '-': case '0':
+            case '1': case '2': case '3':
+            case '4': case '5': case '6': 
+            case '7': case '8': case '9':
+                clean_code[j++]=in_code[i];
+                break;
+            default:
+                break;
+        }
+    }
+    clean_code[j]=0;
+    uint32 address;
+    uint8 byte;
+    
+    if ( S9xProActionReplayToRaw(clean_code, address, byte) == NULL)
+        S9xAddCheat(true, true, address, byte);
+    else if ( S9xGameGenieToRaw(clean_code, address, byte) == NULL)
+        S9xAddCheat(true, true, address, byte);
+    // else, silently ignore
+}
 
 bool retro_load_game(const struct retro_game_info *game)
 {
