@@ -714,7 +714,7 @@ uint8 S9xGetCPU(uint16 Address)
 						}
 					}
 					return (
-						(IPPU.Joypads[0]
+						(IPPU.Joypads[1]
 							>> (PPU.Joypad2ButtonReadPos++ ^ 15))
 							& 1);
 				}
