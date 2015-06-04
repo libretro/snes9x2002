@@ -13,8 +13,6 @@ else ifneq ($(findstring win,$(shell uname -a)),)
 endif
 endif
 
-CC         = gcc
-
 ifeq ($(platform), unix)
    TARGET := libretro.so
    fpic := -fPIC
