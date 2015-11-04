@@ -41,9 +41,7 @@
 #ifndef _srtc_h_
 #define _srtc_h_
 
-#if !defined(_SNESPPC) && !defined(__GIZ__) && !defined(__GP2X__) && !defined(__WIZ__)
-//#include <time.h>
-#endif
+#include <time.h>
 
 #define MAX_RTC_INDEX       0xC
 

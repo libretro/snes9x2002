@@ -444,4 +444,8 @@ enum {
 void S9xSetPause (uint32 mask);
 void S9xClearPause (uint32 mask);
 
+#ifndef MAX_PATH
+#define MAX_PATH    			255
+#endif
+
 #endif

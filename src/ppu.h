@@ -42,7 +42,7 @@
 #define _PPU_H_
 
 #include "rops.h"
-#include "menu.h"
+//#include "menu.h"
 
 #define FIRST_VISIBLE_LINE 1
 
