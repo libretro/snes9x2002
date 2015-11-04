@@ -24,6 +24,11 @@
 #include "../src/cheats.h"
 #include "../src/display.h"
 
+#ifdef _3DS
+extern "C" void* linearMemAlign(size_t size, size_t alignment);
+extern "C" void linearFree(void* mem);
+#endif
+
 #define MAP_BUTTON(id, name) S9xMapButton((id), S9xGetCommandT((name)), false)
 #define MAKE_BUTTON(pad, btn) (((pad)<<4)|(btn))
 
@@ -293,7 +298,12 @@ static void snes_init (void)
    GFX.Pitch = use_overscan ? 1024 : 2048;
    
    // hack to make sure GFX.Delta is always  (2048 * 512 * 2) >> 1, needed for tile16_t.h
+#ifdef _3DS
+   GFX.Screen = (uint8 *) linearMemAlign(2048 * 512 * 2 * 2, 0x80);
+   memset(GFX.Screen, 0x0, 2048 * 512 * 2 * 2);
+#else
    GFX.Screen = (uint8 *) calloc(1, 2048 * 512 * 2 * 2);
+#endif
    GFX.SubScreen = GFX.Screen + 2048 * 512 * 2;
    GFX.ZBuffer = (uint8 *) calloc(1, GFX.Pitch * 512 * sizeof(uint16));
    GFX.SubZBuffer = (uint8 *) calloc(1, GFX.Pitch * 512 * sizeof(uint16));
@@ -337,6 +347,14 @@ void retro_deinit(void)
    Memory.Deinit();
    S9xGraphicsDeinit();
    //S9xUnmapAllControls();
+   if(GFX.Screen)
+#ifdef _3DS
+      linearFree(GFX.Screen);
+#else
+      free(GFX.Screen);
+#endif
+   GFX.Screen = NULL;
+
 }
 
 void retro_reset (void)

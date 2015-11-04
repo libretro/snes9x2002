@@ -147,7 +147,6 @@ void _splitpath (const char *path, char *drive, char *dir, char *fname,
 		 char *ext);
 #define strcasecmp strcmp
 #define strncasecmp strncmp
-#define time(a) (0)
 
 #ifdef INLINE
 #undef INLINE
@@ -249,7 +248,6 @@ void _splitpath (const char *path, char *drive, char *dir, char *fname,
 		 char *ext);
 #define strcasecmp strcmp
 #define strncasecmp strncmp
-#define time(a) (0)
 
 #ifdef INLINE
 #undef INLINE

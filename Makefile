@@ -1,4 +1,5 @@
 DEBUG=0
+TARGET_NAME = pocketsnes
 
 ifeq ($(platform),)
 platform = unix
@@ -41,6 +42,20 @@ else ifeq ($(platform), wii)
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+# CTR (3DS)
+else ifeq ($(platform), ctr)
+   TARGET := $(TARGET_NAME)_libretro_ctr.a
+   CC = $(DEVKITARM)/bin/arm-none-eabi-gcc$(EXE_EXT)
+   CXX = $(DEVKITARM)/bin/arm-none-eabi-g++$(EXE_EXT)
+   AR = $(DEVKITARM)/bin/arm-none-eabi-ar$(EXE_EXT)
+   CFLAGS += -DARM11 -D_3DS
+   CFLAGS += -march=armv6k -mtune=mpcore -mfloat-abi=hard
+   CFLAGS += -Wall -mword-relocations
+   CFLAGS += -fomit-frame-pointer -ffast-math
+   CFLAGS += -D_3DS
+   CFLAGS += -D__GP2X__
+   PLATFORM_DEFINES := -D_3DS
+   STATIC_LINKING = 1
 else
    TARGET := retro.dll
    CC = gcc
@@ -57,9 +72,61 @@ CFLAGS += -O3
 endif
 
 
-OBJECTS    = ./src/apu.o ./src/apuaux.o ./src/c4.o ./src/c4emu.o ./src/cheats.o ./src/cheats2.o ./src/clip.o ./src/data.o ./src/screenshot.o ./src/dsp1.o ./src/fxemu.o ./src/fxinst.o ./src/globals.o ./src/loadzip.o ./src/ppu.o ./src/dma.o ./src/memmap.o ./src/cpu.o ./src/cpuexec.o ./src/cpuops.o ./src/sa1.o ./src/sa1cpu.o ./src/sdd1.o ./src/sdd1emu.o ./src/snapshot.o ./src/soundux.o ./src/spc700.o ./src/spc700a.o ./src/srtc.o ./src/spc_decode.o ./src/tile16.o ./src/tile16add.o ./src/tile16add1_2.o ./src/tile16fadd1_2.o ./src/tile16sub.o ./src/tile16sub1_2.o ./src/tile16fsub1_2.o ./src/mode7new.o ./src/mode7.o ./src/mode7add.o ./src/mode7add1_2.o ./src/mode7sub.o ./src/mode7sub1_2.o ./src/mode7prio.o ./src/mode7addprio.o ./src/mode7add1_2prio.o ./src/mode7subprio.o ./src/mode7sub1_2prio.o ./src/gfx16.o ./src/rops.o ./libretro/libretro.o ./libretro/memstream.o
+OBJECTS  =
+OBJECTS += ./src/apu.o
+OBJECTS += ./src/apuaux.o
+OBJECTS += ./src/c4.o
+OBJECTS += ./src/c4emu.o
+OBJECTS += ./src/cheats.o
+OBJECTS += ./src/cheats2.o
+OBJECTS += ./src/clip.o
+OBJECTS += ./src/data.o
+OBJECTS +=  ./src/screenshot.o
+OBJECTS +=  ./src/dsp1.o
+OBJECTS +=  ./src/fxemu.o
+OBJECTS +=  ./src/fxinst.o
+OBJECTS +=  ./src/globals.o
+OBJECTS +=  ./src/loadzip.o
+OBJECTS +=  ./src/ppu.o
+OBJECTS +=  ./src/dma.o
+OBJECTS +=  ./src/memmap.o
+OBJECTS +=  ./src/cpu.o
+OBJECTS +=  ./src/cpuexec.o
+OBJECTS +=  ./src/cpuops.o
+OBJECTS +=  ./src/sa1.o
+OBJECTS +=  ./src/sa1cpu.o
+OBJECTS +=  ./src/sdd1.o
+OBJECTS +=  ./src/sdd1emu.o
+OBJECTS +=  ./src/snapshot.o
+OBJECTS +=  ./src/soundux.o
+OBJECTS +=  ./src/spc700.o
+OBJECTS +=  ./src/spc700a.o
+OBJECTS +=  ./src/srtc.o
+OBJECTS +=  ./src/spc_decode.o
+OBJECTS +=  ./src/tile16.o
+OBJECTS +=  ./src/tile16add.o
+OBJECTS +=  ./src/tile16add1_2.o
+OBJECTS +=  ./src/tile16fadd1_2.o
+OBJECTS +=  ./src/tile16sub.o
+OBJECTS +=  ./src/tile16sub1_2.o
+OBJECTS +=  ./src/tile16fsub1_2.o
+OBJECTS +=  ./src/mode7new.o
+OBJECTS +=  ./src/mode7.o
+OBJECTS +=  ./src/mode7add.o
+OBJECTS +=  ./src/mode7add1_2.o
+OBJECTS +=  ./src/mode7sub.o
+OBJECTS +=  ./src/mode7sub1_2.o
+OBJECTS +=  ./src/mode7prio.o
+OBJECTS +=  ./src/mode7addprio.o
+OBJECTS +=  ./src/mode7add1_2prio.o
+OBJECTS +=  ./src/mode7subprio.o
+OBJECTS +=  ./src/mode7sub1_2prio.o
+OBJECTS +=  ./src/gfx16.o
+OBJECTS +=  ./src/rops.o
+OBJECTS +=  ./libretro/libretro.o
+OBJECTS +=  ./libretro/memstream.o
 
-INCLUDES   = -I.
+INCLUDES   = -I. -Ilibretro
 DEFINES    = -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline -DUSE_SA1
 
 ifeq ($(platform), sncps3)
@@ -84,6 +151,8 @@ else ifeq ($(platform), sncps3)
 else ifeq ($(platform), xenon)
 	$(AR) rcs $@ $(OBJECTS)
 else ifeq ($(platform), wii)
+	$(AR) rcs $@ $(OBJECTS)
+else ifeq ($(platform), ctr)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	$(CXX) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS) -lm
