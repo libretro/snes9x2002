@@ -87,7 +87,7 @@ static char buff[1024];
 
 void ot(char *format, ...)
 {
-  va_list valist=NULL;
+  va_list valist;
   int i, len;
 
   // notaz: stop me from leaving newlines in the middle of format string
@@ -103,7 +103,7 @@ void ot(char *format, ...)
 // ot buffered
 void otb(char *format, ...)
 {
-  va_list valist=NULL;
+  va_list valist;
   int i, len;
 
   // notaz: stop me from leaving newlines in the middle of format string
