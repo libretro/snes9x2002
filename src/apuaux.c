@@ -2,8 +2,6 @@
 #include "spc700.h"
 #include "apu.h"
 
-extern "C" {
-
 void S9xAPUSetByteFFtoF0 (uint8 val, uint32 Address)
 {
 	if (Address >= 0xf4 && Address <= 0xf7)
@@ -28,5 +26,3 @@ void S9xAPUSetByteFFC0 (uint8 val, uint32 Address)
     if (!APU.ShowROM) IAPU.RAM [Address] = val;
 }
 
-
-}

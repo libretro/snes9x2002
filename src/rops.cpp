@@ -5,42 +5,8 @@
 ROPSTRUCT rops[MAX_ROPS];
 unsigned int ROpCount;
 
-//#define __DEBUG__
-
-#ifdef __DEBUG__
-static char *rasterNames[] = {
-	"ROP_NOP",
-	"ROP_FIXEDCOLOUR",
-	"ROP_PALETTE",
-	"ROP_SCREEN_MODE",
-	"ROP_BRIGHTNESS",
-	"ROP_FORCE_BLANKING",
-	"ROP_TILE_ADDRESS",
-	"ROP_MOSAIC",
-	"ROP_BG_SCSIZE_SCBASE",
-	"ROP_BG_NAMEBASE",
-	"ROP_MODE7_ROTATION",
-	"ROP_BG_WINDOW_ENABLE",
-	"ROP_WINDOW1_LEFT",
-	"ROP_WINDOW1_RIGHT",
-	"ROP_WINDOW2_LEFT",
-	"ROP_WINDOW2_RIGHT",
-	"ROP_BG_WINDOW_LOGIC",
-	"ROP_OBJS_WINDOW_LOGIC",
-	"ROP_MAIN_SCREEN_DESIG",
-	"ROP_SUB_SCREEN_DESIG",
-	"ROP_MAIN_SCREEN_WMASK",
-	"ROP_SUB_SCREEN_WMASK",
-	"ROP_FIXEDCOL_OR_SCREEN",
-	"ROP_ADD_OR_SUB_COLOR"
-	};
-#endif
-
 void doRaster(ROPSTRUCT *rop) {
 	if (!rop) return;
-#ifdef __DEBUG__
-	printf("%s, line: %d, value: %x\n", rasterNames[rop->rop], rop->line, rop->value);
-#endif
 	switch (rop->rop) {
 		case ROP_NOP:
 			// NOP
@@ -182,9 +148,6 @@ void doRaster(ROPSTRUCT *rop) {
 			GFX.r2131_s = rop->value;
 			break;
 	}
-#ifdef __DEBUG__
-	printf("ROP OK\n");
-#endif
 	rop->rop = 0; // Raster Operation already done, invalidate it
 }
 

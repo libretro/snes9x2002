@@ -132,7 +132,7 @@ EXTERN_C int32 ESPC (int32);
 
 
 // return cycles left (always negative)
-extern "C" int spc700_execute(int cycles);
+EXTERN_C int spc700_execute(int cycles);
 
 #endif // SPCTOOL
 
