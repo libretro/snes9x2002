@@ -3312,11 +3312,6 @@ static void OpFB (void)
 /* BRK *************************************************************************************** */
 static void Op00 (void)
 {
-#ifdef DEBUGGER
-    if (CPU.Flags & TRACE_FLAG)
-	S9xTraceMessage ("*** BRK");
-#endif
-
 #ifndef SA1_OPCODES
     CPU.BRKTriggered = TRUE;
 #endif
@@ -3374,10 +3369,6 @@ static void Op82 (void)
 /* IRQ *************************************************************************************** */
 void S9xOpcode_IRQ (void)
 {
-#ifdef DEBUGGER
-    if (CPU.Flags & TRACE_FLAG)
-	S9xTraceMessage ("*** IRQ");
-#endif
     if (!CheckEmulation())
     {
 	PushB (Registers.PB);
@@ -3442,10 +3433,6 @@ void S9xOpcode_IRQ (void)
 /* NMI *************************************************************************************** */
 void S9xOpcode_NMI (void)
 {
-#ifdef DEBUGGER
-    if (CPU.Flags & TRACE_FLAG)
-	S9xTraceMessage ("*** NMI");
-#endif
     if (!CheckEmulation())
     {
 	PushB (Registers.PB);
@@ -3509,10 +3496,6 @@ void S9xOpcode_NMI (void)
 /* COP *************************************************************************************** */
 static void Op02 (void)
 {
-#ifdef DEBUGGER
-    if (CPU.Flags & TRACE_FLAG)
-	S9xTraceMessage ("*** COP");
-#endif	
     if (!CheckEmulation())
     {
 	PushB (Registers.PB);
