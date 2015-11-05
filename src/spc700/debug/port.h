@@ -181,9 +181,7 @@ void gp32_fseek (long position,int ref,long *s);
 //#define THREADCPU
 
 
-//#define USE_OPENGL
 //#define NETPLAY_SUPPORT
-//#define FMOD_SUPPORT
 #define OLD_COLOUR_BLENDING
 
 #endif // __GP32__
