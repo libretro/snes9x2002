@@ -27,21 +27,25 @@ else ifeq ($(platform), ps3)
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
    CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   STATIC_LINKING := 1
 else ifeq ($(platform), sncps3)
    TARGET := libretro.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
    CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   STATIC_LINKING := 1
 else ifeq ($(platform), xenon)
    TARGET := libretro.a
    CC = xenon-gcc
    AR = xenon-ar
    CFLAGS += -D__LIBXENON__ -m32 -D__ppc__
+   STATIC_LINKING := 1
 else ifeq ($(platform), wii)
    TARGET := libretro.a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   STATIC_LINKING := 1
 # CTR (3DS)
 else ifeq ($(platform), ctr)
    TARGET := $(TARGET_NAME)_libretro_ctr.a
@@ -53,9 +57,8 @@ else ifeq ($(platform), ctr)
    CFLAGS += -Wall -mword-relocations
    CFLAGS += -fomit-frame-pointer -ffast-math
    CFLAGS += -D_3DS
-   CFLAGS += -D__GP2X__
    PLATFORM_DEFINES := -D_3DS
-   STATIC_LINKING = 1
+   STATIC_LINKING := 1
 else
    TARGET := retro.dll
    CC = gcc
@@ -125,6 +128,30 @@ OBJECTS += ./src/rops.o
 OBJECTS += ./libretro/libretro.o
 OBJECTS += ./libretro/memstream.o
 
+
+OBJECTS += ./src/os9x_65c816_global.o
+OBJECTS += ./src/os9x_65c816_spcasm.o
+OBJECTS += ./src/os9x_65c816_spcc.o
+
+OBJECTS += ./src/os9x_65c816.o
+
+OBJECTS += ./src/os9x_asm_cpu.o
+
+#CFLAGS += -D__GP2X__
+#CFLAGS += -DASMCPU
+#CFLAGS += -DVAR_CYCLES
+#CFLAGS += -D_C_GW_
+##COPT = -DUSE_SA1
+# -DFAST_LSB_WORD_ACCESS
+#CFLAGS += -ffast-math
+#CFLAGS += -msoft-float
+#CFLAGS += -finline -finline-functions -fexpensive-optimizations
+#CFLAGS += -falign-functions=16 -falign-loops -falign-labels
+#CFLAGS += -falign-jumps
+#CFLAGS += -fomit-frame-pointer
+#CFLAGS += -fstrict-aliasing -mstructure-size-boundary=32 -fweb -fsigned-char -frename-registers
+
+
 INCLUDES   = -I. -Ilibretro
 DEFINES    = -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline -DUSE_SA1
 
@@ -143,15 +170,7 @@ CFLAGS     += $(DEFINES) $(COMMON_DEFINES)
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-ifeq ($(platform), ps3)
-	$(AR) rcs $@ $(OBJECTS)
-else ifeq ($(platform), sncps3)
-	$(AR) rcs $@ $(OBJECTS)
-else ifeq ($(platform), xenon)
-	$(AR) rcs $@ $(OBJECTS)
-else ifeq ($(platform), wii)
-	$(AR) rcs $@ $(OBJECTS)
-else ifeq ($(platform), ctr)
+ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	$(CXX) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS) -lm

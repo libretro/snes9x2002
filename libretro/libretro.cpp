@@ -23,6 +23,7 @@
 #include "../src/soundux.h"
 #include "../src/cheats.h"
 #include "../src/display.h"
+#include "../src/os9x_asm_cpu.h"
 
 #ifdef _3DS
 extern "C" void* linearMemAlign(size_t size, size_t alignment);
@@ -242,6 +243,7 @@ static void snes_init (void)
 	Settings.ThreadSound = FALSE;
 	Settings.SoundSync = FALSE;
 	Settings.asmspc700 = TRUE;
+//   Settings.asmspc700 = FALSE;
 	Settings.SpeedHacks = TRUE;
 
 	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
@@ -386,6 +388,7 @@ void retro_run (void)
 {
    IPPU.RenderThisFrame = TRUE;
    S9xMainLoop();
+//   asm_S9xMainLoop();
    S9xMixSamples(audio_buf, avail);
    audio_batch_cb((int16_t *) audio_buf, avail >> 1);
 
