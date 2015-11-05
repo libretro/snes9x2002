@@ -60,12 +60,10 @@ extern int HDMA_ModeByteCounts [8];
 extern uint8 *HDMAMemPointers [8];
 extern uint8 *HDMABasePointers [8];
 
-#if defined(__linux__) || defined(__WIN32__) || defined(__GP2X__) || defined(__GIZ__) || defined(__WIZ__)
 static int S9xCompareSDD1IndexEntries (const void *p1, const void *p2)
 {
     return (*(uint32 *) p1 - *(uint32 *) p2);
 }
-#endif
 
 /**********************************************************************************************/
 /* S9xDoDMA()                                                                                   */
