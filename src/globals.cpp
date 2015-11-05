@@ -45,7 +45,6 @@
 #include "dsp1.h"
 #include "missing.h"
 #include "cpuexec.h"
-#include "debug.h"
 #include "apu.h"
 #include "dma.h"
 #include "fxemu.h"

@@ -43,7 +43,6 @@
 #include "ppu.h"
 #include "dsp1.h"
 #include "cpuexec.h"
-#include "debug.h"
 #include "apu.h"
 #include "dma.h"
 #ifdef USE_SA1
