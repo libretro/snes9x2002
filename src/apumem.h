@@ -49,103 +49,107 @@ END_EXTERN_C
 
 INLINE uint8 S9xAPUGetByteZ (uint8 Address)
 {
-    if (Address >= 0xf0 && IAPU.DirectPage == IAPU.RAM)
-    {
-	if (Address >= 0xfd) {
-	    uint8 t = IAPU.RAM [Address];
-	    IAPU.RAM [Address] = 0;
-	    return (t);
-	} else if (Address == 0xf3) return (S9xGetAPUDSP ());
+   if (Address >= 0xf0 && IAPU.DirectPage == IAPU.RAM)
+   {
+      if (Address >= 0xfd)
+      {
+         uint8 t = IAPU.RAM [Address];
+         IAPU.RAM [Address] = 0;
+         return (t);
+      }
+      else if (Address == 0xf3)
+         return (S9xGetAPUDSP ());
 
-	return (IAPU.RAM [Address]);
-    }
-    else
-	return (IAPU.DirectPage [Address]);
+      return (IAPU.RAM [Address]);
+   }
+   return (IAPU.DirectPage [Address]);
 }
 
 INLINE void S9xAPUSetByteZ (uint8 val, uint8 Address)
 {
-    if (Address >= 0xf0 && IAPU.DirectPage == IAPU.RAM)
-    {
-	if (Address == 0xf3)
-	    S9xSetAPUDSP (val);
-	else
-	if (Address >= 0xf4 && Address <= 0xf7)
-	    APU.OutPorts [Address - 0xf4] = val;
-	else
-	if (Address == 0xf1)
-	    S9xSetAPUControl (val);
-	else
-	if (Address < 0xfd)
-	{
-	    IAPU.RAM [Address] = val;
-	    if (Address >= 0xfa)
-	    {
-		if (val == 0)
-		    APU.TimerTarget [Address - 0xfa] = 0x100;
-		else
-		    APU.TimerTarget [Address - 0xfa] = val;
-	    }
-	}
-    }
-    else
-	IAPU.DirectPage [Address] = val;
+   if (Address >= 0xf0 && IAPU.DirectPage == IAPU.RAM)
+   {
+      if (Address == 0xf3)
+         S9xSetAPUDSP (val);
+      else
+         if (Address >= 0xf4 && Address <= 0xf7)
+            APU.OutPorts [Address - 0xf4] = val;
+         else
+            if (Address == 0xf1)
+               S9xSetAPUControl (val);
+            else
+               if (Address < 0xfd)
+               {
+                  IAPU.RAM [Address] = val;
+                  if (Address >= 0xfa)
+                  {
+                     if (val == 0)
+                        APU.TimerTarget [Address - 0xfa] = 0x100;
+                     else
+                        APU.TimerTarget [Address - 0xfa] = val;
+                  }
+               }
+   }
+   else
+      IAPU.DirectPage [Address] = val;
 }
 
 INLINE uint8 S9xAPUGetByte (uint32 Address)
 {
-    Address &= 0xffff;
-    
-    if (Address <= 0xff && Address >= 0xf3)
-    {
-	if (Address == 0xf3) return (S9xGetAPUDSP ());
-	if (Address >= 0xfd) {
-	    uint8 t = IAPU.RAM [Address];
-	    IAPU.RAM [Address] = 0;
-	    return (t);
-	}
-	return (IAPU.RAM [Address]);
-    }
-    return (IAPU.RAM [Address]);
+   Address &= 0xffff;
+
+   if (Address <= 0xff && Address >= 0xf3)
+   {
+      if (Address == 0xf3)
+         return (S9xGetAPUDSP ());
+      if (Address >= 0xfd)
+      {
+         uint8 t = IAPU.RAM [Address];
+         IAPU.RAM [Address] = 0;
+         return (t);
+      }
+      return (IAPU.RAM [Address]);
+   }
+   return (IAPU.RAM [Address]);
 }
 
 INLINE void S9xAPUSetByte (uint8 val, uint32 Address)
 {
-    Address &= 0xffff;
-    
-    if (Address <= 0xff && Address >= 0xf0)
-    {
-	if (Address == 0xf3)
-	    S9xSetAPUDSP (val);
-	else
-	if (Address >= 0xf4 && Address <= 0xf7)
-	    APU.OutPorts [Address - 0xf4] = val;
-	else
-	if (Address == 0xf1)
-	    S9xSetAPUControl (val);
-	else
-	if (Address < 0xfd)
-	{
-	    IAPU.RAM [Address] = val;
-	    if (Address >= 0xfa)
-	    {
-		if (val == 0)
-		    APU.TimerTarget [Address - 0xfa] = 0x100;
-		else
-		    APU.TimerTarget [Address - 0xfa] = val;
-	    }
-	}
-    }
-    else
-    {
-	if (Address < 0xffc0)
-	    IAPU.RAM [Address] = val;
-	else
-	{
-	    APU.ExtraRAM [Address - 0xffc0] = val;
-	    if (!APU.ShowROM)
-		IAPU.RAM [Address] = val;
-	}
-    }
+   Address &= 0xffff;
+
+   if (Address <= 0xff && Address >= 0xf0)
+   {
+      if (Address == 0xf3)
+         S9xSetAPUDSP (val);
+      else
+         if (Address >= 0xf4 && Address <= 0xf7)
+            APU.OutPorts [Address - 0xf4] = val;
+         else
+            if (Address == 0xf1)
+               S9xSetAPUControl (val);
+            else
+               if (Address < 0xfd)
+               {
+                  IAPU.RAM [Address] = val;
+                  if (Address >= 0xfa)
+                  {
+                     if (val == 0)
+                        APU.TimerTarget [Address - 0xfa] = 0x100;
+                     else
+                        APU.TimerTarget [Address - 0xfa] = val;
+                  }
+               }
+   }
+   else
+   {
+      if (Address < 0xffc0)
+         IAPU.RAM [Address] = val;
+      else
+      {
+         APU.ExtraRAM [Address - 0xffc0] = val;
+         if (!APU.ShowROM)
+            IAPU.RAM [Address] = val;
+      }
+   }
 }
 #endif

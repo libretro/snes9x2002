@@ -282,8 +282,7 @@ static uint8 GetPPU_APUR (uint16 Address)
 		{
 			if (r & 4)
 				return ((Address & 3) == 1 ? 0xaa : 0xbb);
-			else
-				return ((r >> 3) & 0xff);
+         return ((r >> 3) & 0xff);
 		}
 	}
 	else
@@ -342,66 +341,63 @@ uint8 (*GetPPU[])(uint16 Address) = {
 
 uint8 S9xGetPPU (uint16 Address)
 {
-	uint8 byte = 0;
-	if(Address<0x2100)//not a real PPU reg
-		return 0; //treat as unmapped memory returning last byte on the bus
-    if (Address <= 0x2190){
-		return GetPPU[Address - 0x2100](Address);
-    } else
-	{
-	#ifdef USE_SA1
-		if (Settings.SA1)
-			return (S9xGetSA1(Address));
-	#endif
-		if (Address <= 0x2fff || Address >= 0x3000 + 768)
-		{
-			switch (Address)
-			{
-				case 0x21c2 :
-					return (0x20);
-				case 0x21c3 :
-					return (0);
-				case 0x2800 :
-					// For Dai Kaijyu Monogatari II
-					if (Settings.SRTC)
-						return (S9xGetSRTC(Address));
-					/*FALL*/
-	
-				default :
-	#ifdef DEBUGGER
-					missing.unknownppu_read = Address;
-					if (Settings.TraceUnknownRegisters)
-					{
-						sprintf(String, "Unknown register read: $%04X\n", Address);
-						S9xMessage(S9X_TRACE, S9X_PPU_TRACE, String);
-					}
-	#endif
-					// XXX:
-					return (0); //Memory.FillRAM[Address]);
-			}
-		}
-	
-		if (!Settings.SuperFX)
-			return (0x30);
-			byte = Memory.FillRAM[Address];
-	
-		//if (Address != 0x3030 && Address != 0x3031)
-		//printf ("%04x\n", Address);
-	#ifdef CPU_SHUTDOWN
-		if (Address == 0x3030)
-		{
-			CPU.WaitAddress = CPU.PCAtOpcodeStart;
-			#ifdef ASMCPU
-			CPU.rstatus |= (1<<(24-3));
-			#endif
-		}
-		else
-	#endif
-		if (Address == 0x3031)
-		{
-			CLEAR_IRQ_SOURCE(GSU_IRQ_SOURCE);
-			Memory.FillRAM[0x3031] = byte & 0x7f;
-		}
-		return (byte);
-	}
+   uint8 byte = 0;
+   if(Address<0x2100)//not a real PPU reg
+      return 0; //treat as unmapped memory returning last byte on the bus
+   if (Address <= 0x2190)
+      return GetPPU[Address - 0x2100](Address);
+#ifdef USE_SA1
+   if (Settings.SA1)
+      return (S9xGetSA1(Address));
+#endif
+   if (Address <= 0x2fff || Address >= 0x3000 + 768)
+   {
+      switch (Address)
+      {
+         case 0x21c2 :
+            return (0x20);
+         case 0x21c3 :
+            return (0);
+         case 0x2800 :
+            // For Dai Kaijyu Monogatari II
+            if (Settings.SRTC)
+               return (S9xGetSRTC(Address));
+            /*FALL*/
+
+         default :
+#ifdef DEBUGGER
+            missing.unknownppu_read = Address;
+            if (Settings.TraceUnknownRegisters)
+            {
+               sprintf(String, "Unknown register read: $%04X\n", Address);
+               S9xMessage(S9X_TRACE, S9X_PPU_TRACE, String);
+            }
+#endif
+            // XXX:
+            return (0); //Memory.FillRAM[Address]);
+      }
+   }
+
+   if (!Settings.SuperFX)
+      return (0x30);
+   byte = Memory.FillRAM[Address];
+
+   //if (Address != 0x3030 && Address != 0x3031)
+   //printf ("%04x\n", Address);
+#ifdef CPU_SHUTDOWN
+   if (Address == 0x3030)
+   {
+      CPU.WaitAddress = CPU.PCAtOpcodeStart;
+#ifdef ASMCPU
+      CPU.rstatus |= (1<<(24-3));
+#endif
+   }
+   else
+#endif
+      if (Address == 0x3031)
+      {
+         CLEAR_IRQ_SOURCE(GSU_IRQ_SOURCE);
+         Memory.FillRAM[0x3031] = byte & 0x7f;
+      }
+   return (byte);
 }

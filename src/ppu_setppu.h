@@ -1534,9 +1534,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 						default :
 							Memory.FillRAM[Address] = Byte;
 							if (Address >= 0x3100)
-							{
 								FxCacheWriteAccess(Address);
-							}
 							break;
 					}
 					return;
