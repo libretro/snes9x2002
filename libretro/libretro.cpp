@@ -193,14 +193,19 @@ void retro_set_controller_port_device(unsigned in_port, unsigned device)
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   info->geometry.base_width = 256;
-   info->geometry.base_height = 239;
+   info->geometry.base_width = SNES_WIDTH;
+   info->geometry.base_height = SNES_HEIGHT;
    info->geometry.max_width = 512;
    info->geometry.max_height = 512;
+
+   if(PPU.ScreenHeight == SNES_HEIGHT_EXTENDED)
+      info->geometry.base_height = SNES_HEIGHT_EXTENDED;
+
    if (!Settings.PAL)
       info->timing.fps = 21477272.0 / 357366.0;
    else
       info->timing.fps = 21281370.0 / 425568.0;
+
    info->timing.sample_rate = samplerate;
    info->geometry.aspect_ratio = 4.0f / 3.0f;
 }
