@@ -203,7 +203,7 @@ uint8 S9xSA1GetByte (uint32 address)
 {
     uint8 *GetAddress = SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK];
     if (GetAddress >= (uint8 *) CMemory::MAP_LAST) return (*(GetAddress + (address & 0xffff)));
-    return S9xSA1GetByte_JumpTable[(int) GetAddress](address);
+    return S9xSA1GetByte_JumpTable[(intptr_t) GetAddress](address);
 //	return (SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK] >= (uint8 *)CMemory::MAP_LAST) ? 
 //		(*((uint8 *)(SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK]) + (address & 0xffff))) : 
 //		S9xSA1GetByte_JumpTable[(int) SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK]](address); 
@@ -292,7 +292,7 @@ void S9xSA1SetByte (uint8 byte, uint32 address)
 	*(Setaddress + (address & 0xffff)) = byte;
 	return;
     }
-    S9xSA1SetByte_JumpTable[(int)Setaddress](byte, address);
+    S9xSA1SetByte_JumpTable[(intptr_t)Setaddress](byte, address);
 }
 
 void S9xSA1SetPCBase (uint32 address)
@@ -305,7 +305,7 @@ void S9xSA1SetPCBase (uint32 address)
 	return;
     }
 
-    switch ((int) GetAddress)
+    switch ((intptr_t) GetAddress)
     {
     case CMemory::MAP_PPU:
 	SA1.PCBase = Memory.FillRAM - 0x2000;
