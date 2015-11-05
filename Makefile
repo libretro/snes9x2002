@@ -88,7 +88,6 @@ OBJECTS += ./src/dsp1.o
 OBJECTS += ./src/fxemu.o
 OBJECTS += ./src/fxinst.o
 OBJECTS += ./src/globals.o
-OBJECTS += ./src/loadzip.o
 OBJECTS += ./src/ppu.o
 OBJECTS += ./src/dma.o
 OBJECTS += ./src/memmap.o

@@ -168,7 +168,7 @@ void gp32_fseek (long position,int ref,long *s);
 
 //#undef ZLIB
 //#define ZLIB
-#define UNZIP_SUPPORT
+//#define UNZIP_SUPPORT
 
 
 #define SPC700_SHUTDOWN

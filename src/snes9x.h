@@ -67,7 +67,7 @@
 #define SEEK_STREAM(p,r,s)   memstream_seek(p,r,s)
 #elif defined(ZLIB)
 //#ifndef __WIN32__
-#include "zlib.h"
+//#include "zlib.h"
 //#endif
 #define STREAM gzFile
 #define READ_STREAM(p,l,s) gzread (s,p,l)

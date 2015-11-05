@@ -355,17 +355,6 @@ again:
 
     int32 TotalFileSize = 0;
 
-#ifdef UNZIP_SUPPORT
-
-    if( checkzip( fname ) )
-    {
-    	if (!LoadZip (fname, &TotalFileSize, &HeaderCount))
-    	    return (FALSE);
-
-    	strcpy (ROMFilename, fname);
-    }
-    else
-#endif
     {
 	if ((ROMFile = OPEN_STREAM (fname, "rb")) == NULL)
 	    return (FALSE);
