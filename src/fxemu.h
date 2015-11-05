@@ -149,9 +149,6 @@ extern uint32 FxGetPlotOptionRegister();
 extern uint32 FxGetSourceRegisterIndex();
 extern uint32 FxGetDestinationRegisterIndex();
 
-/* Get string for opcode currently in the pipe */
-extern void FxPipeString(char * pvString);
-
 /* Get the byte currently in the pipe */
 extern uint8 FxPipe();
 
