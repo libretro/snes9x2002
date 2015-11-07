@@ -496,7 +496,7 @@ bool retro_load_game(const struct retro_game_info *game)
 
    //S9xGraphicsInit();
    S9xReset();
-   Settings.asmspc700 = false;
+//   Settings.asmspc700 = false;
    CPU.APU_APUExecuting = Settings.APUEnabled = 1;
    Settings.SixteenBitSound = true;
    so.stereo = Settings.Stereo;
