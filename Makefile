@@ -68,103 +68,17 @@ else
    CFLAGS += -D__WIN32__ -D__WIN32_LIBRETRO__
 endif
 
-ifeq ($(DEBUG), 1)
-CFLAGS += -O0 -g
-else
-CFLAGS += -O3
-endif
+CORE_DIR     := ./src
+LIBRETRO_DIR := ./libretro
 
+include Makefile.common
 
-OBJECTS  =
-OBJECTS += ./src/apu.o
-OBJECTS += ./src/apuaux.o
-OBJECTS += ./src/c4.o
-OBJECTS += ./src/c4emu.o
-OBJECTS += ./src/cheats.o
-OBJECTS += ./src/cheats2.o
-OBJECTS += ./src/clip.o
-OBJECTS += ./src/data.o
-OBJECTS += ./src/dsp1.o
-OBJECTS += ./src/fxemu.o
-OBJECTS += ./src/fxinst.o
-OBJECTS += ./src/globals.o
-OBJECTS += ./src/ppu.o
-OBJECTS += ./src/dma.o
-OBJECTS += ./src/memmap.o
-OBJECTS += ./src/cpu.o
-OBJECTS += ./src/cpuexec.o
-OBJECTS += ./src/cpuops.o
-OBJECTS += ./src/sa1.o
-OBJECTS += ./src/sa1cpu.o
-OBJECTS += ./src/sdd1.o
-OBJECTS += ./src/sdd1emu.o
-OBJECTS += ./src/snapshot.o
-OBJECTS += ./src/soundux.o
-OBJECTS += ./src/spc700.o
-OBJECTS += ./src/spc700a.o
-OBJECTS += ./src/srtc.o
-OBJECTS += ./src/spc_decode.o
-OBJECTS += ./src/tile16.o
-OBJECTS += ./src/tile16add.o
-OBJECTS += ./src/tile16add1_2.o
-OBJECTS += ./src/tile16fadd1_2.o
-OBJECTS += ./src/tile16sub.o
-OBJECTS += ./src/tile16sub1_2.o
-OBJECTS += ./src/tile16fsub1_2.o
-OBJECTS += ./src/mode7new.o
-OBJECTS += ./src/mode7.o
-OBJECTS += ./src/mode7add.o
-OBJECTS += ./src/mode7add1_2.o
-OBJECTS += ./src/mode7sub.o
-OBJECTS += ./src/mode7sub1_2.o
-OBJECTS += ./src/mode7prio.o
-OBJECTS += ./src/mode7addprio.o
-OBJECTS += ./src/mode7add1_2prio.o
-OBJECTS += ./src/mode7subprio.o
-OBJECTS += ./src/mode7sub1_2prio.o
-OBJECTS += ./src/gfx16.o
-OBJECTS += ./src/rops.o
-OBJECTS += ./libretro/libretro.o
-OBJECTS += ./libretro/memstream.o
+OBJECTS := $(SOURCES:.c=.o)
+OBJECTS := $(OBJECTS:.cpp=.o)
+OBJECTS := $(OBJECTS:.S=.o)
+OBJECTS := $(OBJECTS:.s=.o)
 
-
-OBJECTS += ./src/os9x_65c816_global.o
-OBJECTS += ./src/os9x_65c816_spcasm.o
-OBJECTS += ./src/os9x_65c816_spcc.o
-
-OBJECTS += ./src/os9x_65c816.o
-
-OBJECTS += ./src/os9x_asm_cpu.o
-
-#CFLAGS += -D__GP2X__
-#CFLAGS += -DASMCPU
-#CFLAGS += -DVAR_CYCLES
-#CFLAGS += -D_C_GW_
-##COPT = -DUSE_SA1
-# -DFAST_LSB_WORD_ACCESS
-#CFLAGS += -ffast-math
-#CFLAGS += -msoft-float
-#CFLAGS += -finline -finline-functions -fexpensive-optimizations
-#CFLAGS += -falign-functions=16 -falign-loops -falign-labels
-#CFLAGS += -falign-jumps
-#CFLAGS += -fomit-frame-pointer
-#CFLAGS += -fstrict-aliasing -mstructure-size-boundary=32 -fweb -fsigned-char -frename-registers
-
-
-INCLUDES   = -I. -Ilibretro
-DEFINES    = -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline -DUSE_SA1
-
-ifeq ($(platform), sncps3)
-WARNINGS_DEFINES =
-CODE_DEFINES =
-else
-WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter -Wno-parentheses -Wno-write-strings -Wno-comment
-CODE_DEFINES = -fomit-frame-pointer
-endif
-
-COMMON_DEFINES += $(CODE_DEFINES) $(WARNINGS_DEFINES) -DNDEBUG=1 $(fpic)
-
-CFLAGS     += $(DEFINES) $(COMMON_DEFINES)
+CFLAGS += $(DEFINES) $(COMMON_DEFINES) $(INCLUDES)
 
 all: $(TARGET)
 
@@ -176,16 +90,16 @@ else
 endif
 
 %.o: %.c
-	$(CC) $(INCLUDES) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 %.o: %.cpp
-	$(CXX) $(INCLUDES) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CFLAGS) -c -o $@ $<
 
 %.o: %.s
-	$(CXX) $(INCLUDES) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
+	$(CXX) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
 
 %.o: %.S
-	$(CXX) $(INCLUDES) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
+	$(CXX) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)

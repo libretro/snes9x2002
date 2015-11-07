@@ -1,0 +1,96 @@
+
+ifeq ($(DEBUG), 1)
+DEFINES += -O0 -g
+else
+DEFINES += -O3 -DNDEBUG=1
+endif
+
+SOURCES :=
+SOURCES += $(CORE_DIR)/apu.cpp
+SOURCES += $(CORE_DIR)/apuaux.c
+SOURCES += $(CORE_DIR)/c4.cpp
+SOURCES += $(CORE_DIR)/c4emu.cpp
+SOURCES += $(CORE_DIR)/cheats.cpp
+SOURCES += $(CORE_DIR)/cheats2.cpp
+SOURCES += $(CORE_DIR)/clip.cpp
+SOURCES += $(CORE_DIR)/data.cpp
+SOURCES += $(CORE_DIR)/dsp1.cpp
+SOURCES += $(CORE_DIR)/fxemu.cpp
+SOURCES += $(CORE_DIR)/fxinst.cpp
+SOURCES += $(CORE_DIR)/globals.cpp
+SOURCES += $(CORE_DIR)/ppu.cpp
+SOURCES += $(CORE_DIR)/dma.cpp
+SOURCES += $(CORE_DIR)/memmap.cpp
+SOURCES += $(CORE_DIR)/cpu.cpp
+SOURCES += $(CORE_DIR)/cpuexec.cpp
+SOURCES += $(CORE_DIR)/cpuops.cpp
+SOURCES += $(CORE_DIR)/sa1.cpp
+SOURCES += $(CORE_DIR)/sa1cpu.cpp
+SOURCES += $(CORE_DIR)/sdd1.cpp
+SOURCES += $(CORE_DIR)/sdd1emu.cpp
+SOURCES += $(CORE_DIR)/snapshot.cpp
+SOURCES += $(CORE_DIR)/soundux.cpp
+SOURCES += $(CORE_DIR)/spc700.cpp
+SOURCES += $(CORE_DIR)/spc700a.s
+SOURCES += $(CORE_DIR)/srtc.cpp
+SOURCES += $(CORE_DIR)/spc_decode.S
+SOURCES += $(CORE_DIR)/tile16.cpp
+SOURCES += $(CORE_DIR)/tile16add.cpp
+SOURCES += $(CORE_DIR)/tile16add1_2.cpp
+SOURCES += $(CORE_DIR)/tile16fadd1_2.cpp
+SOURCES += $(CORE_DIR)/tile16sub.cpp
+SOURCES += $(CORE_DIR)/tile16sub1_2.cpp
+SOURCES += $(CORE_DIR)/tile16fsub1_2.cpp
+SOURCES += $(CORE_DIR)/mode7new.cpp
+SOURCES += $(CORE_DIR)/mode7.cpp
+SOURCES += $(CORE_DIR)/mode7add.cpp
+SOURCES += $(CORE_DIR)/mode7add1_2.cpp
+SOURCES += $(CORE_DIR)/mode7sub.cpp
+SOURCES += $(CORE_DIR)/mode7sub1_2.cpp
+SOURCES += $(CORE_DIR)/mode7prio.cpp
+SOURCES += $(CORE_DIR)/mode7addprio.cpp
+SOURCES += $(CORE_DIR)/mode7add1_2prio.cpp
+SOURCES += $(CORE_DIR)/mode7subprio.cpp
+SOURCES += $(CORE_DIR)/mode7sub1_2prio.cpp
+SOURCES += $(CORE_DIR)/gfx16.cpp
+SOURCES += $(CORE_DIR)/rops.cpp
+SOURCES += $(LIBRETRO_DIR)/libretro.cpp
+SOURCES += $(LIBRETRO_DIR)/memstream.c
+
+
+SOURCES += $(CORE_DIR)/os9x_65c816_global.s
+SOURCES += $(CORE_DIR)/os9x_65c816_spcasm.s
+SOURCES += $(CORE_DIR)/os9x_65c816_spcc.s
+
+SOURCES += $(CORE_DIR)/os9x_65c816.s
+
+SOURCES += $(CORE_DIR)/os9x_asm_cpu.cpp
+
+#CFLAGS += -D__GP2X__
+#CFLAGS += -DASMCPU
+#CFLAGS += -DVAR_CYCLES
+#CFLAGS += -D_C_GW_
+##COPT = -DUSE_SA1
+# -DFAST_LSB_WORD_ACCESS
+#CFLAGS += -ffast-math
+#CFLAGS += -msoft-float
+#CFLAGS += -finline -finline-functions -fexpensive-optimizations
+#CFLAGS += -falign-functions=16 -falign-loops -falign-labels
+#CFLAGS += -falign-jumps
+#CFLAGS += -fomit-frame-pointer
+#CFLAGS += -fstrict-aliasing -mstructure-size-boundary=32 -fweb -fsigned-char -frename-registers
+
+#CFLAGS += -ffast-math -funroll-loops -fomit-frame-pointer
+
+INCLUDES   = -Ilibretro -Isrc -I.
+DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline -DUSE_SA1
+
+ifeq ($(platform), sncps3)
+WARNINGS_DEFINES =
+CODE_DEFINES =
+else
+WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter -Wno-parentheses -Wno-write-strings -Wno-comment
+CODE_DEFINES = -fomit-frame-pointer
+endif
+
+COMMON_DEFINES += $(CODE_DEFINES) $(WARNINGS_DEFINES) $(fpic)
