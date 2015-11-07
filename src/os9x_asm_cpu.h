@@ -1,12 +1,18 @@
 #ifndef __os9x_asm_cpu__
 #define __os9x_asm_cpu__
 
-extern "C" void test_opcode(SCPUState *cpuptr);
+#include "snes9x.h"
 
-extern "C" void asmMainLoop_spcC(SCPUState *cpuptr);
-extern "C" void asmMainLoop_spcAsm(SCPUState *cpuptr);
-extern "C" void asmMainLoop(SCPUState *cpuptr);
+START_EXTERN_C
 
-extern "C" void asm_S9xMainLoop(void);
+void test_opcode(SCPUState *cpuptr);
+
+void asmMainLoop_spcC(SCPUState *cpuptr);
+void asmMainLoop_spcAsm(SCPUState *cpuptr);
+void asmMainLoop(SCPUState *cpuptr);
+
+void asm_S9xMainLoop(void);
+
+END_EXTERN_C
 
 #endif
