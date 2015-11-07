@@ -1,4 +1,5 @@
 	.align 4
+   .text
 	.globl  DecodeBlockAsm
 	
 /*

@@ -1,4 +1,5 @@
-	.DATA
+/*	.DATA*/
+   .text
 /****************************************************************	
 ****************************************************************/
 	.align 4
@@ -115,13 +116,13 @@ Ecrans:
 
 
 [GNV] : utilisation de la lard (laccdate) pour afficher les openings.
-   +nécessité d'avoir des valeurs dans l'opening pour date tréso=date compta=laccdate
+   +nÃ©cessitÃ© d'avoir des valeurs dans l'opening pour date trÃ©so=date compta=laccdate
 	
-[Accounting rec] : si laccdate pas bonne (pas = BD-1) -> message warning et pas de donnée
+[Accounting rec] : si laccdate pas bonne (pas = BD-1) -> message warning et pas de donnÃ©e
 sinon : 
-  +données nécessaires : opening date tréso=date compta=laccdate=BD-1
-  +données nécessaires : opening date tréso=date compta=laccdate-1
-  +données nécessaires : opening date tréso=laccdate-1 et date compta=laccdate
+  +donnÃ©es nÃ©cessaires : opening date trÃ©so=date compta=laccdate=BD-1
+  +donnÃ©es nÃ©cessaires : opening date trÃ©so=date compta=laccdate-1
+  +donnÃ©es nÃ©cessaires : opening date trÃ©so=laccdate-1 et date compta=laccdate
    */
 
 

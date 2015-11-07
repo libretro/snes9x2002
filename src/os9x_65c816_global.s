@@ -1,4 +1,5 @@
-	.DATA
+/*	.DATA*/
+   .text
 	.align	4
 	.include	"os9x_65c816_common.s"
 

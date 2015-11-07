@@ -59,6 +59,7 @@
 
 @ --------------------------- Framework --------------------------
 	.align 	4
+   .text
 spc700_execute: @ int cycles
   stmfd sp!,{r4-r11,lr}
   ldr   context,=IAPU               @ Pointer to SIAPU struct
