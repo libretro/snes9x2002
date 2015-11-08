@@ -52,6 +52,8 @@
 extern uint32 HeadMask [4];
 extern uint32 TailMask [5];
 
+#ifdef ARM_ASM
+
 #define f(from, to_lo, to_hi, pix) \
 	"	movs	" #from ", " #from ", lsl #(17)	\n" \
 	"	addcs	" #to_hi ", " #to_hi ", #(1 << ( 0 + 1 + " #pix ")) \n" \
@@ -214,8 +216,127 @@ void SelectConvertTile() {
 	ConvertTile = &ConvertTile2bpp; 
 	break;
 	}
-
 }
+#else
+uint8 ConvertTile (uint8 *pCache, uint32 TileAddr)
+{
+    register uint8 *tp = &Memory.VRAM[TileAddr];
+    uint32 *p = (uint32 *) pCache;
+    uint32 non_zero = 0;
+    uint8 line;
+
+    switch (BG.BitShift)
+    {
+    case 8:
+	for (line = 8; line != 0; line--, tp += 2)
+	{
+	    uint32 p1 = 0;
+	    uint32 p2 = 0;
+	    register uint8 pix;
+
+	    if ((pix = *(tp + 0)))
+	    {
+		p1 |= odd_high[0][pix >> 4];
+		p2 |= odd_low[0][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 1)))
+	    {
+		p1 |= even_high[0][pix >> 4];
+		p2 |= even_low[0][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 16)))
+	    {
+		p1 |= odd_high[1][pix >> 4];
+		p2 |= odd_low[1][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 17)))
+	    {
+		p1 |= even_high[1][pix >> 4];
+		p2 |= even_low[1][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 32)))
+	    {
+		p1 |= odd_high[2][pix >> 4];
+		p2 |= odd_low[2][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 33)))
+	    {
+		p1 |= even_high[2][pix >> 4];
+		p2 |= even_low[2][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 48)))
+	    {
+		p1 |= odd_high[3][pix >> 4];
+		p2 |= odd_low[3][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 49)))
+	    {
+		p1 |= even_high[3][pix >> 4];
+		p2 |= even_low[3][pix & 0xf];
+	    }
+	    *p++ = p1;
+	    *p++ = p2;
+	    non_zero |= p1 | p2;
+	}
+	break;
+
+    case 4:
+	for (line = 8; line != 0; line--, tp += 2)
+	{
+	    uint32 p1 = 0;
+	    uint32 p2 = 0;
+	    register uint8 pix;
+	    if ((pix = *(tp + 0)))
+	    {
+		p1 |= odd_high[0][pix >> 4];
+		p2 |= odd_low[0][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 1)))
+	    {
+		p1 |= even_high[0][pix >> 4];
+		p2 |= even_low[0][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 16)))
+	    {
+		p1 |= odd_high[1][pix >> 4];
+		p2 |= odd_low[1][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 17)))
+	    {
+		p1 |= even_high[1][pix >> 4];
+		p2 |= even_low[1][pix & 0xf];
+	    }
+	    *p++ = p1;
+	    *p++ = p2;
+	    non_zero |= p1 | p2;
+	}
+	break;
+
+    case 2:
+	for (line = 8; line != 0; line--, tp += 2)
+	{
+	    uint32 p1 = 0;
+	    uint32 p2 = 0;
+	    register uint8 pix;
+	    if ((pix = *(tp + 0)))
+	    {
+		p1 |= odd_high[0][pix >> 4];
+		p2 |= odd_low[0][pix & 0xf];
+	    }
+	    if ((pix = *(tp + 1)))
+	    {
+		p1 |= even_high[0][pix >> 4];
+		p2 |= even_low[0][pix & 0xf];
+	    }
+	    *p++ = p1;
+	    *p++ = p2;
+	    non_zero |= p1 | p2;
+	}
+	break;
+    }
+    return (non_zero ? TRUE : BLANK_TILE);
+}
+#endif
 
 void SelectPalette() {
 	// GFX.ScreenColors = &GFX.ScreenColorsPre[(Tile & GFX.PaletteMask) >> GFX.PaletteShift];

@@ -44,7 +44,12 @@
 
 void SelectConvertTile();
 void SelectPalette();
+
+#ifdef ARM_ASM
 extern uint8 (*ConvertTile) (uint8 *pCache, uint32 TileAddr);
+#else
+uint8 ConvertTile (uint8 *pCache, uint32 TileAddr);
+#endif
 
 extern uint32 TileBlank;
 
