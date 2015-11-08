@@ -48,9 +48,6 @@
 #include "gfx.h"
 #include "display.h"
 #include "sa1.h"
-#ifndef _SNESPPC
-//#include "netplay.h"
-#endif
 #include "sdd1.h"
 #include "srtc.h"
 
@@ -126,20 +123,18 @@ void S9xUpdateHTimer ()
 
 void S9xFixColourBrightness ()
 {
-    IPPU.XB = mul_brightness [PPU.Brightness];
-#ifndef _SNESPPC
-    if (Settings.SixteenBit)
-#endif
-    {
-	for (int i = 0; i < 256; i++)
-	{
-	    IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
-	    IPPU.Green [i] = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
-	    IPPU.Blue [i] = IPPU.XB [(PPU.CGDATA [i] >> 10) & 0x1f];
-	    IPPU.ScreenColors [i] = BUILD_PIXEL (IPPU.Red [i], IPPU.Green [i],
-						 IPPU.Blue [i]);
-	}
-    }
+   IPPU.XB = mul_brightness [PPU.Brightness];
+   if (Settings.SixteenBit)
+   {
+      for (int i = 0; i < 256; i++)
+      {
+         IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
+         IPPU.Green [i] = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
+         IPPU.Blue [i] = IPPU.XB [(PPU.CGDATA [i] >> 10) & 0x1f];
+         IPPU.ScreenColors [i] = BUILD_PIXEL (IPPU.Red [i], IPPU.Green [i],
+               IPPU.Blue [i]);
+      }
+   }
 }
 
 /**********************************************************************************************/
@@ -2396,77 +2391,73 @@ void S9xNextController ()
 
 void S9xUpdateJoypads ()
 {
-#ifdef _SNESPPC
-    int i = 0;
-#else
-    int i;
+   int i;
 
-    for (i = 0; i < 5; i++)
-#endif
-    {
-	IPPU.Joypads [i] = S9xReadJoypad (i);
-	if (IPPU.Joypads [i] & SNES_LEFT_MASK)
-	    IPPU.Joypads [i] &= ~SNES_RIGHT_MASK;
-	if (IPPU.Joypads [i] & SNES_UP_MASK)
-	    IPPU.Joypads [i] &= ~SNES_DOWN_MASK;
-    }
+   for (i = 0; i < 5; i++)
+   {
+      IPPU.Joypads [i] = S9xReadJoypad (i);
+      if (IPPU.Joypads [i] & SNES_LEFT_MASK)
+         IPPU.Joypads [i] &= ~SNES_RIGHT_MASK;
+      if (IPPU.Joypads [i] & SNES_UP_MASK)
+         IPPU.Joypads [i] &= ~SNES_DOWN_MASK;
+   }
 
-    //touhaiden controller Fix
-    if (SNESGameFixes.TouhaidenControllerFix && 
-        (IPPU.Controller == SNES_JOYPAD || IPPU.Controller == SNES_MULTIPLAYER5))
-    {
-	for (i = 0; i < 5; i++)
-	{
-	    if (IPPU.Joypads [i])
-		IPPU.Joypads [i] |= 0xffff0000;
-	}
-    }
+   //touhaiden controller Fix
+   if (SNESGameFixes.TouhaidenControllerFix && 
+         (IPPU.Controller == SNES_JOYPAD || IPPU.Controller == SNES_MULTIPLAYER5))
+   {
+      for (i = 0; i < 5; i++)
+      {
+         if (IPPU.Joypads [i])
+            IPPU.Joypads [i] |= 0xffff0000;
+      }
+   }
 
-    // Read mouse position if enabled
-    if (Settings.MouseMaster)
-    {
-	for (i = 0; i < 2; i++)
-	    S9xProcessMouse (i);
-    }
+   // Read mouse position if enabled
+   if (Settings.MouseMaster)
+   {
+      for (i = 0; i < 2; i++)
+         S9xProcessMouse (i);
+   }
 
-    // Read SuperScope if enabled
-    if (Settings.SuperScopeMaster)
-	ProcessSuperScope ();
+   // Read SuperScope if enabled
+   if (Settings.SuperScopeMaster)
+      ProcessSuperScope ();
 
-    if (Memory.FillRAM [0x4200] & 1)
-    {
-	PPU.Joypad1ButtonReadPos = 16;
-	if (Memory.FillRAM [0x4201] & 0x80)
-	{
-	    PPU.Joypad2ButtonReadPos = 16;
-	    PPU.Joypad3ButtonReadPos = 0;
-	}
-	else
-	{
-	    PPU.Joypad2ButtonReadPos = 0;
-	    PPU.Joypad3ButtonReadPos = 16;
-	}
-	int ind = Settings.SwapJoypads ? 1 : 0;
+   if (Memory.FillRAM [0x4200] & 1)
+   {
+      PPU.Joypad1ButtonReadPos = 16;
+      if (Memory.FillRAM [0x4201] & 0x80)
+      {
+         PPU.Joypad2ButtonReadPos = 16;
+         PPU.Joypad3ButtonReadPos = 0;
+      }
+      else
+      {
+         PPU.Joypad2ButtonReadPos = 0;
+         PPU.Joypad3ButtonReadPos = 16;
+      }
+      int ind = Settings.SwapJoypads ? 1 : 0;
 
-	Memory.FillRAM [0x4218] = (uint8) IPPU.Joypads [ind];
-	Memory.FillRAM [0x4219] = (uint8) (IPPU.Joypads [ind] >> 8);
-	Memory.FillRAM [0x421a] = (uint8) IPPU.Joypads [ind ^ 1];
-	Memory.FillRAM [0x421b] = (uint8) (IPPU.Joypads [ind ^ 1] >> 8);
-	if (Memory.FillRAM [0x4201] & 0x80)
-	{
-	    Memory.FillRAM [0x421c] = (uint8) IPPU.Joypads [ind];
-	    Memory.FillRAM [0x421d] = (uint8) (IPPU.Joypads [ind] >> 8);
-	    Memory.FillRAM [0x421e] = (uint8) IPPU.Joypads [2];
-	    Memory.FillRAM [0x421f] = (uint8) (IPPU.Joypads [2] >> 8);
-	}
-	else
-	{
-	    Memory.FillRAM [0x421c] = (uint8) IPPU.Joypads [3];
-	    Memory.FillRAM [0x421d] = (uint8) (IPPU.Joypads [3] >> 8);
-	    Memory.FillRAM [0x421e] = (uint8) IPPU.Joypads [4];
-	    Memory.FillRAM [0x421f] = (uint8) (IPPU.Joypads [4] >> 8);
-	}
-    }
+      Memory.FillRAM [0x4218] = (uint8) IPPU.Joypads [ind];
+      Memory.FillRAM [0x4219] = (uint8) (IPPU.Joypads [ind] >> 8);
+      Memory.FillRAM [0x421a] = (uint8) IPPU.Joypads [ind ^ 1];
+      Memory.FillRAM [0x421b] = (uint8) (IPPU.Joypads [ind ^ 1] >> 8);
+      if (Memory.FillRAM [0x4201] & 0x80)
+      {
+         Memory.FillRAM [0x421c] = (uint8) IPPU.Joypads [ind];
+         Memory.FillRAM [0x421d] = (uint8) (IPPU.Joypads [ind] >> 8);
+         Memory.FillRAM [0x421e] = (uint8) IPPU.Joypads [2];
+         Memory.FillRAM [0x421f] = (uint8) (IPPU.Joypads [2] >> 8);
+      }
+      else
+      {
+         Memory.FillRAM [0x421c] = (uint8) IPPU.Joypads [3];
+         Memory.FillRAM [0x421d] = (uint8) (IPPU.Joypads [3] >> 8);
+         Memory.FillRAM [0x421e] = (uint8) IPPU.Joypads [4];
+         Memory.FillRAM [0x421f] = (uint8) (IPPU.Joypads [4] >> 8);
+      }
+   }
 }
 
 #ifndef ZSNES_FX

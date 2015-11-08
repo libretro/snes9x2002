@@ -187,9 +187,7 @@ bool8 S9xSaveCheatFile (const char *filename)
 {
     if (Cheat.num_cheats == 0)
     {
-#ifndef _SNESPPC
 	(void) remove (filename);
-#endif
 	return (TRUE);
     }
 

@@ -87,9 +87,6 @@ bool8_32 S9xLoadOrigSnapshot (const char *filename)
     return (FALSE);
 }
 
-#ifdef _SNESPPC
-#pragma warning(disable : 4018)
-#endif
 static int ReadBlock (const char *key, void *block, int max_len, STREAM snap)
 {
     char buffer [20];

@@ -559,13 +559,11 @@ void S9xStartScreenRefresh ()
 
     if (IPPU.RenderThisFrame)
     {
-#ifndef _SNESPPC
 	if (!S9xInitUpdate ())
 	{
 	    IPPU.RenderThisFrame = FALSE;
 	    return;
 	}
-#endif
 	IPPU.RenderedFramesCount++;
 	IPPU.PreviousLine = IPPU.CurrentLine = 0;
 	IPPU.MaxBrightness = PPU.Brightness;

@@ -48,9 +48,6 @@
 #include "gfx.h"
 #include "display.h"
 #include "sa1.h"
-#ifndef _SNESPPC
-//#include "netplay.h"
-#endif
 #include "sdd1.h"
 #include "srtc.h"
 
@@ -128,19 +125,17 @@ void S9xUpdateHTimer ()
 
 void S9xFixColourBrightness ()
 {
-    IPPU.XB = mul_brightness [PPU.Brightness];
-#ifndef _SNESPPC
-    if (Settings.SixteenBit)
-#endif
-    {
-	for (unsigned int i = 0; i < 256; i++)
-	{
-	    //IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
-	    //IPPU.Green [i] = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
-	    //IPPU.Blue [i] = IPPU.XB [(PPU.CGDATA [i] >> 10) & 0x1f];
-	    IPPU.ScreenColors [i] = BUILD_PIXEL (IPPU.XB[IPPU.Red [i]], IPPU.XB[IPPU.Green [i]], IPPU.XB[IPPU.Blue [i]]);
-	}
-    }
+   IPPU.XB = mul_brightness [PPU.Brightness];
+   if (Settings.SixteenBit)
+   {
+      for (unsigned int i = 0; i < 256; i++)
+      {
+         //IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
+         //IPPU.Green [i] = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
+         //IPPU.Blue [i] = IPPU.XB [(PPU.CGDATA [i] >> 10) & 0x1f];
+         IPPU.ScreenColors [i] = BUILD_PIXEL (IPPU.XB[IPPU.Red [i]], IPPU.XB[IPPU.Green [i]], IPPU.XB[IPPU.Blue [i]]);
+      }
+   }
 }
 
 /**********************************************************************************************/

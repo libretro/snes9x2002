@@ -65,11 +65,7 @@ struct Band
     R.Left = MAX(A.Left, B.Left); \
     R.Right = MIN(A.Right, B.Right);}
 
-#ifndef _SNESPPC
 static int IntCompare (const void *d1, const void *d2)
-#else
-static int _cdecl IntCompare (const void *d1, const void *d2)
-#endif
 {
 /*
     if (*(uint32 *) d1 > *(uint32 *) d2)
@@ -82,11 +78,7 @@ static int _cdecl IntCompare (const void *d1, const void *d2)
     return (*(uint32 *) d1 - *(uint32 *) d2);
 }
 
-#ifndef _SNESPPC
 static int BandCompare (const void *d1, const void *d2)
-#else
-static int _cdecl BandCompare (const void *d1, const void *d2)
-#endif
 {
 /*
     if (((struct Band *) d1)->Left > ((struct Band *) d2)->Left)

@@ -81,11 +81,7 @@ void S9xSDD1PostLoadState ()
 	S9xSetSDD1MemoryMap (i, Memory.FillRAM [0x4804 + i]);
 }
 
-#ifndef _SNESPPC
 static int S9xCompareSDD1LoggedDataEntries (const void *p1, const void *p2)
-#else
-static int _cdecl S9xCompareSDD1LoggedDataEntries (const void *p1, const void *p2)
-#endif
 {
     uint8 *b1 = (uint8 *) p1;
     uint8 *b2 = (uint8 *) p2;

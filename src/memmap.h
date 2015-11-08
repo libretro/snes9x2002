@@ -167,11 +167,7 @@ public:
     uint32 SDD1LoggedDataCountPrev;
     uint32 SDD1LoggedDataCount;
     uint8  SDD1LoggedData [MEMMAP_MAX_SDD1_LOGGED_ENTRIES];
-#ifndef _SNESPPC
     char ROMFilename [_MAX_PATH];
-#else
-    char ROMFilename [1024];
-#endif
 };
 
 START_EXTERN_C

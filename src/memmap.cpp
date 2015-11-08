@@ -315,10 +315,6 @@ int checkzip( char * fn  )
 /* LoadROM()                                                                                  */
 /* This function loads a Snes-Backup image                                                    */
 /**********************************************************************************************/
-#ifdef _SNESPPC
-#pragma warning(disable : 4101)
-#pragma warning(disable : 4700)
-#endif
 bool8_32 CMemory::LoadROM (const char *filename)
 {
     unsigned long FileSize = 0;
@@ -341,13 +337,8 @@ bool8_32 CMemory::LoadROM (const char *filename)
 
     CalculatedSize = 0;
 again:
-#ifndef _SNESPPC
     _splitpath (filename, drive, dir, name, ext);
     _makepath (fname, drive, dir, name, ext);
-#else
-	strcpy(fname, filename);
-//	strupr(fname);
-#endif
 
 #ifdef __WIN32__
     memmove (&ext [0], &ext[1], 4);
@@ -391,9 +382,7 @@ again:
                 memmove (&ext [1], &ext [0], 4);
                 ext [0] = '.';
 #endif
-#ifndef _SNESPPC
 		_makepath (fname, drive, dir, name, ext);
-#endif
 		}
 	    else
 	    if (ptr - ROM < MAX_ROM_SIZE + 0x200 &&
@@ -408,9 +397,7 @@ again:
                 memmove (&ext [1], &ext [0], 4);
                 ext [0] = '.';
 #endif
-#ifndef _SNESPPC
 		_makepath (fname, drive, dir, name, ext);
-#endif
 		}
 	    else
 		more = FALSE;

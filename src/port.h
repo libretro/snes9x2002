@@ -53,10 +53,6 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
 	with a single define-block for each target platform.
 */
 
-/*
-**  _SNESPPC DEFINES
-*/
-
 #if 1
 
 //Title
@@ -145,7 +141,6 @@ typedef short			int16_32;
 
 EXTERN_C void S9xGenerateSound ();
 
-//Additional Items for _SNESPPC port
 void _makepath (char *path, const char *drive, const char *dir,
 		const char *fname, const char *ext);
 void _splitpath (const char *path, char *drive, char *dir, char *fname,
@@ -163,6 +158,6 @@ void _splitpath (const char *path, char *drive, char *dir, char *fname,
 #define inline __inline
 #endif
 
-#endif //  _SNESPPC
+#endif //  
 
 #endif //  _PORT_H_
