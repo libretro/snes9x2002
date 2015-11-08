@@ -157,6 +157,7 @@ extern uint8 mul_brightness [16][32];
 //#define SWAP_DWORD(dw) dw = ((dw & 0xff) << 24) | ((dw & 0xff00) << 8) | \
 //		            ((dw & 0xff0000) >> 8) | ((dw & 0xff000000) >> 24)
 // by Harald Kipp, from http://www.ethernut.de/en/documents/arm-inline-asm.html
+#ifdef ARM_ASM
 #define SWAP_DWORD(val) \
     __asm__ __volatile__ ( \
         "eor     r3, %1, %1, ror #16\n\t" \
@@ -167,7 +168,12 @@ extern uint8 mul_brightness [16][32];
         : "0"(val) \
         : "r3", "cc" \
     );
-
+#else
+#define SWAP_DWORD(dword) ((((unsigned int)(dword) & 0x000000ff) << 24) \
+                         | (((unsigned int)(dword) & 0x0000ff00) <<  8) \
+                         | (((unsigned int)(dword) & 0x00ff0000) >>  8) \
+                         | (((unsigned int)(dword) & 0xff000000) >> 24))
+#endif
 
 #ifdef FAST_LSB_WORD_ACCESS
 #define READ_2BYTES(s) (*(uint16 *) (s))
