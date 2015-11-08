@@ -2,6 +2,8 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+ARM_ASM = 1
+
 LOCAL_MODULE    := retro
 
 ifeq ($(TARGET_ARCH),arm)

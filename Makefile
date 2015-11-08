@@ -69,10 +69,6 @@ else
    CFLAGS += -D__WIN32__ -D__WIN32_LIBRETRO__
 endif
 
-ifeq ($(ARM_ASM), 1)
-CFLAGS += -DARM_ASM
-endif
-
 CORE_DIR     := ./src
 LIBRETRO_DIR := ./libretro
 

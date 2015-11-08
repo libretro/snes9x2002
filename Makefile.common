@@ -91,6 +91,10 @@ INCLUDES   = -Ilibretro -Isrc -I.
 DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline
 DEFINES    += -DUSE_SA1
 
+ifeq ($(ARM_ASM), 1)
+DEFINES += -DARM_ASM
+endif
+
 ifeq ($(platform), sncps3)
 WARNINGS_DEFINES =
 CODE_DEFINES =
