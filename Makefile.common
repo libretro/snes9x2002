@@ -31,9 +31,7 @@ SOURCES += $(CORE_DIR)/sdd1emu.cpp
 SOURCES += $(CORE_DIR)/snapshot.cpp
 SOURCES += $(CORE_DIR)/soundux.cpp
 SOURCES += $(CORE_DIR)/spc700.cpp
-SOURCES += $(CORE_DIR)/spc700a.s
 SOURCES += $(CORE_DIR)/srtc.cpp
-SOURCES += $(CORE_DIR)/spc_decode.S
 SOURCES += $(CORE_DIR)/tile16.cpp
 SOURCES += $(CORE_DIR)/tile16add.cpp
 SOURCES += $(CORE_DIR)/tile16add1_2.cpp
@@ -57,6 +55,10 @@ SOURCES += $(CORE_DIR)/rops.cpp
 SOURCES += $(LIBRETRO_DIR)/libretro.cpp
 SOURCES += $(LIBRETRO_DIR)/memstream.c
 
+ifeq ($(ARM_ASM), 1)
+SOURCES += $(CORE_DIR)/spc700a.s \
+			  $(CORE_DIR)/spc_decode.S
+endif
 
 SOURCES += $(CORE_DIR)/os9x_65c816_global.s
 SOURCES += $(CORE_DIR)/os9x_65c816_spcasm.s

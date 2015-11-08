@@ -52,7 +52,8 @@ else ifeq ($(platform), ctr)
    CC = $(DEVKITARM)/bin/arm-none-eabi-gcc$(EXE_EXT)
    CXX = $(DEVKITARM)/bin/arm-none-eabi-g++$(EXE_EXT)
    AR = $(DEVKITARM)/bin/arm-none-eabi-ar$(EXE_EXT)
-   CFLAGS += -DARM11 -D_3DS
+	ARM_ASM = 1
+   CFLAGS += -DARM11 -D_3DS 
    CFLAGS += -march=armv6k -mtune=mpcore -mfloat-abi=hard
    CFLAGS += -Wall -mword-relocations
    CFLAGS += -fomit-frame-pointer -ffast-math
@@ -66,6 +67,10 @@ else
    LD_FLAGS := 
    SHARED := -shared -static-libgcc -static-libstdc++ -Wl,--version-script=libretro/link.T
    CFLAGS += -D__WIN32__ -D__WIN32_LIBRETRO__
+endif
+
+ifeq ($(ARM_ASM), 1)
+CFLAGS += -DARM_ASM
 endif
 
 CORE_DIR     := ./src

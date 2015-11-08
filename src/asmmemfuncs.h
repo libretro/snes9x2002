@@ -1,6 +1,7 @@
 #ifndef _ASMMEMFUNCS_H_
 #define _ASMMEMFUNCS_H_
 
+#ifdef ARM_ASM
 #define memset32(_dst, _c, _count) \
 ({ uint32_t *dst = (_dst); register uint32_t c asm ("r7") = (_c); int count = (_count); register uint32_t dummy0 asm ("r4"), dummy1 asm ("r5"), dummy2 asm ("r6"); \
     __asm__ __volatile__ ( \
@@ -202,5 +203,11 @@
 	: "r4", "r5", "r6", "r7", "cc", "memory" \
     ); _dst; \
 })
+#else
+#define memset32(_dst, _c, _count) memset(_dst, _c, _count)
+#define memset16(_dst, _c, _count) memset(_dst, _c, _count)
+#define memcpy32(_dst, _src, _count) memcpy(_dst, _src, _count)
+#define memcpy16(_dst, _src, _count) memcpy(_dst, _src, _count)
+#endif
 
 #endif
