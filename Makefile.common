@@ -81,9 +81,8 @@ DEFINES += -ffast-math
 #DEFINES += -msoft-float
 DEFINES += -finline -finline-functions -fexpensive-optimizations
 DEFINES += -falign-functions=16 -falign-loops -falign-labels
-DEFINES += -falign-jumps
+DEFINES += -falign-jumps -fstrict-aliasing -fsigned-char -frename-registers -fweb
 DEFINES += -fomit-frame-pointer
-DEFINES += -fstrict-aliasing -mstructure-size-boundary=32 -fweb -fsigned-char -frename-registers
 
 DEFINES += -ffast-math -funroll-loops -fomit-frame-pointer
 
@@ -92,6 +91,7 @@ DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ 
 DEFINES    += -DUSE_SA1
 
 ifeq ($(ARM_ASM), 1)
+DEFINES += -mstructure-size-boundary=32 
 DEFINES += -DARM_ASM
 endif
 
