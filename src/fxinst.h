@@ -216,7 +216,7 @@
 /* Address checking (definately slow) */
 /* #define FX_ADDRESS_CHECK */
 
-struct FxRegs_s
+typedef struct
 {
     /* FxChip registers */
     uint32	avReg[16];		/* 16 Generic registers */
@@ -281,7 +281,7 @@ struct FxRegs_s
     uint32	vCounter;
     uint32	vInstCount;
     uint32	vSCBRDirty;		/* if SCBR is written, our cached screen pointers need updating */
-};
+}FxRegs_s;
 
 #define  FxRegs_s_null { \
    {0},    0,      0,      0,      0,   0,    0,   0,    0,    0, \

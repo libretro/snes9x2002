@@ -6,61 +6,61 @@ DEFINES += -O3 -DNDEBUG=1
 endif
 
 SOURCES :=
-SOURCES += $(CORE_DIR)/apu.cpp
+SOURCES += $(CORE_DIR)/apu.c
 SOURCES += $(CORE_DIR)/apuaux.c
-SOURCES += $(CORE_DIR)/c4.cpp
-SOURCES += $(CORE_DIR)/c4emu.cpp
-SOURCES += $(CORE_DIR)/cheats.cpp
-SOURCES += $(CORE_DIR)/cheats2.cpp
-SOURCES += $(CORE_DIR)/clip.cpp
-SOURCES += $(CORE_DIR)/data.cpp
-SOURCES += $(CORE_DIR)/dsp1.cpp
-SOURCES += $(CORE_DIR)/fxemu.cpp
-SOURCES += $(CORE_DIR)/fxinst.cpp
-SOURCES += $(CORE_DIR)/globals.cpp
-SOURCES += $(CORE_DIR)/ppu.cpp
-SOURCES += $(CORE_DIR)/dma.cpp
-SOURCES += $(CORE_DIR)/memmap.cpp
-SOURCES += $(CORE_DIR)/cpu.cpp
-SOURCES += $(CORE_DIR)/cpuexec.cpp
-SOURCES += $(CORE_DIR)/cpuops.cpp
-SOURCES += $(CORE_DIR)/sa1.cpp
-SOURCES += $(CORE_DIR)/sa1cpu.cpp
-SOURCES += $(CORE_DIR)/sdd1.cpp
-SOURCES += $(CORE_DIR)/sdd1emu.cpp
-SOURCES += $(CORE_DIR)/snapshot.cpp
-SOURCES += $(CORE_DIR)/soundux.cpp
-SOURCES += $(CORE_DIR)/spc700.cpp
-SOURCES += $(CORE_DIR)/srtc.cpp
-SOURCES += $(CORE_DIR)/mode7new.cpp
-SOURCES += $(CORE_DIR)/mode7.cpp
-SOURCES += $(CORE_DIR)/mode7add.cpp
-SOURCES += $(CORE_DIR)/mode7add1_2.cpp
-SOURCES += $(CORE_DIR)/mode7sub.cpp
-SOURCES += $(CORE_DIR)/mode7sub1_2.cpp
-SOURCES += $(CORE_DIR)/mode7prio.cpp
-SOURCES += $(CORE_DIR)/mode7addprio.cpp
-SOURCES += $(CORE_DIR)/mode7add1_2prio.cpp
-SOURCES += $(CORE_DIR)/mode7subprio.cpp
-SOURCES += $(CORE_DIR)/mode7sub1_2prio.cpp
-SOURCES += $(CORE_DIR)/gfx16.cpp
-SOURCES += $(CORE_DIR)/rops.cpp
-SOURCES += $(LIBRETRO_DIR)/libretro.cpp
+SOURCES += $(CORE_DIR)/c4.c
+SOURCES += $(CORE_DIR)/c4emu.c
+SOURCES += $(CORE_DIR)/cheats.c
+SOURCES += $(CORE_DIR)/cheats2.c
+SOURCES += $(CORE_DIR)/clip.c
+SOURCES += $(CORE_DIR)/data.c
+SOURCES += $(CORE_DIR)/dsp1.c
+SOURCES += $(CORE_DIR)/fxemu.c
+SOURCES += $(CORE_DIR)/fxinst.c
+SOURCES += $(CORE_DIR)/globals.c
+SOURCES += $(CORE_DIR)/ppu.c
+SOURCES += $(CORE_DIR)/dma.c
+SOURCES += $(CORE_DIR)/memmap.c
+SOURCES += $(CORE_DIR)/cpu.c
+SOURCES += $(CORE_DIR)/cpuexec.c
+SOURCES += $(CORE_DIR)/cpuops.c
+SOURCES += $(CORE_DIR)/sa1.c
+SOURCES += $(CORE_DIR)/sa1cpu.c
+SOURCES += $(CORE_DIR)/sdd1.c
+SOURCES += $(CORE_DIR)/sdd1emu.c
+SOURCES += $(CORE_DIR)/snapshot.c
+SOURCES += $(CORE_DIR)/soundux.c
+SOURCES += $(CORE_DIR)/spc700.c
+SOURCES += $(CORE_DIR)/srtc.c
+SOURCES += $(CORE_DIR)/mode7new.c
+SOURCES += $(CORE_DIR)/mode7.c
+SOURCES += $(CORE_DIR)/mode7add.c
+SOURCES += $(CORE_DIR)/mode7add1_2.c
+SOURCES += $(CORE_DIR)/mode7sub.c
+SOURCES += $(CORE_DIR)/mode7sub1_2.c
+SOURCES += $(CORE_DIR)/mode7prio.c
+SOURCES += $(CORE_DIR)/mode7addprio.c
+SOURCES += $(CORE_DIR)/mode7add1_2prio.c
+SOURCES += $(CORE_DIR)/mode7subprio.c
+SOURCES += $(CORE_DIR)/mode7sub1_2prio.c
+SOURCES += $(CORE_DIR)/gfx16.c
+SOURCES += $(CORE_DIR)/rops.c
+SOURCES += $(LIBRETRO_DIR)/libretro.c
 SOURCES += $(LIBRETRO_DIR)/memstream.c
 
 ifeq ($(ARM_ASM), 1)
 SOURCES += $(CORE_DIR)/spc700a.s \
 			  $(CORE_DIR)/spc_decode.S
 
-SOURCES += $(CORE_DIR)/tile16.cpp
-SOURCES += $(CORE_DIR)/tile16add.cpp
-SOURCES += $(CORE_DIR)/tile16add1_2.cpp
-SOURCES += $(CORE_DIR)/tile16fadd1_2.cpp
-SOURCES += $(CORE_DIR)/tile16sub.cpp
-SOURCES += $(CORE_DIR)/tile16sub1_2.cpp
-SOURCES += $(CORE_DIR)/tile16fsub1_2.cpp
+SOURCES += $(CORE_DIR)/tile16.c
+SOURCES += $(CORE_DIR)/tile16add.c
+SOURCES += $(CORE_DIR)/tile16add1_2.c
+SOURCES += $(CORE_DIR)/tile16fadd1_2.c
+SOURCES += $(CORE_DIR)/tile16sub.c
+SOURCES += $(CORE_DIR)/tile16sub1_2.c
+SOURCES += $(CORE_DIR)/tile16fsub1_2.c
 else
-SOURCES += $(CORE_DIR)/tile_c.cpp
+SOURCES += $(CORE_DIR)/tile_c.c
 endif
 
 SOURCES += $(CORE_DIR)/os9x_65c816_global.s
@@ -69,7 +69,7 @@ SOURCES += $(CORE_DIR)/os9x_65c816_spcc.s
 
 #SOURCES += $(CORE_DIR)/os9x_65c816.s
 
-SOURCES += $(CORE_DIR)/os9x_asm_cpu.cpp
+SOURCES += $(CORE_DIR)/os9x_asm_cpu.c
 
 #DEFINES += -D__GP2X__
 #DEFINES += -DASMCPU
@@ -88,11 +88,13 @@ DEFINES += -ffast-math -funroll-loops -fomit-frame-pointer
 
 INCLUDES   = -I$(LIBRETRO_DIR) -I$(CORE_DIR) -I.
 DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline
+#DEFINES += -DRIGHTSHIFT_IS_SAR
 DEFINES    += -DUSE_SA1
 
 ifeq ($(ARM_ASM), 1)
 DEFINES += -mstructure-size-boundary=32 
 DEFINES += -DARM_ASM
+DEFINES += -DRIGHTSHIFT_IS_SAR
 endif
 
 ifeq ($(platform), sncps3)

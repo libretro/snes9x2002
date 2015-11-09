@@ -48,7 +48,7 @@ END_EXTERN_C
 
 // TODO: restore nondebug version
 
-INLINE uint8 S9xAPUGetByteZ (uint8 Address)
+static INLINE uint8 S9xAPUGetByteZ (uint8 Address)
 {
 	uint8 res = 0;
 	pIAPU->memread_addr = Address;
@@ -86,7 +86,7 @@ INLINE uint8 S9xAPUGetByteZ (uint8 Address)
 	return res;
 }
 
-INLINE void S9xAPUSetByteZ (uint8 val, uint8 Address)
+static INLINE void S9xAPUSetByteZ (uint8 val, uint8 Address)
 {
 	pIAPU->memwrite_addr = Address;
 	pIAPU->memwrite_data = val;
@@ -120,7 +120,7 @@ INLINE void S9xAPUSetByteZ (uint8 val, uint8 Address)
 	pIAPU->DirectPage [Address] = val;
 }
 
-INLINE uint8 S9xAPUGetByte (uint32 Address)
+static INLINE uint8 S9xAPUGetByte (uint32 Address)
 {
     Address &= 0xffff;
     uint8 res = 0;
@@ -159,7 +159,7 @@ INLINE uint8 S9xAPUGetByte (uint32 Address)
 	return res;
 }
 
-INLINE void S9xAPUSetByte (uint8 val, uint32 Address)
+static INLINE void S9xAPUSetByte (uint8 val, uint32 Address)
 {
     Address &= 0xffff;
 	pIAPU->memwrite_addr = Address;

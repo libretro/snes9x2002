@@ -6,8 +6,8 @@
 #include "gfx.h"
 #include "apu.h"
 
-extern struct SLineData LineData[240];
-extern struct SLineMatrixData LineMatrixData [240];
+extern SLineData LineData[240];
+extern SLineMatrixData LineMatrixData [240];
 extern uint8  Mode7Depths [2];
 
 #define M7 	19
@@ -48,7 +48,7 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg)
 
     Screen += GFX.StartY * GFX_PITCH; 
     Depth = GFX.DB + GFX.StartY * GFX_PPL;
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
+    SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
 
     for (Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) { 
 	HOffset = ((int32) LineData[Line].BG[0].HOffset << M7) >> M7; 
@@ -93,7 +93,7 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg)
 
 	    xx3 = (startx + HOffset); 
 
-		asm volatile (
+		__asm__ volatile (
 		"1:						\n"
 		"	mov	r3, %[AA], asr #18		\n"	
 		"	orrs	r3, r3, %[CC], asr #18		\n"			
@@ -249,7 +249,7 @@ static void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg)
     Screen += GFX.StartY * GFX_PITCH; 
     Depth = GFX.DB + GFX.StartY * GFX_PPL;
 
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
+    SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
 
     for (Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) { 
 	HOffset = ((int32) LineData[Line].BG[0].HOffset << M7) >> M7; 
@@ -285,7 +285,7 @@ static void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg)
 			aa = l->MatrixA; 
 			cc = l->MatrixC;
 	    } 
-		asm volatile (
+		__asm__ volatile (
 		"1:						\n"
 		"	mov	r3, %[AA], asr #18		\n"
 		"	orrs	r3, r3, %[CC], asr #18		\n"			
@@ -384,7 +384,7 @@ static void DrawBGMode7Background16R0 (uint8 *Screen, int bg)
     int DD; 
     uint32 Line;
     uint32 clip;
-    struct SLineMatrixData *l;
+    SLineMatrixData *l;
     uint8 *Depth;
     unsigned int fixedColour = GFX.FixedColour;
     uint32 depth = Mode7Depths[0] | (Mode7Depths[1] << 8);
@@ -437,7 +437,7 @@ static void DrawBGMode7Background16R0 (uint8 *Screen, int bg)
 			aa = l->MatrixA; 
 			cc = l->MatrixC;
 	    } 
-		asm volatile (
+		__asm__ volatile (
 		"	ldr	r3, %[AndByY]			\n"		
 		"1:						\n"
 		"	and	r1, r3, %[CC], asr #4		\n"

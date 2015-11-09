@@ -199,13 +199,14 @@ enum {
 #undef MEMMAP_NUM_BLOCKS
 #define MEMMAP_NUM_BLOCKS (0x1000000 / MEMMAP_BLOCK_SIZE)
 
-struct SCPUState{
+typedef struct
+{
     uint32  Flags;					//0
     bool8   BranchSkip;				//4
     bool8   NMIActive;				//5
     bool8   IRQActive;				//6
     bool8   WaitingForInterrupt;	//7
-    struct SRegisters Regs;			//8
+    SRegisters Regs;			//8
 		//uint8  PB;				//8		--> status
 		//uint8  DB;				//9
 		//pair   P;					//10
@@ -254,7 +255,7 @@ struct SCPUState{
 	void *DSPGet;
 	void *DSPSet;
 	int32 rstatus; 
-};
+}SCPUState;
 
 
 #define HBLANK_START_EVENT 0
@@ -263,7 +264,8 @@ struct SCPUState{
 #define HTIMER_AFTER_EVENT 3
 #define NO_EVENT 4
 
-struct SSettings{
+typedef struct
+{
     // CPU options
     bool8  APUEnabled;
     bool8  Shutdown;
@@ -398,9 +400,9 @@ struct SSettings{
 #ifdef __WIN32__
     int    SoundDriver;
 #endif
-};
+}SSettings;
 
-struct SSNESGameFixes
+typedef struct
 {
     uint8 NeedInit0x2137;
     uint8 umiharakawaseFix;
@@ -414,12 +416,12 @@ struct SSNESGameFixes
     uint8 Uniracers;
     uint8 Flintstones;
     uint8 Mode7Hack;
-};
+}SSNESGameFixes;
 
 START_EXTERN_C
-extern struct SSettings Settings;
-extern struct SCPUState CPU;
-extern struct SSNESGameFixes SNESGameFixes;
+extern SSettings Settings;
+extern SCPUState CPU;
+extern SSNESGameFixes SNESGameFixes;
 extern char String [513];
 
 void S9xExit ();

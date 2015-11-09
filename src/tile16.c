@@ -87,7 +87,7 @@ uint8 ConvertTile8bpp (uint8 *pCache, uint32 TileAddr)
     register uint32 *p = (uint32 *) pCache;
     register uint32 non_zero;
 
-	asm volatile (
+	__asm__ volatile (
 	"	mov	r0, #8		\n"
 	"	mov	%[non_zero], #0	\n"
 
@@ -132,7 +132,7 @@ uint8 ConvertTile4bpp (uint8 *pCache, uint32 TileAddr)
     register uint32 *p = (uint32 *) pCache;
     register uint32 non_zero;
 
-	asm volatile (
+	__asm__ volatile (
 	"	mov	r0, #8		\n"
 	"	mov	%[non_zero], #0	\n"
 	"1:	\n"
@@ -170,7 +170,7 @@ uint8 ConvertTile2bpp (uint8 *pCache, uint32 TileAddr)
     register uint32 *p = (uint32 *) pCache;
     register uint32 non_zero;
 
-	asm volatile (
+	__asm__ volatile (
 	"	mov	r0, #8		\n"
 	"	mov	%[non_zero], #0	\n"
 	"1:	\n"
@@ -356,7 +356,7 @@ void SelectPalette() {
     
 }
 
-inline void WRITE_4PIXELSHI16 (uint32 Offset, uint8 *Pixels)
+static inline void WRITE_4PIXELSHI16 (uint32 Offset, uint8 *Pixels)
 {
     uint32 Pixel;
     uint16 *Screen = (uint16 *) GFX.S + Offset;
@@ -376,7 +376,7 @@ inline void WRITE_4PIXELSHI16 (uint32 Offset, uint8 *Pixels)
 #undef FN
 }
 
-inline void WRITE_4PIXELSHI16_FLIPPED (uint32 Offset, uint8 *Pixels)
+static inline void WRITE_4PIXELSHI16_FLIPPED (uint32 Offset, uint8 *Pixels)
 {
     uint32 Pixel;
     uint16 *Screen = (uint16 *) GFX.S + Offset;
@@ -396,7 +396,7 @@ inline void WRITE_4PIXELSHI16_FLIPPED (uint32 Offset, uint8 *Pixels)
 #undef FN
 }
 
-INLINE void WRITE_4PIXELS16x2 (uint32 Offset, uint8 *Pixels)
+static INLINE void WRITE_4PIXELS16x2 (uint32 Offset, uint8 *Pixels)
 {
     register uint32 Pixel;
     uint16 *Screen = (uint16 *) GFX.S + Offset;
@@ -416,7 +416,7 @@ INLINE void WRITE_4PIXELS16x2 (uint32 Offset, uint8 *Pixels)
 #undef FN
 }
 
-INLINE void WRITE_4PIXELS16_FLIPPEDx2 (uint32 Offset, uint8 *Pixels)
+static INLINE void WRITE_4PIXELS16_FLIPPEDx2 (uint32 Offset, uint8 *Pixels)
 {
     register uint32 Pixel;
     uint16 *Screen = (uint16 *) GFX.S + Offset;
@@ -436,7 +436,7 @@ INLINE void WRITE_4PIXELS16_FLIPPEDx2 (uint32 Offset, uint8 *Pixels)
 #undef FN
 }
 
-INLINE void WRITE_4PIXELS16x2x2 (uint32 Offset, uint8 *Pixels)
+static INLINE void WRITE_4PIXELS16x2x2 (uint32 Offset, uint8 *Pixels)
 {
     register uint32 Pixel;
     uint16 *Screen = (uint16 *) GFX.S + Offset;
@@ -458,7 +458,7 @@ INLINE void WRITE_4PIXELS16x2x2 (uint32 Offset, uint8 *Pixels)
 #undef FN
 }
 
-INLINE void WRITE_4PIXELS16_FLIPPEDx2x2 (uint32 Offset, uint8 *Pixels)
+static INLINE void WRITE_4PIXELS16_FLIPPEDx2x2 (uint32 Offset, uint8 *Pixels)
 {
     register uint32 Pixel;
     uint16 *Screen = (uint16 *) GFX.S + Offset;
@@ -488,7 +488,7 @@ void DrawNoZTile16 (uint32 Tile, uint32 Offset, uint32 StartLine, uint32 LineCou
      TILE_PREAMBLE 
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 #define FN(p)  \
 			"	ldrb	r1, [%[bp], #" #p "]		\n"\
@@ -526,7 +526,7 @@ if (Tile & V_FLIP){
 		: "r0", "r1", "cc" // r8 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 #define FN1(p)  \
 			"	ldrb	r1, [%[bp], #( 7 - " #p ")]	\n"\
@@ -566,7 +566,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		FN(2)
@@ -590,7 +590,7 @@ if (Tile & V_FLIP){
 		: "r0", "r1", "cc" // r8 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1(0)
 		FN1(2)
@@ -629,7 +629,7 @@ void DrawTile16 (uint32 Tile, uint32 Offset, uint32 StartLine, uint32 LineCount)
 
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 #define FN(p)  \
 			"	ldrb	r9, [%[depth], #" #p "]		\n"\
@@ -674,7 +674,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r8 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:						\n"
 #define FN1(p)  \
 			"	ldrb	r9, [%[depth], #" #p "]		\n"\
@@ -721,7 +721,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		FN(2)
@@ -746,7 +746,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r8 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:						\n"
 		FN1(0)
 		FN1(2)
@@ -819,7 +819,7 @@ switch(Width) {
 // -- Width = 1 ------
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		// Loop	
@@ -844,7 +844,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1(0)
 		// Loop	
@@ -871,7 +871,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		// Loop	
@@ -896,7 +896,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1(0)
 		// Loop	
@@ -928,7 +928,7 @@ if (Tile & V_FLIP){
 // -- Width = 2 ------
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN(0)
@@ -955,7 +955,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN1(0)
@@ -984,7 +984,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		FN(1)
@@ -1010,7 +1010,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1(0)
 		FN1(1)
@@ -1044,7 +1044,7 @@ if (Tile & V_FLIP){
 // -- Width = 3 ------
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN(0)
@@ -1072,7 +1072,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN1(0)
@@ -1102,7 +1102,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		FN(1)
@@ -1129,7 +1129,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1(0)
 		FN1(1)
@@ -1164,7 +1164,7 @@ if (Tile & V_FLIP){
 // -- Width = 4 ------
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN(0)
@@ -1193,7 +1193,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN1(0)
@@ -1224,7 +1224,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		FN(1)
@@ -1252,7 +1252,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1(0)
 		FN1(1)
@@ -1288,7 +1288,7 @@ if (Tile & V_FLIP){
 // -- Width = 5 ------
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN(0)
@@ -1318,7 +1318,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN1(0)
@@ -1350,7 +1350,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		FN(1)
@@ -1379,7 +1379,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1(0)
 		FN1(1)
@@ -1416,7 +1416,7 @@ if (Tile & V_FLIP){
 // -- Width = 6 ------
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN(0)
@@ -1447,7 +1447,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN1(0)
@@ -1480,7 +1480,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		FN(1)
@@ -1510,7 +1510,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1(0)
 		FN1(1)
@@ -1548,7 +1548,7 @@ if (Tile & V_FLIP){
 // -- Width = 7 ------
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN(0)
@@ -1580,7 +1580,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		FN1(0)
@@ -1614,7 +1614,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN(0)
 		FN(1)
@@ -1645,7 +1645,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r9 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1(0)
 		FN1(1)

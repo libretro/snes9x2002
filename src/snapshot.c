@@ -102,7 +102,7 @@ enum {
 #define COUNT(ARRAY) (sizeof (ARRAY) / sizeof (ARRAY[0]))
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SCPUState *)
+#define OFFSET(f) Offset(f, SCPUState *)
 
 static FreezeData SnapCPU [] = {
     {OFFSET (Flags), 4, INT_V},
@@ -120,7 +120,7 @@ static FreezeData SnapCPU [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SRegisters *)
+#define OFFSET(f) Offset(f, SRegisters *)
 
 static FreezeData SnapRegisters [] = {
     {OFFSET (PB),  1, INT_V},
@@ -135,7 +135,7 @@ static FreezeData SnapRegisters [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SPPU *)
+#define OFFSET(f) Offset(f, SPPU *)
 
 static FreezeData SnapPPU [] = {
     {OFFSET (BGMode), 1, INT_V},
@@ -268,32 +268,32 @@ static FreezeData SnapPPU [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SDMA *)
+#define OFFSET(f) Offset(f, SDMA *)
 
 static FreezeData SnapDMA [] = {
 #define O(N) \
-    {OFFSET (TransferDirection) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (AAddressFixed) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (AAddressDecrement) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (TransferMode) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (ABank) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (AAddress) + N * sizeof (struct SDMA), 2, INT_V}, \
-    {OFFSET (Address) + N * sizeof (struct SDMA), 2, INT_V}, \
-    {OFFSET (BAddress) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (TransferBytes) + N * sizeof (struct SDMA), 2, INT_V}, \
-    {OFFSET (HDMAIndirectAddressing) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (IndirectAddress) + N * sizeof (struct SDMA), 2, INT_V}, \
-    {OFFSET (IndirectBank) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (Repeat) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (LineCount) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (FirstLine) + N * sizeof (struct SDMA), 1, INT_V}
+    {OFFSET (TransferDirection) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (AAddressFixed) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (AAddressDecrement) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (TransferMode) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (ABank) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (AAddress) + N * sizeof ( SDMA), 2, INT_V}, \
+    {OFFSET (Address) + N * sizeof ( SDMA), 2, INT_V}, \
+    {OFFSET (BAddress) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (TransferBytes) + N * sizeof ( SDMA), 2, INT_V}, \
+    {OFFSET (HDMAIndirectAddressing) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (IndirectAddress) + N * sizeof ( SDMA), 2, INT_V}, \
+    {OFFSET (IndirectBank) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (Repeat) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (LineCount) + N * sizeof ( SDMA), 1, INT_V}, \
+    {OFFSET (FirstLine) + N * sizeof ( SDMA), 1, INT_V}
 
     O(0), O(1), O(2), O(3), O(4), O(5), O(6), O(7)
 #undef O
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SAPU *)
+#define OFFSET(f) Offset(f, SAPU *)
 
 static FreezeData SnapAPU [] = {
     {OFFSET (Cycles), 4, INT_V},
@@ -310,7 +310,7 @@ static FreezeData SnapAPU [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SAPURegisters *)
+#define OFFSET(f) Offset(f, SAPURegisters *)
 
 static FreezeData SnapAPURegisters [] = {
     {OFFSET (P)   , 1, INT_V},
@@ -374,7 +374,7 @@ static FreezeData SnapSoundData [] = {
 #ifdef USE_SA1
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SSA1Registers *)
+#define OFFSET(f) Offset(f, SSA1Registers *)
 
 static FreezeData SnapSA1Registers [] = {
     {OFFSET (PB),  1, INT_V},
@@ -389,7 +389,7 @@ static FreezeData SnapSA1Registers [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SSA1 *)
+#define OFFSET(f) Offset(f, SSA1 *)
 
 static FreezeData SnapSA1 [] = {
     {OFFSET (Flags), 4, INT_V},
@@ -499,7 +499,7 @@ static void Freeze ()
 // RAM and VRAM
     FreezeBlock ("VRA", Memory.VRAM, 0x10000);
     FreezeBlock ("RAM", Memory.RAM, 0x20000);
-    FreezeBlock ("SRA", ::SRAM, 0x20000);
+    FreezeBlock ("SRA", SRAM, 0x20000);
     FreezeBlock ("FIL", Memory.FillRAM, 0x8000);
     if (Settings.APUEnabled)
     {
@@ -581,7 +581,7 @@ static int Unfreeze()
 	return (result);
 	
 	
-    Memory.FixROMSpeed ();
+    FixROMSpeed ();
     CPU.Flags |= old_flags & (DEBUG_MODE_FLAG | TRACE_FLAG |
 			      SINGLE_STEP_FLAG | FRAME_ADVANCE_FLAG);
     if ((result = UnfreezeStruct("REG", &Registers, SnapRegisters, COUNT (SnapRegisters))) != SUCCESS)
@@ -613,7 +613,7 @@ static int Unfreeze()
     if ((result = UnfreezeBlock ("RAM", Memory.RAM, 0x20000)) != SUCCESS)
 	return (result);
 
-    if ((result = UnfreezeBlock ("SRA", ::SRAM, 0x20000)) != SUCCESS)
+    if ((result = UnfreezeBlock ("SRA", SRAM, 0x20000)) != SUCCESS)
 	return (result);
 
     if ((result = UnfreezeBlock ("FIL", Memory.FillRAM, 0x8000)) != SUCCESS)

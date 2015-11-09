@@ -93,7 +93,7 @@
 #include <string.h>
 #include <stdio.h>
 
-extern struct FxRegs_s GSU;
+extern FxRegs_s GSU;
 int gsu_bank [512] = {0};
 
 /* Set this define if you wish the plot instruction to check for y-pos limits */

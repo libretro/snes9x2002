@@ -291,9 +291,9 @@ static void snes_init (void)
 
    CPU.Flags = 0;
 
-   if (!Memory.Init() || !S9xInitAPU())
+   if (!MemoryInit() || !S9xInitAPU())
    {
-      Memory.Deinit();
+      MemoryDeinit();
       S9xDeinitAPU();
       fprintf(stderr, "[libsnes]: Failed to init Memory or APU.\n");
       exit(1);
@@ -351,7 +351,7 @@ void retro_init (void)
 void retro_deinit(void)
 {
    S9xDeinitAPU();
-   Memory.Deinit();
+   MemoryDeinit();
    S9xGraphicsDeinit();
    //S9xUnmapAllControls();
    if(GFX.Screen)
@@ -466,9 +466,9 @@ void retro_cheat_set(unsigned index, bool enable, const char* in_code)
     uint32 address;
     uint8 byte;
     
-    if ( S9xProActionReplayToRaw(clean_code, address, byte) == NULL)
+    if ( S9xProActionReplayToRaw(clean_code, &address, &byte) == NULL)
         S9xAddCheat(true, true, address, byte);
-    else if ( S9xGameGenieToRaw(clean_code, address, byte) == NULL)
+    else if ( S9xGameGenieToRaw(clean_code, &address, &byte) == NULL)
         S9xAddCheat(true, true, address, byte);
     // else, silently ignore
 }
@@ -487,7 +487,7 @@ bool retro_load_game(const struct retro_game_info *game)
    /* Hack. S9x cannot do stuff from RAM. <_< */
    memstream_set_buffer((uint8_t*)game->data, game->size);
 
-   loaded = Memory.LoadROM("");
+   loaded = LoadROM("");
    if (!loaded)
    {
       fprintf(stderr, "[libretro]: Rom loading failed...\n");
@@ -576,9 +576,8 @@ bool8 S9xContinueUpdate(int width, int height) { return TRUE; }
 void S9xSetPalette() {}
 void S9xAutoSaveSRAM() {}
 void S9xLoadSDD1Data() {}
-bool8 S9xReadMousePosition (int which1_0_to_1, int &x, int &y, uint32 &buttons) { return FALSE; }
-bool8 S9xReadSuperScopePosition (int &x, int &y, uint32 &buttons) { return FALSE; }
-void JustifierButtons(uint32& x) {}
+bool8 S9xReadMousePosition (int which1_0_to_1, int* x, int* y, uint32* buttons) { return FALSE; }
+bool8 S9xReadSuperScopePosition (int* x, int* y, uint32* buttons) { return FALSE; }
 bool JustifierOffscreen() { return false; }
 
 START_EXTERN_C

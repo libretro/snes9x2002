@@ -38,7 +38,7 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
- extern "C" {
+// START_EXTERN_C
 #include "snes9x.h"
 #include "memmap.h"
 #include "ppu.h"
@@ -52,34 +52,35 @@
 #include "soundux.h"
 #include "cheats.h"
 #include "sa1.h"
- }
+// END_EXTERN_C
+
 START_EXTERN_C
 char String[513];
 
 int (*APUMainLoop)(int);
 
-struct Missing missing;
+Missing missing;
 
-struct SICPU ICPU;
+SICPU ICPU;
 
-struct SCPUState CPU;
+SCPUState CPU;
 
-//struct SRegisters Registers;
+//SRegisters Registers;
 
-struct SAPU APU;
+SAPU APU;
 
-struct SIAPU IAPU;
+SIAPU IAPU;
 
-struct SAPURegisters APURegisters;
+SAPURegisters APURegisters;
 
-struct SSettings Settings;
+SSettings Settings;
 
-struct SDSP1 DSP1;
+SDSP1 DSP1;
 
 #ifdef USE_SA1
-struct SSA1Registers SA1Registers;
+SSA1Registers SA1Registers;
 
-struct SSA1 SA1;
+SSA1 SA1;
 
 uint8 *SA1_Map [MEMMAP_NUM_BLOCKS];
 uint8 *SA1_WriteMap [MEMMAP_NUM_BLOCKS];
@@ -94,31 +95,31 @@ long OpAddress = 0;
 
 CMemory Memory;
 
-struct SSNESGameFixes SNESGameFixes;
+SSNESGameFixes SNESGameFixes;
 
 END_EXTERN_C
 
 #ifndef ZSNES_FX
-struct FxInit_s SuperFX;
+FxInit_s SuperFX;
 #else
 START_EXTERN_C
 uint8 *SFXPlotTable = NULL;
 END_EXTERN_C
 #endif
 
-struct SPPU PPU;
-struct InternalPPU IPPU;
+SPPU PPU;
+InternalPPU IPPU;
 
-struct SDMA DMA[8];
+SDMA DMA[8];
 
 uint8 *HDMAMemPointers [8];
 uint8 *HDMABasePointers [8];
 
-struct SBG BG;
+SBG BG;
 
-struct SGFX GFX;
-struct SLineData LineData[240];
-struct SLineMatrixData LineMatrixData [240];
+SGFX GFX;
+SLineData LineData[240];
+SLineMatrixData LineMatrixData [240];
 
 uint8 Mode7Depths [2];
 NormalTileRenderer DrawTilePtr = NULL;
@@ -167,7 +168,7 @@ uint32 current_graphic_format = RGB565;
 #endif
 
 uint8 GetBank = 0;
-struct SCheatData Cheat;
+SCheatData Cheat;
 
 SoundStatus so;
 SSoundData SoundData;
@@ -288,7 +289,7 @@ uint8 APUROM [64] =
 };
 
 #ifdef NETPLAY_SUPPORT
-struct SNetPlay NetPlay;
+SNetPlay NetPlay;
 #endif
 
 // Raw SPC700 instruction cycle lengths

@@ -7,8 +7,8 @@
 #include "gfx.h"
 #include "apu.h"
 
-extern struct SLineData LineData[240];
-extern struct SLineMatrixData LineMatrixData [240];
+extern SLineData LineData[240];
+extern SLineMatrixData LineMatrixData [240];
 extern uint8  Mode7Depths [2];
 
 #define M7 	19
@@ -50,7 +50,7 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg, int depth)
 
     Screen += GFX.StartY * GFX_PITCH; 
     Depth = GFX.DB + GFX.StartY * GFX_PPL;
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
+    SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
 
     for (Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) { 
 	HOffset = ((int32) LineData[Line].BG[0].HOffset << M7) >> M7; 
@@ -96,7 +96,7 @@ static void DrawBGMode7Background16R3 (uint8 *Screen, int bg, int depth)
 	    xx3 = (startx + HOffset); 
 
 #define M7R3(dir) \
-		asm volatile (\
+		__asm__ volatile (\
 		"1:						\n"\
 		"	ldrb	r0, [%[d], #1]!			\n"\
 		"	mov	r3, %[AA], asr #18		\n"\
@@ -237,7 +237,7 @@ static void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg, int depth)
     Screen += GFX.StartY * GFX_PITCH; 
     Depth = GFX.DB + GFX.StartY * GFX_PPL;
 
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
+    SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
 
     for (Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) { 
 	HOffset = ((int32) LineData[Line].BG[0].HOffset << M7) >> M7; 
@@ -278,7 +278,7 @@ static void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg, int depth)
 	    AA = (l->MatrixA * (startx + xx) + BB);
 	    CC = (l->MatrixC * (startx + xx) + DD);
 
-		asm volatile (
+		__asm__ volatile (
 		"1:						\n"
 		"	ldrb	r0, [%[d], #1]!			\n"
 		"	mov	r3, %[AA], asr #18		\n"
@@ -373,7 +373,7 @@ static void DrawBGMode7Background16R0 (uint8 *Screen, int bg, int depth)
     int DD; 
     uint32 Line;
     uint32 clip;
-    struct SLineMatrixData *l;
+    SLineMatrixData *l;
     uint8 *Depth;
     unsigned int fixedColour = GFX.FixedColour;
      
@@ -430,7 +430,7 @@ static void DrawBGMode7Background16R0 (uint8 *Screen, int bg, int depth)
 	    AA = (l->MatrixA * (startx + xx) + BB);
 	    CC = (l->MatrixC * (startx + xx) + DD);
 
-		asm volatile (
+		__asm__ volatile (
 		"	ldrb	r0, [%[d], #1]!			\n"
 		"1:						\n"
 		"	ldr	r3, %[AndByY]			\n"

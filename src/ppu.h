@@ -62,13 +62,13 @@ extern uint16 SignExtend [2];
 #define SA1_IRQ_SOURCE		(1 << 7)
 #define SA1_DMA_IRQ_SOURCE	(1 << 5)
 
-struct ClipData {
+typedef struct {
     uint32  Count [6];
     uint32  Left [6][6];
     uint32  Right [6][6];
-};
+}ClipData;
 
-struct InternalPPU {
+typedef struct{
     bool8  ColorsChanged;
     uint8  HDMA;
     bool8  HDMAStarted;
@@ -102,10 +102,10 @@ struct InternalPPU {
     uint32 Mouse[2];
     int    PrevMouseX[2];
     int    PrevMouseY[2];
-    struct ClipData Clip [2];
-};
+    ClipData Clip [2];
+}InternalPPU;
 
-struct SOBJ
+typedef struct
 {
     short  HPos;
     uint16 VPos;
@@ -115,9 +115,10 @@ struct SOBJ
     uint8  Priority;
     uint8  Palette;
     uint8  Size;
-};
+}SOBJ;
 
-struct SPPU {
+typedef struct
+{
     uint8  BGMode;
     uint8  BG3Priority;
     uint8  Brightness;
@@ -145,7 +146,7 @@ struct SPPU {
     uint16 CGDATA [256]; 
     uint8  FirstSprite;
     uint8  LastSprite;
-    struct SOBJ OBJ [128];
+    SOBJ OBJ [128];
     uint8  OAMPriorityRotation;
     uint16 OAMAddr;
 
@@ -212,14 +213,14 @@ struct SPPU {
     uint16 SavedOAMAddr2;
     uint16 OAMWriteRegister;
     uint8 BGnxOFSbyte;
-};
+}SPPU;
 
 #define CLIP_OR 0
 #define CLIP_AND 1
 #define CLIP_XOR 2
 #define CLIP_XNOR 3
 
-struct SDMA {
+typedef struct {
     bool8  TransferDirection;
     bool8  AAddressFixed;
     bool8  AAddressDecrement;
@@ -240,7 +241,7 @@ struct SDMA {
     uint8  Repeat;
     uint8  LineCount;
     uint8  FirstLine;
-};
+}SDMA;
 
 START_EXTERN_C
 //void S9xUpdateScreen ();
@@ -261,9 +262,9 @@ uint8 S9xGetC4 (uint16 Address);
 void S9xSetC4RAM (uint8 Byte, uint16 Address);
 uint8 S9xGetC4RAM (uint16 Address);
 
-extern struct SPPU PPU;
-extern struct SDMA DMA [8];
-extern struct InternalPPU IPPU;
+extern SPPU PPU;
+extern SDMA DMA [8];
+extern InternalPPU IPPU;
 END_EXTERN_C
 
 #include "gfx.h"
@@ -309,7 +310,7 @@ STATIC INLINE void REGISTER_2104 (uint8 byte)
             IPPU.OBJChanged = TRUE;
 
             // X position high bit, and sprite size (x4)
-            struct SOBJ *pObj = &PPU.OBJ [(addr & 0x1f) * 4];
+            SOBJ *pObj = &PPU.OBJ [(addr & 0x1f) * 4];
 
             pObj->HPos = (pObj->HPos & 0xFF) | SignExtend[(byte >> 0) & 1];
             pObj++->Size = byte & 2;

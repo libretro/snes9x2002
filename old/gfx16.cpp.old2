@@ -115,10 +115,10 @@ extern NormalTileRenderer DrawHiResTilePtr;
 extern ClippedTileRenderer DrawHiResClippedTilePtr;
 extern LargePixelRenderer DrawLargePixelPtr;
 
-extern struct SBG BG;
+extern SBG BG;
 
-extern struct SLineData LineData[240];
-extern struct SLineMatrixData LineMatrixData [240];
+extern SLineData LineData[240];
+extern SLineMatrixData LineMatrixData [240];
 
 extern uint8  Mode7Depths [2];
 
@@ -586,7 +586,7 @@ void RenderLine (uint8 C)
 
 	if (PPU.BGMode == 7)
 	{
-	    struct SLineMatrixData *p = &LineMatrixData [C];
+	    SLineMatrixData *p = &LineMatrixData [C];
 	    p->MatrixA = PPU.MatrixA;
 	    p->MatrixB = PPU.MatrixB;
 	    p->MatrixC = PPU.MatrixC;
@@ -704,7 +704,7 @@ TileRendererSet TileRenderersNoZ[] = {
 	{DrawNoZTile16Sub1_2, DrawClippedTile16Sub1_2, DrawLargePixel16Sub1_2},  // 7 -> GFX.r2131:7 = 1, GFX.r2131:6 = 1, GFX.r2130:1 = 1  
 	{DrawNoZTile16, DrawClippedTile16, DrawLargePixel16}	// 8 -> normal
 	};
-INLINE void SelectTileRenderer (bool8_32 normal, bool NoZ = false)
+static INLINE void SelectTileRenderer (bool8_32 normal, bool NoZ = false)
 {   
 	if (normal) {
 		TileRenderer = 8;
@@ -2242,23 +2242,23 @@ void RenderScreen (uint8 *Screen, bool8_32 sub, bool8_32 force_no_add, uint8 D)
 	}
 	if (BG0)
 	{
-	    SelectTileRenderer (sub || !SUB_OR_ADD(0));
+	    SelectTileRenderer (sub || !SUB_OR_ADD(0), false);
 	    DrawBackground (PPU.BGMode, 0, D + 10, D + 14);
 	}
 	if (BG1)
 	{
-	    SelectTileRenderer (sub || !SUB_OR_ADD(1));
+	    SelectTileRenderer (sub || !SUB_OR_ADD(1), false);
 	    DrawBackground (PPU.BGMode, 1, D + 9, D + 13);
 	}
 	if (BG2)
 	{
-	    SelectTileRenderer (sub || !SUB_OR_ADD(2));
+	    SelectTileRenderer (sub || !SUB_OR_ADD(2), false);
 	    DrawBackground (PPU.BGMode, 2, D + 3, 
 				PPU.BG3Priority ? D + 17 : D + 6);
 	}
 	if (BG3 && PPU.BGMode == 0)
 	{
-	    SelectTileRenderer (sub || !SUB_OR_ADD(3));
+	    SelectTileRenderer (sub || !SUB_OR_ADD(3), false);
 	    DrawBackground (PPU.BGMode, 3, D + 2, D + 5);
 	}
     }
@@ -2271,12 +2271,12 @@ void RenderScreen (uint8 *Screen, bool8_32 sub, bool8_32 force_no_add, uint8 D)
 		}
 		if (BG0)
 		{
-			SelectTileRenderer (sub || !SUB_OR_ADD(0));
+			SelectTileRenderer (sub || !SUB_OR_ADD(0), false);
 			DrawBackground (PPU.BGMode, 0, D + 5, D + 13);
 		}
 		if (PPU.BGMode != 6 && BG1)
 		{
-			SelectTileRenderer (sub || !SUB_OR_ADD(1));
+			SelectTileRenderer (sub || !SUB_OR_ADD(1), false);
 			DrawBackground (PPU.BGMode, 1, D + 2, D + 9);
 		}
     }
@@ -2488,7 +2488,7 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 			!((GFX.r2130 & 0x30) == 0x10 && IPPU.Clip[1].Count[5] == 0))
 		{
 			// transparency effects in use, so lets get busy!
-			struct ClipData *pClip;
+			ClipData *pClip;
 			uint32 fixedColour;
 			GFX.FixedColour = BUILD_PIXEL (IPPU.XB [PPU.FixedColourRed],
 						   IPPU.XB [PPU.FixedColourGreen],
@@ -2533,7 +2533,7 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 			
 			register unsigned int width = pClip->Right [c][5] - pClip->Left [c][5];
 			if (width > 0) {				
-				asm volatile (
+				__asm__ volatile (
 				"    mov     r0, %[fixedcolour]		\n"
 				"    subs    %[width], %[width], #4	\n"
 				"    bmi     2f				\n"
@@ -2591,7 +2591,7 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 
 		    if (IPPU.Clip [0].Count [5])
 			{
-				asm volatile (
+				__asm__ volatile (
 				"1:		\n"
 				"	mov	r1, #(256 >> 2)		\n"
 
@@ -2671,7 +2671,7 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 				}
 #define SUBSCREEN_BG(rop, half) \
 \
-asm volatile (\
+__asm__ volatile (\
 "	ldrb	r0, [%[d]], #1 		\n"\
 "71:		\n"\
 \
@@ -2738,7 +2738,7 @@ ROP_##rop##half (r0, r1)\
 					// copy the sub-screen to the main screen
 					// or fill it with the back-drop colour if the
 					// sub-screen is clear.
-						asm volatile (
+						__asm__ volatile (
 						"	ldrb	r0, [%[d]], #1 		\n"
 						"31:		\n"
 					
@@ -2791,7 +2791,7 @@ ROP_##rop##half (r0, r1)\
 							uint32 Left = pClip->Left [b][5];
 							uint32 Right = pClip->Right [b][5];
 							if (Left >= Right) continue;
-						asm volatile (
+						__asm__ volatile (
 						
 						"	tst	%[c], #1		\n"
 						"	bne	21f			\n"
@@ -2831,7 +2831,7 @@ ROP_##rop##half (r0, r1)\
 				}
 				else
 				{
-						asm volatile (
+						__asm__ volatile (
 						"@ -- SubScreen clear			\n"
 						"1113:		\n"
 						"	mov	r1, #(256/8)		\n"
@@ -2918,7 +2918,7 @@ ROP_##rop##half (r0, r1)\
 							{
 			register unsigned int width = IPPU.Clip [0].Right [c][5] - IPPU.Clip [0].Left [c][5];				
 			if (width > 0) { 				
-				asm volatile (
+				__asm__ volatile (
 				"    mov     r0, %[back]		\n"
 				"    subs    %[width], %[width], #4	\n"
 				"    bmi     2f				\n"
@@ -3079,7 +3079,7 @@ else \
 				if (OB)
 				{
 				    FIXCLIP(4);
-				    DrawOBJS ();
+				    DrawOBJS (FALSE, 0);
 				}
 				if (BG0)
 				{
@@ -3109,7 +3109,7 @@ else \
 				if (OB)
 				{
 				    FIXCLIP(4);
-				    DrawOBJS ();
+				    DrawOBJS (FALSE, 0);
 				}
 				if (BG0)
 				{
@@ -3129,7 +3129,7 @@ else \
 				if (OB)
 				{
 				    FIXCLIP(4);
-				    DrawOBJS ();
+				    DrawOBJS (FALSE, 0);
 				}
 		   }
 		}

@@ -52,7 +52,7 @@
 extern int oppause;
 //extern uint16 mem_check;
 
-INLINE uint8 S9xGetByte (uint32 Address)
+static INLINE uint8 S9xGetByte (uint32 Address)
 {	
 #ifdef __show_io__
 	char str[64];
@@ -69,7 +69,7 @@ INLINE uint8 S9xGetByte (uint32 Address)
 #else
     uint8 *GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 #endif    
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (GetAddress >= (uint8 *) MAP_LAST)
     {
 #ifdef VAR_CYCLES
 	CPU.Cycles += Memory.MemorySpeed [block];
@@ -83,52 +83,52 @@ INLINE uint8 S9xGetByte (uint32 Address)
 
     switch ((intptr_t) GetAddress)
     {
-    case CMemory::MAP_PPU:
+    case MAP_PPU:
 #ifdef VAR_CYCLES
 	if (!CPU.InDMA)
 	    CPU.Cycles += ONE_CYCLE;
 #endif	
 	return (S9xGetPPU (Address & 0xffff));
-    case CMemory::MAP_CPU:
+    case MAP_CPU:
 #ifdef VAR_CYCLES
 	CPU.Cycles += ONE_CYCLE;
 #endif
 	return (S9xGetCPU (Address & 0xffff));
-    case CMemory::MAP_DSP:
+    case MAP_DSP:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif	
 	return (S9xGetDSP (Address & 0xffff));
-    case CMemory::MAP_SA1RAM:
-    case CMemory::MAP_LOROM_SRAM:
+    case MAP_SA1RAM:
+    case MAP_LOROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
 	return (*(Memory.SRAM + ((Address & CPU.Memory_SRAMMask))));
 
-    case CMemory::MAP_HIROM_SRAM:
+    case MAP_HIROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
 	return (*(Memory.SRAM + (((Address & 0x7fff) - 0x6000 +
 				  ((Address & 0xf0000) >> 3)) & CPU.Memory_SRAMMask)));
 
-    case CMemory::MAP_DEBUG:
+    case MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("R(B) %06x\n", Address);
 #endif
 
-    case CMemory::MAP_BWRAM:
+    case MAP_BWRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
 	return (*(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)));
 //#ifndef __GP32__
-    case CMemory::MAP_C4:
+    case MAP_C4:
 	return (S9xGetC4 (Address & 0xffff));
 //#endif    
     default:
-    case CMemory::MAP_NONE:
+    case MAP_NONE:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
@@ -139,7 +139,7 @@ INLINE uint8 S9xGetByte (uint32 Address)
     }
 }
 
-INLINE uint16 S9xGetWord (uint32 Address)
+static INLINE uint16 S9xGetWord (uint32 Address)
 {
 #ifdef __show_io__
 	char str[64];
@@ -160,7 +160,7 @@ INLINE uint16 S9xGetWord (uint32 Address)
 #else
     uint8 *GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 #endif    
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (GetAddress >= (uint8 *) MAP_LAST)
     {
 #ifdef VAR_CYCLES
 	CPU.Cycles += Memory.MemorySpeed [block] << 1;
@@ -179,34 +179,34 @@ INLINE uint16 S9xGetWord (uint32 Address)
 
     switch ((intptr_t) GetAddress)
     {
-    case CMemory::MAP_PPU:
+    case MAP_PPU:
 #ifdef VAR_CYCLES
 	if (!CPU.InDMA)
 	    CPU.Cycles += TWO_CYCLES;
 #endif	
 	return (S9xGetPPU (Address & 0xffff) |
 		(S9xGetPPU ((Address + 1) & 0xffff) << 8));
-    case CMemory::MAP_CPU:
+    case MAP_CPU:
 #ifdef VAR_CYCLES   
 	CPU.Cycles += TWO_CYCLES;
 #endif
 	return (S9xGetCPU (Address & 0xffff) |
 		(S9xGetCPU ((Address + 1) & 0xffff) << 8));
-    case CMemory::MAP_DSP:
+    case MAP_DSP:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif	
 	return (S9xGetDSP (Address & 0xffff) |
 		(S9xGetDSP ((Address + 1) & 0xffff) << 8));
-    case CMemory::MAP_SA1RAM:
-    case CMemory::MAP_LOROM_SRAM:
+    case MAP_SA1RAM:
+    case MAP_LOROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif
 	return (*(Memory.SRAM + (Address & CPU.Memory_SRAMMask)) |
 		(*(Memory.SRAM + ((Address + 1) & CPU.Memory_SRAMMask)) << 8));
 
-    case CMemory::MAP_HIROM_SRAM:
+    case MAP_HIROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif
@@ -217,25 +217,25 @@ INLINE uint16 S9xGetWord (uint32 Address)
 		   ((((Address + 1) & 0x7fff) - 0x6000 +
 		     (((Address + 1) & 0xf0000) >> 3)) & CPU.Memory_SRAMMask)) << 8));
 
-    case CMemory::MAP_BWRAM:
+    case MAP_BWRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif
 	return (*(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) |
 		(*(Memory.BWRAM + (((Address + 1) & 0x7fff) - 0x6000)) << 8));
 
-    case CMemory::MAP_DEBUG:
+    case MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("R(W) %06x\n", Address);
 #endif
 
 //#ifndef __GP32__
-    case CMemory::MAP_C4:
+    case MAP_C4:
 	return (S9xGetC4 (Address & 0xffff) |	
 		(S9xGetC4 ((Address + 1) & 0xffff) << 8));
 //#endif    
     default:
-    case CMemory::MAP_NONE:
+    case MAP_NONE:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif
@@ -246,7 +246,7 @@ INLINE uint16 S9xGetWord (uint32 Address)
     }
 }
 
-INLINE void S9xSetByte (uint8 Byte, uint32 Address)
+static INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 {
 #ifdef __show_io__
 	char str[64];
@@ -268,7 +268,7 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
     uint8 *SetAddress = Memory.WriteMap [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 #endif
 
-    if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (SetAddress >= (uint8 *) MAP_LAST)
     {
 #ifdef VAR_CYCLES
 	CPU.Cycles += Memory.MemorySpeed [block];
@@ -292,7 +292,7 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 
     switch ((intptr_t) SetAddress)
     {
-    case CMemory::MAP_PPU:
+    case MAP_PPU:
 #ifdef VAR_CYCLES
 	if (!CPU.InDMA)
 	    CPU.Cycles += ONE_CYCLE;
@@ -300,21 +300,21 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 	S9xSetPPU (Byte, Address & 0xffff);
 	return;
 
-    case CMemory::MAP_CPU:
+    case MAP_CPU:
 #ifdef VAR_CYCLES   
 	CPU.Cycles += ONE_CYCLE;
 #endif
 	S9xSetCPU (Byte, Address & 0xffff);
 	return;
 
-    case CMemory::MAP_DSP:
+    case MAP_DSP:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif	
 	S9xSetDSP (Byte, Address & 0xffff);
 	return;
 
-    case CMemory::MAP_LOROM_SRAM:
+    case MAP_LOROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
@@ -325,7 +325,7 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 	}
 	return;
 
-    case CMemory::MAP_HIROM_SRAM:
+    case MAP_HIROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
@@ -337,7 +337,7 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 	}
 	return;
 
-    case CMemory::MAP_BWRAM:
+    case MAP_BWRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
@@ -345,12 +345,12 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 	CPU.SRAMModified = TRUE;
 	return;
 
-    case CMemory::MAP_DEBUG:
+    case MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("W(B) %06x\n", Address);
 #endif
 
-    case CMemory::MAP_SA1RAM:
+    case MAP_SA1RAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
@@ -360,12 +360,12 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 #endif
 	break;
 //#ifndef __GP32__
-    case CMemory::MAP_C4:
+    case MAP_C4:
 	S9xSetC4 (Byte, Address & 0xffff);
 	return;
 //#endif	
     default:
-    case CMemory::MAP_NONE:
+    case MAP_NONE:
 #ifdef VAR_CYCLES    
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif	
@@ -376,7 +376,7 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
     }
 }
 
-INLINE void S9xSetWord (uint16 Word, uint32 Address)
+static INLINE void S9xSetWord (uint16 Word, uint32 Address)
 {
 #ifdef __show_io__
 	char str[64];
@@ -397,7 +397,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
     uint8 *SetAddress = Memory.WriteMap [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 #endif
 
-    if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (SetAddress >= (uint8 *) MAP_LAST)
     {
 #ifdef VAR_CYCLES
 	CPU.Cycles += Memory.MemorySpeed [block] << 1;
@@ -430,7 +430,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 
     switch ((intptr_t) SetAddress)
     {
-    case CMemory::MAP_PPU:
+    case MAP_PPU:
 #ifdef VAR_CYCLES
 	if (!CPU.InDMA)
 	    CPU.Cycles += TWO_CYCLES;
@@ -439,7 +439,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	S9xSetPPU (Word >> 8, (Address & 0xffff) + 1);
 	return;
 
-    case CMemory::MAP_CPU:
+    case MAP_CPU:
 #ifdef VAR_CYCLES   
 	CPU.Cycles += TWO_CYCLES;
 #endif
@@ -447,7 +447,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	S9xSetCPU (Word >> 8, (Address & 0xffff) + 1);
 	return;
 
-    case CMemory::MAP_DSP:
+    case MAP_DSP:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif	
@@ -455,7 +455,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	S9xSetDSP (Word >> 8, (Address & 0xffff) + 1);
 	return;
 
-    case CMemory::MAP_LOROM_SRAM:
+    case MAP_LOROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif
@@ -467,7 +467,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	}
 	return;
 
-    case CMemory::MAP_HIROM_SRAM:
+    case MAP_HIROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif
@@ -483,7 +483,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	}
 	return;
 
-    case CMemory::MAP_BWRAM:
+    case MAP_BWRAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif
@@ -492,12 +492,12 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	CPU.SRAMModified = TRUE;
 	return;
 
-    case CMemory::MAP_DEBUG:
+    case MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("W(W) %06x\n", Address);
 #endif
 
-    case CMemory::MAP_SA1RAM:
+    case MAP_SA1RAM:
 #ifdef VAR_CYCLES
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
@@ -508,13 +508,13 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 #endif
 	break;
 //#ifndef __GP32__
-    case CMemory::MAP_C4:
+    case MAP_C4:
 	S9xSetC4 (Word & 0xff, Address & 0xffff);
 	S9xSetC4 ((uint8) (Word >> 8), (Address + 1) & 0xffff);
 	return;
 //#endif	
     default:
-    case CMemory::MAP_NONE:
+    case MAP_NONE:
 #ifdef VAR_CYCLES    
 	CPU.Cycles += SLOW_ONE_CYCLE * 2;
 #endif
@@ -525,38 +525,38 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
     }
 }
 
-INLINE uint8 *GetBasePointer (uint32 Address)
+static INLINE uint8 *GetBasePointer (uint32 Address)
 {
     uint8 *GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (GetAddress >= (uint8 *) MAP_LAST)
 	return (GetAddress);
 
     switch ((intptr_t) GetAddress)
     {
-    case CMemory::MAP_PPU:
+    case MAP_PPU:
 	return (Memory.FillRAM - 0x2000);
-    case CMemory::MAP_CPU:
+    case MAP_CPU:
 	return (Memory.FillRAM - 0x4000);
-    case CMemory::MAP_DSP:
+    case MAP_DSP:
 	return (Memory.FillRAM - 0x6000);
-    case CMemory::MAP_SA1RAM:
-    case CMemory::MAP_LOROM_SRAM:
+    case MAP_SA1RAM:
+    case MAP_LOROM_SRAM:
 	return (Memory.SRAM);
-    case CMemory::MAP_BWRAM:
+    case MAP_BWRAM:
 	return (Memory.BWRAM - 0x6000);
-    case CMemory::MAP_HIROM_SRAM:
+    case MAP_HIROM_SRAM:
 	return (Memory.SRAM - 0x6000);
 //#ifndef __GP32__	
-    case CMemory::MAP_C4:
+    case MAP_C4:
 	return (Memory.C4RAM - 0x6000);
 //#endif	
-    case CMemory::MAP_DEBUG:
+    case MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("GBP %06x\n", Address);
 #endif
 
     default:
-    case CMemory::MAP_NONE:
+    case MAP_NONE:
 #ifdef DEBUGGER
 	printf ("GBP %06x\n", Address);
 #endif
@@ -564,37 +564,37 @@ INLINE uint8 *GetBasePointer (uint32 Address)
     }
 }
 
-INLINE uint8 *S9xGetMemPointer (uint32 Address)
+static INLINE uint8 *S9xGetMemPointer (uint32 Address)
 {
     uint8 *GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (GetAddress >= (uint8 *) MAP_LAST)
 	return (GetAddress + (Address & 0xffff));
 
     switch ((intptr_t) GetAddress)
     {
-    case CMemory::MAP_PPU:
+    case MAP_PPU:
 	return (Memory.FillRAM - 0x2000 + (Address & 0xffff));
-    case CMemory::MAP_CPU:
+    case MAP_CPU:
 	return (Memory.FillRAM - 0x4000 + (Address & 0xffff));
-    case CMemory::MAP_DSP:
+    case MAP_DSP:
 	return (Memory.FillRAM - 0x6000 + (Address & 0xffff));
-    case CMemory::MAP_SA1RAM:
-    case CMemory::MAP_LOROM_SRAM:
+    case MAP_SA1RAM:
+    case MAP_LOROM_SRAM:
 	return (Memory.SRAM + (Address & 0xffff));
-    case CMemory::MAP_BWRAM:
+    case MAP_BWRAM:
 	return (Memory.BWRAM - 0x6000 + (Address & 0xffff));
-    case CMemory::MAP_HIROM_SRAM:
+    case MAP_HIROM_SRAM:
 	return (Memory.SRAM - 0x6000 + (Address & 0xffff));
 //#ifndef __GP32__	
-    case CMemory::MAP_C4:
+    case MAP_C4:
 	return (Memory.C4RAM - 0x6000 + (Address & 0xffff));
 //#endif
-    case CMemory::MAP_DEBUG:
+    case MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("GMP %06x\n", Address);
 #endif
     default:
-    case CMemory::MAP_NONE:
+    case MAP_NONE:
 #ifdef DEBUGGER
 	printf ("GMP %06x\n", Address);
 #endif
@@ -602,7 +602,7 @@ INLINE uint8 *S9xGetMemPointer (uint32 Address)
     }
 }
 
-INLINE void S9xSetPCBase (uint32 Address)
+static INLINE void S9xSetPCBase (uint32 Address)
 {
 #ifdef VAR_CYCLES
     int block;
@@ -610,7 +610,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 #else
     uint8 *GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 #endif    
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (GetAddress >= (uint8 *) MAP_LAST)
     {
 #ifdef VAR_CYCLES
 	CPU.MemSpeed = Memory.MemorySpeed [block];
@@ -623,7 +623,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 
     switch ((intptr_t) GetAddress)
     {
-    case CMemory::MAP_PPU:
+    case MAP_PPU:
 #ifdef VAR_CYCLES
 	CPU.MemSpeed = ONE_CYCLE;
 	CPU.MemSpeedx2 = TWO_CYCLES;
@@ -632,7 +632,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 	CPU.PC = CPU.PCBase + (Address & 0xffff);
 	return;
 	
-    case CMemory::MAP_CPU:
+    case MAP_CPU:
 #ifdef VAR_CYCLES   
 	CPU.MemSpeed = ONE_CYCLE;
 	CPU.MemSpeedx2 = TWO_CYCLES;
@@ -641,7 +641,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 	CPU.PC = CPU.PCBase + (Address & 0xffff);
 	return;
 	
-    case CMemory::MAP_DSP:
+    case MAP_DSP:
 #ifdef VAR_CYCLES
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
 	CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
@@ -650,8 +650,8 @@ INLINE void S9xSetPCBase (uint32 Address)
 	CPU.PC = CPU.PCBase + (Address & 0xffff);
 	return;
 	
-    case CMemory::MAP_SA1RAM:
-    case CMemory::MAP_LOROM_SRAM:
+    case MAP_SA1RAM:
+    case MAP_LOROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
 	CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
@@ -660,7 +660,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 	CPU.PC = CPU.PCBase + (Address & 0xffff);
 	return;
 
-    case CMemory::MAP_BWRAM:
+    case MAP_BWRAM:
 #ifdef VAR_CYCLES
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
 	CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
@@ -668,7 +668,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 	CPU.PCBase = Memory.BWRAM - 0x6000;
 	CPU.PC = CPU.PCBase + (Address & 0xffff);
 	return;
-    case CMemory::MAP_HIROM_SRAM:
+    case MAP_HIROM_SRAM:
 #ifdef VAR_CYCLES
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
 	CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
@@ -677,7 +677,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 	CPU.PC = CPU.PCBase + (Address & 0xffff);
 	return;
 //#ifndef __GP32__
-    case CMemory::MAP_C4:
+    case MAP_C4:
 #ifdef VAR_CYCLES
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
 	CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
@@ -686,13 +686,13 @@ INLINE void S9xSetPCBase (uint32 Address)
 	CPU.PC = CPU.PCBase + (Address & 0xffff);
 	return;
 //#endif
-    case CMemory::MAP_DEBUG:
+    case MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("SBP %06x\n", Address);
 #endif
 	
     default:
-    case CMemory::MAP_NONE:
+    case MAP_NONE:
 #ifdef VAR_CYCLES
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
 	CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;

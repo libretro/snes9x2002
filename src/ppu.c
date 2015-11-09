@@ -56,8 +56,8 @@
 #ifndef ZSNES_FX
 #include "fxemu.h"
 #include "fxinst.h"
-extern struct FxInit_s SuperFX;
-extern struct FxRegs_s GSU;
+extern FxInit_s SuperFX;
+extern FxRegs_s GSU;
 #else
 EXTERN_C void S9xSuperFXWriteReg (uint8, uint32);
 EXTERN_C uint8 S9xSuperFXReadReg (uint32);
@@ -128,7 +128,8 @@ void S9xFixColourBrightness ()
    IPPU.XB = mul_brightness [PPU.Brightness];
    if (Settings.SixteenBit)
    {
-      for (unsigned int i = 0; i < 256; i++)
+      unsigned int i;
+      for (i = 0; i < 256; i++)
       {
          //IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
          //IPPU.Green [i] = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
@@ -385,7 +386,7 @@ void S9xSetCPU(uint8 byte, uint16 Address)
 					else
 						CPU.FastROMSpeed = SLOW_ONE_CYCLE;
 
-					Memory.FixROMSpeed();
+					FixROMSpeed();
 				}
 				/* FALL */
 			case 0x420e :
@@ -985,7 +986,8 @@ void S9xResetPPU()
 	PPU.VMA.FullGraphicCount = 0;
 	PPU.VMA.Shift = 0;
 
-	for (uint8 B = 0; B != 4; B++)
+   uint8 B;
+	for (B = 0; B != 4; B++)
 	{
 		PPU.BG[B].SCBase = 0;
 		PPU.BG[B].VOffset = 0;
@@ -1023,7 +1025,8 @@ void S9xResetPPU()
 
 	PPU.FirstSprite = 0;
 	PPU.LastSprite = 127;
-	for (int Sprite = 0; Sprite < 128; Sprite++)
+   int Sprite;
+	for (Sprite = 0; Sprite < 128; Sprite++)
 	{
 		PPU.OBJ[Sprite].HPos = 0;
 		PPU.OBJ[Sprite].VPos = 0;
@@ -1131,7 +1134,7 @@ void S9xResetPPU()
 	S9xNextController();
 
 	for (c = 0; c < 2; c++)
-		memset(& IPPU.Clip[c], 0, sizeof(struct ClipData));
+		memset(& IPPU.Clip[c], 0, sizeof(ClipData));
 
 	if (Settings.MouseMaster)
 	{
@@ -1169,7 +1172,7 @@ void S9xProcessMouse(int which1)
 
 	if ((IPPU.Controller == SNES_MOUSE
 		|| IPPU.Controller == SNES_MOUSE_SWAPPED)
-		&& S9xReadMousePosition(which1, x, y, buttons))
+		&& S9xReadMousePosition(which1, &x, &y, &buttons))
 	{
 		int delta_x, delta_y;
 #define MOUSE_SIGNATURE 0x1
@@ -1237,7 +1240,7 @@ void ProcessSuperScope()
 	uint32 buttons;
 
 	if (IPPU.Controller == SNES_SUPERSCOPE
-		&& S9xReadSuperScopePosition(x, y, buttons))
+		&& S9xReadSuperScopePosition(&x, &y, &buttons))
 	{
 #define SUPERSCOPE_SIGNATURE 0x00ff
 		uint32 scope;

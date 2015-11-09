@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -70,7 +70,7 @@ unsigned long SustainRate [32] = {
 	1200, 880, 740, 590, 440, 370, 290, 220,
 	180, 150, 110, 92, 74, 55, 37, 18
 };
-	
+
 unsigned long IncreaseRate [32] = {
 	/*~0*/0xFFFFFFFF, 4100, 3100, 2600, 2000, 1500, 1300, 1000,
 	770, 640, 510, 380, 320, 260, 190, 160,
@@ -83,7 +83,7 @@ unsigned long DecreaseRateExp [32] = {
 	7100, 5900, 4700, 3500, 2900, 2400, 1800, 1500,
 	1200, 880, 740, 590, 440, 370, 290, 220,
 	180, 150, 110, 92, 74, 55, 37, 18
-};	
+};
 
 // precalculated env rates for S9xSetEnvRate
 unsigned long AttackERate     [16][10];
@@ -105,8 +105,8 @@ static inline void S9xSetSoundADSR (int channel, int attack_ind, int decay_ind,
 	int attack_rate = AttackRate [attack_ind];
 	int decay_rate = DecayRate [decay_ind];
 	int sustain_rate = SustainRate [sustain_ind];
-	
-	// Hack for ROMs that use a very short attack rate, key on a 
+
+	// Hack for ROMs that use a very short attack rate, key on a
 	// channel, then switch to decay mode. e.g. Final Fantasy II.
 	if (attack_rate == 1)
 		attack_rate = 0;
@@ -233,7 +233,7 @@ static inline bool8 S9xSetSoundMode (int channel, int mode)
 	    return (TRUE);
 	}
 	break;
-	
+
     case MODE_DECREASE_LINEAR:
     case MODE_DECREASE_EXPONENTIAL:
     case MODE_GAIN:
@@ -276,7 +276,7 @@ static inline bool8 S9xSetSoundMode (int channel, int mode)
 static inline void S9xPlaySample (int channel)
 {
     Channel *ch = &SoundData.channels[channel];
-    
+
     ch->state = SOUND_SILENT;
     ch->mode = MODE_NONE;
     ch->envx = 0;
@@ -286,7 +286,7 @@ static inline void S9xPlaySample (int channel)
 	ch->gaussian[0]=ch->gaussian[1]=ch->gaussian[2]=ch->gaussian[3]=0;
 
     S9xFixEnvelope (channel,
-		    APU.DSP [APU_GAIN  + (channel << 4)], 
+		    APU.DSP [APU_GAIN  + (channel << 4)],
 		    APU.DSP [APU_ADSR1 + (channel << 4)],
 		    APU.DSP [APU_ADSR2 + (channel << 4)]);
 
@@ -322,7 +322,7 @@ static inline void S9xPlaySample (int channel)
 	    {
 		ch->state = SOUND_DECAY;
 		ch->envx = MAX_ENVELOPE_HEIGHT;
-		S9xSetEnvRate (ch, ch->decay_rate, -1, 
+		S9xSetEnvRate (ch, ch->decay_rate, -1,
 				    (MAX_ENVELOPE_HEIGHT * ch->sustain_level) >> 3, 1<<28);
 	    }
 	    ch-> left_vol_level = (ch->envx * ch->volume_left) / 128;
@@ -364,12 +364,12 @@ static inline void S9xPlaySample (int channel)
     }
 
     S9xFixEnvelope (channel,
-		    APU.DSP [APU_GAIN  + (channel << 4)], 
+		    APU.DSP [APU_GAIN  + (channel << 4)],
 		    APU.DSP [APU_ADSR1 + (channel << 4)],
 		    APU.DSP [APU_ADSR2 + (channel << 4)]);
 }
 
-extern "C" uint32 Spc700JumpTab_15;
+uint32 Spc700JumpTab_15;
 
 bool8 S9xInitAPU ()
 {
@@ -414,6 +414,7 @@ EXTERN_C uint8 APUROM [64];
 
 void S9xResetAPU ()
 {
+   int i, j;
 //    Settings.APUEnabled = Settings.NextAPUEnabled;
 
 	ZeroMemory(IAPU.RAM, 0x100);
@@ -422,7 +423,8 @@ void S9xResetAPU ()
 	memset(IAPU.RAM+0xA0, 0xFF, 0x20);
 	memset(IAPU.RAM+0xE0, 0xFF, 0x20);
 
-	for(int i=1;i<256;i++)
+
+	for(i=1;i<256;i++)
 	{
 		memcpy(IAPU.RAM+(i<<8), IAPU.RAM, 0x100);
 	}
@@ -447,8 +449,6 @@ void S9xResetAPU ()
     APU.ShowROM = TRUE;
     IAPU.RAM [0xf1] = 0x80;
 
-    int i;
-
     for (i = 0; i < 3; i++)
     {
 	APU.TimerEnabled [i] = FALSE;
@@ -456,7 +456,7 @@ void S9xResetAPU ()
 	APU.TimerTarget [i] = 0;
 	APU.Timer [i] = 0;
     }
-    for (int j = 0; j < 0x80; j++)
+    for (j = 0; j < 0x80; j++)
 	APU.DSP [j] = 0;
 
     IAPU.TwoCycles = IAPU.OneCycle * 2;
@@ -481,7 +481,7 @@ void S9xSetAPUDSP (uint8 byte)
 	static uint8 KeyOn;
 	static uint8 KeyOnPrev;
     int i;
-    
+
 /*    char str[64];
     if (byte!=0)
     {
@@ -528,8 +528,9 @@ void S9xSetAPUDSP (uint8 byte)
     case APU_NON:
 	if (byte != APU.DSP [APU_NON])
 	{
+      int c;
 	    uint8 mask = 1;
-	    for (int c = 0; c < 8; c++, mask <<= 1)
+	    for (c = 0; c < 8; c++, mask <<= 1)
 	    {
 		int type;
 		if (byte & mask)
@@ -579,8 +580,9 @@ void S9xSetAPUDSP (uint8 byte)
     case APU_KOFF:
 		//		if (byte)
 	{
+       int c;
 	    uint8 mask = 1;
-	    for (int c = 0; c < 8; c++, mask <<= 1)
+	    for (c = 0; c < 8; c++, mask <<= 1)
 	    {
 		if ((byte & mask) != 0)
 		{
@@ -613,8 +615,9 @@ void S9xSetAPUDSP (uint8 byte)
 
 	if (byte)
 	{
+      int c;
 	    uint8 mask = 1;
-	    for (int c = 0; c < 8; c++, mask <<= 1)
+	    for (c = 0; c < 8; c++, mask <<= 1)
 	    {
 		if ((byte & mask) != 0)
 		{
@@ -635,7 +638,7 @@ void S9xSetAPUDSP (uint8 byte)
 	}
 	//spc_is_dumping_temp = byte;
 	return;
-	
+
     case APU_VOL_LEFT + 0x00:
     case APU_VOL_LEFT + 0x10:
     case APU_VOL_LEFT + 0x20:
@@ -686,7 +689,7 @@ void S9xSetAPUDSP (uint8 byte)
     case APU_P_HIGH + 0x50:
     case APU_P_HIGH + 0x60:
     case APU_P_HIGH + 0x70:
-	    S9xSetSoundHertz (reg >> 4, 
+	    S9xSetSoundHertz (reg >> 4,
 			(((byte << 8) + APU.DSP [reg - 1]) & FREQUENCY_MASK) * 8);
 	break;
 
@@ -703,7 +706,7 @@ void S9xSetAPUDSP (uint8 byte)
 	    //S9xSetSoundSample (reg >> 4, byte); // notaz: seems to be unused?
 	}
 	break;
-	
+
     case APU_ADSR1 + 0x00:
     case APU_ADSR1 + 0x10:
     case APU_ADSR1 + 0x20:
@@ -715,7 +718,7 @@ void S9xSetAPUDSP (uint8 byte)
 	if (byte != APU.DSP [reg])
 	{
 	    {
-		S9xFixEnvelope (reg >> 4, APU.DSP [reg + 2], byte, 
+		S9xFixEnvelope (reg >> 4, APU.DSP [reg + 2], byte,
 			     APU.DSP [reg + 1]);
 	    }
 	}
@@ -774,7 +777,7 @@ void S9xSetAPUDSP (uint8 byte)
     case APU_OUTX + 0x60:
     case APU_OUTX + 0x70:
 	break;
-    
+
     case APU_DIR:
 	break;
 
@@ -821,7 +824,7 @@ void S9xSetAPUDSP (uint8 byte)
 
 	KeyOnPrev|=KeyOn;
 	KeyOn=0;
-	
+
     if (reg < 0x80)
 	APU.DSP [reg] = byte;
 }
@@ -831,7 +834,7 @@ void S9xFixEnvelope (int channel, uint8 gain, uint8 adsr1, uint8 adsr2)
     if (adsr1 & 0x80)
     {
 		// ADSR mode
-		
+
 		// XXX: can DSP be switched to ADSR mode directly from GAIN/INCREASE/
 		// DECREASE mode? And if so, what stage of the sequence does it start
 		// at?
@@ -853,7 +856,7 @@ void S9xFixEnvelope (int channel, uint8 gain, uint8 adsr1, uint8 adsr2)
 		}
 		else
 		{
-			
+
 			if (gain & 0x40)
 			{
 				// Increase mode

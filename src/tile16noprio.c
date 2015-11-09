@@ -62,7 +62,7 @@ void DrawTile16NoPrio (uint32 Tile, uint32 Offset, uint32 StartLine, uint32 Line
 
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 #define FN(p, p2, p3, p4)  \
 			"	ldrb	r9, [%[bp], #" p "]		\n"\
@@ -102,7 +102,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r8 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:						\n"
 #define FN1(p, p2, p3, p4, p5, p6)  \
 			"	ldrb	r9, [%[bp], #" p3 "]		\n"\
@@ -144,7 +144,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN("0", "0", "1", "2")
 		FN("2", "4", "3", "6")
@@ -170,7 +170,7 @@ if (Tile & V_FLIP){
 		: "r9", "r8", "cc" // r8 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:						\n"
 		FN1("0", "0", "7", "1", "2", "6")
 		FN1("2", "4", "5", "3", "6", "4")
@@ -216,7 +216,7 @@ Offset = Offset + StartPixel;
 
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 #define FN(p)  \
 			"	ldrb	r9, [%[bp], #" p "]		\n"\
@@ -266,7 +266,7 @@ if (Tile & V_FLIP){
 		: "r9", "cc" // r8 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 #define FN1(p)  \
 			"	ldrb	r9, [%[bp], #(7 - " p ")]	\n"\
@@ -315,7 +315,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN("0")
 		C("0")
@@ -354,7 +354,7 @@ if (Tile & V_FLIP){
 		: "r9", "cc" // r8 & flags 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		FN1("0")
 		C("0")

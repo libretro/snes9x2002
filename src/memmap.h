@@ -80,14 +80,12 @@
 #define MEMMAP_MASK (MEMMAP_BLOCK_SIZE - 1)
 #define MEMMAP_MAX_SDD1_LOGGED_ENTRIES (0x10000 / 8)
 
-class CMemory {
-public:
     bool8_32 LoadROM (const char *);
     void  InitROM (bool8_32);
     bool8_32 LoadSRAM (const char *);
     bool8_32 SaveSRAM (const char *);
-    bool8_32 Init ();
-    void  Deinit ();
+    bool8_32 MemoryInit ();
+    void  MemoryDeinit ();
     void  FreeSDD1Data ();
     
     void WriteProtectROM ();
@@ -112,7 +110,7 @@ public:
     int  ScoreLoROM (bool8_32 skip_header);
     void ApplyROMFixes ();
     void CheckForIPSPatch (const char *rom_filename, bool8_32 header,
-			   int32 &rom_size);
+			   int32 *rom_size);
     
     const char *TVStandard ();
     const char *Speed ();
@@ -124,7 +122,7 @@ public:
     const char *Headers ();
     const char *ROMID ();
     const char *CompanyID ();
-	uint32 caCRC32(uint8 *array, uint32 size, register uint32 crc32= 0xFFFFFFFF);	
+	uint32 caCRC32(uint8 *array, uint32 size);
     
     enum {
 	MAP_PPU, MAP_CPU, MAP_DSP, MAP_LOROM_SRAM, MAP_HIROM_SRAM,
@@ -132,7 +130,8 @@ public:
 	MAP_BWRAM_BITMAP2, MAP_SA1RAM, MAP_LAST
     };
     enum { MAX_ROM_SIZE = 0x600000 };
-    
+typedef struct {
+
     uint8 *RAM;
     uint8 *ROM;
     uint8 *VRAM;
@@ -168,7 +167,7 @@ public:
     uint32 SDD1LoggedDataCount;
     uint8  SDD1LoggedData [MEMMAP_MAX_SDD1_LOGGED_ENTRIES];
     char ROMFilename [_MAX_PATH];
-};
+}CMemory;
 
 START_EXTERN_C
 extern CMemory Memory;

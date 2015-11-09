@@ -188,7 +188,7 @@ static uint8	region_map[6][6] =
 };
 
 static inline uint8 CalcWindowMask (int, uint8, uint8);
-static inline void StoreWindowRegions (uint8, struct ClipData *, int, int16 *, uint8 *, bool8, bool8 s = FALSE);
+static inline void StoreWindowRegions (uint8, ClipData *, int, int16 *, uint8 *, bool8, bool8 s = FALSE);
 
 
 static inline uint8 CalcWindowMask (int i, uint8 W1, uint8 W2)
@@ -240,7 +240,7 @@ static inline uint8 CalcWindowMask (int i, uint8 W1, uint8 W2)
 	return (0);
 }
 
-static inline void StoreWindowRegions (uint8 Mask, struct ClipData *Clip, int n_regions, int16 *windows, uint8 *drawing_modes, bool8 sub, bool8 StoreMode0)
+static inline void StoreWindowRegions (uint8 Mask, ClipData *Clip, int n_regions, int16 *windows, uint8 *drawing_modes, bool8 sub, bool8 StoreMode0)
 {
 	int	ct = 0;
 

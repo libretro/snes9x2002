@@ -40,26 +40,27 @@
  */
 #ifndef _CPUEXEC_H_
 #define _CPUEXEC_H_
-#include "ppu.h"
-#include "memmap.h"
+//#include "ppu.h"
+//#include "memmap.h"
+#include "snes9x.h"
 #include "65c816.h"
 
 #define DO_HBLANK_CHECK() \
     if (CPU.Cycles >= CPU.NextEvent) \
 	S9xDoHBlankProcessing ();
 
-struct SOpcodes {
+typedef struct{
 #ifdef __WIN32__
 	void (__cdecl *S9xOpcode)( void);
 #else
 	void (*S9xOpcode)( void);
 #endif
-};
+}SOpcodes;
 
-struct SICPU
+typedef struct
 {
     uint8  *Speed;
-    struct SOpcodes *S9xOpcodes;
+    SOpcodes *S9xOpcodes;
     uint8  _Carry;
     uint8  _Zero;
     uint8  _Negative;
@@ -70,7 +71,7 @@ struct SICPU
     uint32 Frame;
     uint32 Scanline;
     uint32 FrameAdvanceCount;
-};
+}SICPU;
 
 START_EXTERN_C
 void S9xMainLoop (void);
@@ -79,10 +80,10 @@ void S9xDoHBlankProcessing ();
 void S9xClearIRQ (uint32);
 void S9xSetIRQ (uint32);
 
-extern struct SOpcodes S9xOpcodesM1X1 [256];
-extern struct SOpcodes S9xOpcodesM1X0 [256];
-extern struct SOpcodes S9xOpcodesM0X1 [256];
-extern struct SOpcodes S9xOpcodesM0X0 [256];
+extern SOpcodes S9xOpcodesM1X1 [256];
+extern SOpcodes S9xOpcodesM1X0 [256];
+extern SOpcodes S9xOpcodesM0X1 [256];
+extern SOpcodes S9xOpcodesM0X0 [256];
 
 #ifndef VAR_CYCLES
 extern uint8 S9xE1M1X1 [256];
@@ -92,7 +93,7 @@ extern uint8 S9xE0M0X0 [256];
 extern uint8 S9xE0M0X1 [256];
 #endif
 
-extern struct SICPU ICPU;
+extern SICPU ICPU;
 END_EXTERN_C
 
 STATIC inline void CLEAR_IRQ_SOURCE (uint32 M)

@@ -42,13 +42,14 @@
 #define _GFX_H_
 
 #include "port.h"
+#include "ppu.h"
 
 #define GFX_PIXSIZE 1
 #define GFX_PITCH 640
 #define GFX_ZPITCH 320
 #define GFX_PPL 320
 
-struct SGFX{
+typedef struct{
     // Initialize these variables
     uint8  *Screen;
     uint8  *SubScreen;
@@ -73,7 +74,7 @@ struct SGFX{
     uint32 FixedColour;
     uint32 StartY;
     uint32 EndY;
-    struct ClipData *pCurrentClip;
+    ClipData *pCurrentClip;
     uint32 Mode7Mask;
     uint32 Mode7PriorityMask;
 
@@ -99,20 +100,20 @@ struct SGFX{
     uint32 (*BuildPixel2) (uint32 R, uint32 G, uint32 B);
     void   (*DecomposePixel) (uint32 Pixel, uint32 &R, uint32 &G, uint32 &B);
 #endif
-};
+}SGFX;
 
-struct SLineData {
+typedef struct {
     struct {
 	uint16 VOffset;
 	uint16 HOffset;
     } BG [4];
-};
+}SLineData;
 
 #define H_FLIP 0x4000
 #define V_FLIP 0x8000
 #define BLANK_TILE 2
 
-struct SBG
+typedef struct
 {
     uint32 TileSize;
     uint32 BitShift;
@@ -128,9 +129,9 @@ struct SBG
     uint8 *Buffer;
     uint8 *Buffered;
     bool8  DirectColourMode;
-};
+}SBG;
 
-struct SLineMatrixData
+typedef struct
 {
     short MatrixA;
     short MatrixB;
@@ -138,7 +139,7 @@ struct SLineMatrixData
     short MatrixD;
     short CentreX;
     short CentreY;
-};
+}SLineMatrixData;
 
 extern uint32 odd_high [4][16];
 extern uint32 odd_low [4][16];
@@ -249,7 +250,7 @@ START_EXTERN_C
 void S9xStartScreenRefresh ();
 void S9xDrawScanLine (uint8 Line);
 void S9xEndScreenRefresh ();
-void S9xSetupOBJ (struct SOBJ *);
+void S9xSetupOBJ ();
 void S9xUpdateScreen ();
 //extern void (*S9xUpdateScreen)();
 //void SelectUpdateScreen();
@@ -258,7 +259,7 @@ void S9xBuildDirectColourMaps ();
 
 // External port interface which must be implemented or initialised for each
 // port.
-extern struct SGFX GFX;
+extern SGFX GFX;
 
 bool8_32 S9xGraphicsInit ();
 void S9xGraphicsDeinit();

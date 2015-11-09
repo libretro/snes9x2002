@@ -119,10 +119,10 @@ extern NormalTileRenderer DrawHiResTilePtr;
 extern ClippedTileRenderer DrawHiResClippedTilePtr;
 extern LargePixelRenderer DrawLargePixelPtr;
 
-extern struct SBG BG;
+extern SBG BG;
 
-extern struct SLineData LineData[240];
-extern struct SLineMatrixData LineMatrixData [240];
+extern SLineData LineData[240];
+extern SLineMatrixData LineMatrixData [240];
 
 extern uint8  Mode7Depths [2];
 
@@ -603,7 +603,7 @@ void RenderLine (uint8 C)
 	//if (PPU.BGMode == 7)
 	if ((Memory.FillRAM[0x2105] & 7) == 7)
 	{
-	    struct SLineMatrixData *p = &LineMatrixData [C];
+	    SLineMatrixData *p = &LineMatrixData [C];
 	    p->MatrixA = PPU.MatrixA;
 	    p->MatrixB = PPU.MatrixB;
 	    p->MatrixC = PPU.MatrixC;
@@ -722,7 +722,7 @@ TileRendererSet TileRenderersNoZ[] = {
 	{DrawNoZTile16, DrawClippedTile16, DrawLargePixel16}	// 8 -> normal
 	};
 #endif
-INLINE void SelectTileRenderer (bool8_32 normal, bool NoZ = false)
+static INLINE void SelectTileRenderer (bool8_32 normal, bool NoZ)
 {   
 	if (normal) {
 		TileRenderer = 8;
@@ -843,7 +843,7 @@ void S9xSetupOBJ ()
     IPPU.OBJChanged = FALSE;
 }
 
-void DrawOBJS (bool8_32 OnMain = FALSE, uint8 D = 0)
+void DrawOBJS (bool8_32 OnMain, uint8 D)
 {
     int bg_ta_ns;
     int bg_ta;
@@ -1526,7 +1526,7 @@ void DrawBackgroundOffset (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     }
 }
 
-void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
+void DrawBackgroundMode5 (uint32 BGMODE, uint32 bg, uint8 Z1, uint8 Z2)
 {
 #ifdef __DEBUG__
 	printf("DrawBackgroundMode5(?, %i, %i, %i)\n", bg, Z1, Z2);	
@@ -2190,7 +2190,7 @@ void DrawBackground_16 (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 }
 
 
-inline void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
+static inline void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 {
 //StartAnalyze();
 
@@ -2550,7 +2550,7 @@ static void S9xUpdateScreenTransparency () // ~30-50ms! (called from FLUSH_REDRA
 		{
 			DBG("Transparency in use\n");
 			// transparency effects in use, so lets get busy!
-			struct ClipData *pClip;
+			ClipData *pClip;
 			uint32 fixedColour;
 			GFX.FixedColour = BUILD_PIXEL (IPPU.XB[PPU.FixedColourRed], IPPU.XB[PPU.FixedColourGreen] , IPPU.XB[PPU.FixedColourBlue]);
 			fixedColour = (GFX.FixedColour<<16|GFX.FixedColour);
@@ -2597,7 +2597,7 @@ static void S9xUpdateScreenTransparency () // ~30-50ms! (called from FLUSH_REDRA
 							// the main screen that will allow the sub-screen
 							// 'underneath' to show through.
 			
-				asm volatile (
+				__asm__ volatile (
 				"    mov     r0, %[fixedcolour]		\n"
 				"    subs    %[width], %[width], #8	\n"
 				"    bmi     2f				\n"
@@ -2665,7 +2665,7 @@ static void S9xUpdateScreenTransparency () // ~30-50ms! (called from FLUSH_REDRA
 			{
 				DBG("Copying from SubScreen to the Main Screen\n");
 
-				asm volatile (
+				__asm__ volatile (
 				"1:		\n"
 				"	mov	r1, #(256 >> 2)		\n"
 
@@ -2773,7 +2773,7 @@ static void S9xUpdateScreenTransparency () // ~30-50ms! (called from FLUSH_REDRA
 
 #define SUBSCREEN_BG(rop, half) \
 \
-asm volatile (\
+__asm__ volatile (\
 "	ldrb	r0, [%[d]] 		\n"\
 "71:		\n"\
 \
@@ -2840,7 +2840,7 @@ _ROP_##rop##half \
 					// copy the sub-screen to the main screen
 					// or fill it with the back-drop colour if the
 					// sub-screen is clear.
-						asm volatile (
+						__asm__ volatile (
 						"	ldrb	r0, [%[d]] 		\n"
 						"31:		\n"
 					
@@ -2898,7 +2898,7 @@ _ROP_##rop##half \
 							uint32 Left = pClip->Left [b][5];
 							uint32 Right = pClip->Right [b][5];
 							if (Left >= Right) continue;
-						asm volatile (
+						__asm__ volatile (
 						
 						"	tst	%[c], #1		\n"
 						"	bne	21f			\n"
@@ -2940,7 +2940,7 @@ _ROP_##rop##half \
 				{
 						DBG("Copying SubScreen with no clipping...\n");
 
-						asm volatile (
+						__asm__ volatile (
 						"@ -- SubScreen clear			\n"
 						"1113:		\n"
 						"	mov	r1, #(256/8)		\n"
@@ -3032,7 +3032,7 @@ _ROP_##rop##half \
 				register int width = IPPU.Clip [0].Right [c][5] - IPPU.Clip [0].Left [c][5];				
 				if (width <= 0) continue; 				
 
-				asm volatile (
+				__asm__ volatile (
 				"    mov     r0, %[back]		\n"
 				"    subs    %[width], %[width], #8	\n"
 				"    bmi     2f				\n"
@@ -3168,7 +3168,7 @@ else \
 				if (OB)
 				{
 				    FIXCLIP(4);
-				    DrawOBJS ();
+				    DrawOBJS (FALSE, 0);
 				}
 				if (BG0)
 				{
@@ -3198,7 +3198,7 @@ else \
 				if (OB)
 				{
 				    FIXCLIP(4);
-				    DrawOBJS ();
+				    DrawOBJS (FALSE, 0);
 				}
 				if (BG0)
 				{
@@ -3218,7 +3218,7 @@ else \
 				if (OB)
 				{
 				    FIXCLIP(4);
-				    DrawOBJS ();
+				    DrawOBJS (FALSE, 0);
 				}
 		   }
 		}

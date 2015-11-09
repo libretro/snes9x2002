@@ -87,7 +87,7 @@ DEC_DRAW(ROPNAME)
 
   if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		ROW("#8")
@@ -113,7 +113,7 @@ DEC_DRAW(ROPNAME)
 		: "r8", "r9", "r10", "cc" 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:						\n"
 		ROW1("#8")
 
@@ -139,7 +139,7 @@ DEC_DRAW(ROPNAME)
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		ROW("#8")
 
@@ -163,7 +163,7 @@ DEC_DRAW(ROPNAME)
 		: "r8", "r9", "r10", "cc" 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:						\n"
 		ROW1("#8")
 
@@ -203,7 +203,7 @@ if (Width == 0) return;
 Offset = Offset + StartPixel;
 if (Tile & V_FLIP){
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 
 		ROW("%[width]")
@@ -237,7 +237,7 @@ if (Tile & V_FLIP){
 		: "r8", "r9", "r10", "cc" 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		ROW1("%[width]")
 		// Loop	
@@ -271,7 +271,7 @@ if (Tile & V_FLIP){
 	}
 } else {
     if (!(Tile & H_FLIP)){
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		ROW("%[width]")
 		// Loop	
@@ -303,7 +303,7 @@ if (Tile & V_FLIP){
 		: "r8", "r9", "r10", "cc" 				
 		);
 	} else {
-		asm volatile (
+		__asm__ volatile (
 		"2:					\n"
 		ROW1("%[width]")
 		// Loop	

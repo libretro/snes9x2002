@@ -51,7 +51,7 @@ typedef union
 } YAndA;
 */
 
-struct SAPU
+typedef struct
 {
     int32  Cycles;	// 0x00
     bool8  ShowROM;	// 0x04
@@ -64,9 +64,9 @@ struct SAPU
     uint16 TimerTarget [3];
     bool8  TimerEnabled [3];
     bool8  TimerValueWritten [3];
-};
+}SAPU;
 
-struct SIAPU
+typedef struct
 {
     uint8  *DirectPage;        // 0x00
     uint32 Address;            // 0x04  c core only
@@ -97,11 +97,11 @@ struct SIAPU
     uint8  *RAM;               // 0x44
 
 	uint8  *ExtraRAM;          // 0x48  shortcut to APU.ExtraRAM
-};
+}SIAPU;
 
 
-EXTERN_C struct SAPU APU;
-EXTERN_C struct SIAPU IAPU;
+EXTERN_C SAPU APU;
+EXTERN_C SIAPU IAPU;
 
 STATIC inline void S9xAPUUnpackStatus()
 {

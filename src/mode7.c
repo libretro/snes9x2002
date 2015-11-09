@@ -6,19 +6,18 @@
 #include "gfx.h"
 #include "apu.h"
 
-extern struct SLineData LineData[240];
-extern struct SLineMatrixData LineMatrixData [240];
+extern SLineData LineData[240];
+extern SLineMatrixData LineMatrixData [240];
 extern uint8  Mode7Depths [2];
 
 #define M7 19
 
 /*
-void DrawBGMode7Background16Prio (uint8 *Screen, int bg)
+void DrawBGMode7Background16 (uint8 *Screen, int bg, int depth)
 {
-    RENDER_BACKGROUND_MODE7PRIO (GFX.ScreenColors [b & 0x7f]);
+    RENDER_BACKGROUND_MODE7ADDSUB (depth, GFX.ScreenColors [b & 0xff]);
 }
 */
-
 
 #ifdef __DEBUG__
  
@@ -27,11 +26,11 @@ void DrawBGMode7Background16Prio (uint8 *Screen, int bg)
 	#define DMSG(rop)
 #endif
 
-void DrawBGMode7Background16PrioR0 (uint8 *Screen, int bg);
-void DrawBGMode7Background16PrioR1R2 (uint8 *Screen, int bg);
-void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg);
+void DrawBGMode7Background16R0 (uint8 *Screen, int bg, int depth);
+void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg, int depth);
+void DrawBGMode7Background16R3 (uint8 *Screen, int bg, int depth);
 
-void DrawBGMode7Background16Prio (uint8 *Screen, int bg)
+void DrawBGMode7Background16 (uint8 *Screen, int bg, int depth)
 {
 	DMSG("opaque");
     CHECK_SOUND(); 
@@ -43,20 +42,20 @@ void DrawBGMode7Background16Prio (uint8 *Screen, int bg)
 
 	switch (PPU.Mode7Repeat) {
 		case 0: 
-			DrawBGMode7Background16PrioR0(Screen, bg);
+			DrawBGMode7Background16R0(Screen, bg, depth);
 			return;
 		case 3:
-			DrawBGMode7Background16PrioR3(Screen, bg);
+			DrawBGMode7Background16R3(Screen, bg, depth);
 			return;
 		default:
-			DrawBGMode7Background16PrioR1R2(Screen, bg);
+			DrawBGMode7Background16R1R2(Screen, bg, depth);
 			return;
 	} 
 }
 
 #define M7C	0x1fff
 
-void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg)
+void DrawBGMode7Background16R3 (uint8 *Screen, int bg, int depth)
 {
 
    uint8 *VRAM1 = Memory.VRAM + 1;   
@@ -75,19 +74,20 @@ void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg)
     int dir;
     int yy; 
     int xx; 
+    int yy3;
+    int xx3;
     int BB; 
     int DD; 
     uint32 Line;
     uint32 clip; 
     uint8 b; 
     uint8 *Depth;
-    uint32 depth = Mode7Depths[0] | (Mode7Depths[1] << 8);
 
     if (!ClipCount) ClipCount = 1; 
 
     Screen += GFX.StartY * GFX_PITCH; 
     Depth = GFX.DB + GFX.StartY * GFX_PPL;
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
+    SLineMatrixData *l = &LineMatrixData [GFX.StartY];
 
     for (Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) { 
 	HOffset = ((int32) LineData[Line].BG[0].HOffset << M7) >> M7; 
@@ -105,6 +105,8 @@ void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg)
 	BB = l->MatrixB * yy + (CentreX << 8); 
 	DD = l->MatrixD * yy + (CentreY << 8); 
 	
+	yy3 = ((yy + CentreY) & 7) << 4;
+
 	for (clip = 0; clip < ClipCount; clip++) 
 	{ 
 	    if (GFX.pCurrentClip->Count [0]){ 
@@ -126,42 +128,37 @@ void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg)
 			cc = l->MatrixC;
 			dir = 1;
 	    } 
-	    
+
+
+		xx3 = (startx + HOffset);
+
 		if (dir == 1)
 		{
-		asm volatile (
+		__asm__ volatile (
 		"1:						\n"
-		"	mov	r3, %[AA], lsr #18		\n"	
-		"	orrs	r3, r3, %[CC], lsr #18		\n"			
+		"	ldrb	r0, [%[d]]			\n"
+		"	mov	r3, %[AA], asr #18		\n"	
+		"	cmp	%[depth], r0			\n"
+		"	bls	4f				\n"
+		"	orrs	r3, r3, %[CC], asr #18		\n"			
 		"	bne	2f				\n" 
 		"						\n"
-		"	mov	r3, %[CC], lsr #11		\n"  
-		"	mov	r1, %[AA], lsr #11		\n" 
+		"	mov	r3, %[CC], asr #11		\n"  
+		"	mov	r1, %[AA], asr #11		\n" 
 		"	add	r3, r1, r3, lsl #7		\n" 
 		"	mov	r3, r3, lsl #1			\n"
 		"	ldrb	r3, [%[VRAM], r3]		\n"
 		"						\n"
-		"	mov	r1, %[CC], lsr #8		\n" 
-		"	mov	r0, %[AA], lsr #8		\n" 
-		"						\n"
+		"	and	r1, %[CC], #(7 << 8)		\n"
 		"	add	r3, %[VRAM], r3, lsl #7		\n"
+		"	and	r0, %[AA], #(7 << 8)		\n"
+		"	add	r3, r3, r1, asr #4 		\n"
+		"	add	r3, r3, r0, asr #7		\n"
 		"						\n"
-		"	and	r1, r1, #7			\n"
-		"	and	r0, r0, #7			\n"
-		"	add	r3, r3, r1, lsl #4 		\n"
-		"	add	r3, r3, r0, lsl #1 		\n"
-		"						\n"
-		"	ldrb	r0, [r3, #1]			\n"
-		"	ldrb	r3, [%[d]]			\n"
-		"	tst	r0, #0x80			\n"
-		"	andeq	r1, %[depth], #0xff		\n"
-		"	mov	r1, %[depth], lsr #8		\n" 
-		"	cmp	r1, r3				\n"
-		"	bls	4f				\n"
-
 		"	ldr	r1, %[daa]			\n"
-		"	movs	r0, r0, lsl #2			\n"		
+		"	ldrb	r0, [r3, #1]			\n"
 		"	add	%[AA], %[AA], r1		\n"
+		"	movs	r0, r0, lsl #2			\n"		
 		"	ldrne	r1, [%[colors], r0]		\n"	
 		"	add	%[xx3], %[xx3], #1		\n"
 		"	strneb	%[depth], [%[d]]		\n"
@@ -175,21 +172,13 @@ void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg)
 		"	bne	1b				\n"
 		"	b	3f				\n"
 		"2:						\n"
-		"	and	r1, %[yy3], #7			\n"
+		//"	and	r1, %[yy3], #7			\n"
 		"	and	r0, %[xx3], #7			\n"
-		"	mov	r3, r1, lsl #4 			\n"
-		"	add	r3, r3, r0, lsl #1 		\n"
+		//"	mov	r3, r1, lsl #4 			\n"
+		"	add	r3, %[yy3], r0, lsl #1 		\n"
 		"						\n"
 		"	add	r3, %[VRAM], r3			\n"
-		
 		"	ldrb	r0, [r3, #1]			\n"
-		"	ldrb	r3, [%[d]]			\n"
-		"	tst	r0, #0x80			\n"
-		"	andeq	r1, %[depth], #0xff		\n"
-		"	mov	r1, %[depth], lsr #8		\n" 
-		"	cmp	r1, r3				\n"
-		"	bls	4f				\n"
-		
 		"	movs	r0, r0, lsl #2			\n"		
 		"	ldrne	r1, [%[colors], r0]		\n"	
 		"	strneb	%[depth], [%[d]]		\n"
@@ -217,46 +206,38 @@ void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg)
 		  [d] "r" (d),
 		  [depth] "r" (depth),
 		  //[dir] "r" (dir),
-		  [yy3] "r" (yy + CentreY),
-		  [xx3] "r" (startx + HOffset)
+		  [yy3] "r" (yy3),
+		  [xx3] "r" (xx3)
 		: "r0", "r1", "r3", "cc"
 		); 
 		}
 		else
 		{
-		asm volatile (
+		__asm__ volatile (
 		"1:						\n"
-		"	mov	r3, %[AA], lsr #18		\n"	
-		"	orrs	r3, r3, %[CC], lsr #18		\n"			
+		"	ldrb	r0, [%[d]]			\n"
+		"	mov	r3, %[AA], asr #18		\n"	
+		"	cmp	%[depth], r0			\n"
+		"	bls	4f				\n"
+		"	orrs	r3, r3, %[CC], asr #18		\n"			
 		"	bne	2f				\n" 
 		"						\n"
-		"	mov	r3, %[CC], lsr #11		\n"  
-		"	mov	r1, %[AA], lsr #11		\n" 
+		"	mov	r3, %[CC], asr #11		\n"  
+		"	mov	r1, %[AA], asr #11		\n" 
 		"	add	r3, r1, r3, lsl #7		\n" 
 		"	mov	r3, r3, lsl #1			\n"
 		"	ldrb	r3, [%[VRAM], r3]		\n"
 		"						\n"
-		"	mov	r1, %[CC], lsr #8		\n" 
-		"	mov	r0, %[AA], lsr #8		\n" 
-		"						\n"
+		"	and	r1, %[CC], #(7 << 8)		\n"
 		"	add	r3, %[VRAM], r3, lsl #7		\n"
+		"	and	r0, %[AA], #(7 << 8)		\n"
+		"	add	r3, r3, r1, asr #4 		\n"
+		"	add	r3, r3, r0, asr #7		\n"
 		"						\n"
-		"	and	r1, r1, #7			\n"
-		"	and	r0, r0, #7			\n"
-		"	add	r3, r3, r1, lsl #4 		\n"
-		"	add	r3, r3, r0, lsl #1 		\n"
-		"						\n"
-		"	ldrb	r0, [r3, #1]			\n"
-		"	ldrb	r3, [%[d]]			\n"
-		"	tst	r0, #0x80			\n"
-		"	andeq	r1, %[depth], #0xff		\n"
-		"	mov	r1, %[depth], lsr #8		\n" 
-		"	cmp	r1, r3				\n"
-		"	bls	4f				\n"
-
 		"	ldr	r1, %[daa]			\n"
-		"	movs	r0, r0, lsl #2			\n"		
+		"	ldrb	r0, [r3, #1]			\n"
 		"	add	%[AA], %[AA], r1		\n"
+		"	movs	r0, r0, lsl #2			\n"		
 		"	ldrne	r1, [%[colors], r0]		\n"	
 		"	add	%[xx3], %[xx3], #-1		\n"
 		"	strneb	%[depth], [%[d]]		\n"
@@ -270,21 +251,13 @@ void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg)
 		"	bne	1b				\n"
 		"	b	3f				\n"
 		"2:						\n"
-		"	and	r1, %[yy3], #7			\n"
+		//"	and	r1, %[yy3], #7			\n"
 		"	and	r0, %[xx3], #7			\n"
-		"	mov	r3, r1, lsl #4 			\n"
-		"	add	r3, r3, r0, lsl #1 		\n"
+		//"	mov	r3, r1, lsl #4 			\n"
+		"	add	r3, %[yy3], r0, lsl #1 		\n"
 		"						\n"
 		"	add	r3, %[VRAM], r3			\n"
-		
 		"	ldrb	r0, [r3, #1]			\n"
-		"	ldrb	r3, [%[d]]			\n"
-		"	tst	r0, #0x80			\n"
-		"	andeq	r1, %[depth], #0xff		\n"
-		"	mov	r1, %[depth], lsr #8		\n" 
-		"	cmp	r1, r3				\n"
-		"	bls	4f				\n"
-		
 		"	movs	r0, r0, lsl #2			\n"		
 		"	ldrne	r1, [%[colors], r0]		\n"	
 		"	strneb	%[depth], [%[d]]		\n"
@@ -312,8 +285,8 @@ void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg)
 		  [d] "r" (d),
 		  [depth] "r" (depth),
 		  //[dir] "r" (dir),
-		  [yy3] "r" (yy + CentreY),
-		  [xx3] "r" (startx + HOffset)
+		  [yy3] "r" (yy3),
+		  [xx3] "r" (xx3)
 		: "r0", "r1", "r3", "cc"
 		); 
 		}
@@ -322,7 +295,7 @@ void DrawBGMode7Background16PrioR3 (uint8 *Screen, int bg)
 
 }
 
-void DrawBGMode7Background16PrioR1R2 (uint8 *Screen, int bg)
+void DrawBGMode7Background16R1R2 (uint8 *Screen, int bg, int depth)
 {
 
     int aa, cc;  
@@ -350,14 +323,13 @@ void DrawBGMode7Background16PrioR1R2 (uint8 *Screen, int bg)
     AndByY = AndByX << 4;
     AndByX = AndByX << 1;
     uint8 *Depth;
-    uint32 depth = Mode7Depths[0] | (Mode7Depths[1] << 8);  
 
     if (!ClipCount) ClipCount = 1; 
 
     Screen += GFX.StartY * GFX_PITCH; 
     Depth = GFX.DB + GFX.StartY * GFX_PPL;
 
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; 
+    SLineMatrixData *l = &LineMatrixData [GFX.StartY];
 
     for (Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) { 
 	HOffset = ((int32) LineData[Line].BG[0].HOffset << M7) >> M7; 
@@ -393,20 +365,23 @@ void DrawBGMode7Background16PrioR1R2 (uint8 *Screen, int bg)
 			aa = l->MatrixA; 
 			cc = l->MatrixC;
 	    } 
-		asm volatile (
+		__asm__ volatile (
 		"1:						\n"
-		"	mov	r3, %[AA], lsr #18		\n"
-		"	orrs	r3, r3, %[CC], lsr #18		\n"			
+		"	ldrb	r0, [%[d]]			\n"
+		"	mov	r3, %[AA], asr #18		\n"
+		"	cmp	%[depth], r0			\n"
+		"	bls	2f				\n"
+		"	orrs	r3, r3, %[CC], asr #18		\n"			
 		"	bne	2f				\n" 
 		"						\n"
 		"	ldr	r1, %[AndByY]			\n"
 		"	ldr	r0, %[AndByX]			\n"
-		"	and	r1, r1, %[CC], lsr #4		\n"
-		"	and	r0, r0, %[AA], lsr #7	\n"
+		"	and	r1, r1, %[CC], asr #4		\n"
+		"	and	r0, r0, %[AA], asr #7		\n"
 		"						\n"
 		"	and	r3, r1, #0x7f			\n" 
 		"	sub	r3, r1, r3			\n" 
-		"	add	r3, r3, r0, lsr #4		\n"
+		"	add	r3, r3, r0, asr #4		\n"
 		"	add	r3, r3, r3			\n"
 		"	ldrb	r3, [%[VRAM], r3]		\n"
 		"	and	r1, r1, #0x70			\n"
@@ -418,13 +393,6 @@ void DrawBGMode7Background16PrioR1R2 (uint8 *Screen, int bg)
 		"	add	r3, r3, r0			\n"
 		"						\n"
 		"	ldrb	r0, [r3, #1]			\n"
-		"	ldrb	r3, [%[d]]			\n"
-		"	tst	r0, #0x80			\n"
-		"	andeq	r1, %[depth], #0xff		\n"
-		"	mov	r1, %[depth], lsr #8		\n" 
-		"	cmp	r1, r3				\n"
-		"	bls	2f				\n"
-
 		"	add	%[AA], %[AA], %[daa]		\n"
 		"	movs	r0, r0, lsl #2			\n"		
 		"	ldrne	r1, [%[colors], r0]		\n"	
@@ -464,7 +432,7 @@ void DrawBGMode7Background16PrioR1R2 (uint8 *Screen, int bg)
 }
 
 
-void DrawBGMode7Background16PrioR0 (uint8 *Screen, int bg)
+void DrawBGMode7Background16R0 (uint8 *Screen, int bg, int depth)
 {  
     uint8 *VRAM1 = Memory.VRAM + 1; 
     int aa, cc;  
@@ -485,9 +453,9 @@ void DrawBGMode7Background16PrioR0 (uint8 *Screen, int bg)
     int DD; 
     uint32 Line;
     uint32 clip;
-    struct SLineMatrixData *l;
+    SLineMatrixData *l;
     uint8 *Depth;
-    uint32 depth = Mode7Depths[0] | (Mode7Depths[1] << 8);       
+     
 
 	Left = 0; 
 	Right = 256; 
@@ -510,8 +478,12 @@ void DrawBGMode7Background16PrioR0 (uint8 *Screen, int bg)
 	if (PPU.Mode7VFlip) yy = 255 - (int) Line; 
 	else yy = Line; 
 
-	yy += (VOffset - CentreY) % 1023;
+	/*yy += (VOffset - CentreY) % 1023;
 	xx = (HOffset - CentreX) % 1023;
+*/
+
+	yy += ((VOffset - CentreY) << (32-10+1)) >> (32-10+1) ;
+	xx = ((HOffset - CentreX) << (32-10+1)) >> (32-10+1);
 
 	BB = l->MatrixB * yy + (CentreX << 8); 
 	DD = l->MatrixD * yy + (CentreY << 8); 
@@ -536,21 +508,25 @@ void DrawBGMode7Background16PrioR0 (uint8 *Screen, int bg)
 			aa = l->MatrixA; 
 			cc = l->MatrixC;
 	    } 
-		asm volatile (
+		__asm__ volatile (
 		"	b	1f				\n"
-		"7:						\n" // AndByX
-		"	.word	(0x3ff << 1)                    \n"
+		//"7:						\n" // AndByX
+		//"	.word	(0x3ff << 1)                    \n"
 		"8:						\n" // AndByY
 		"	.word	(0x3ff << 4)                    \n"
 		"						\n"
 		"1:						\n"
 		"	ldr	r3, 8b				\n"
-		"	ldr	r0, 7b				\n"
-		"	and	r1, r3, %[CC], lsr #4		\n"
+		"	ldrb	r0, [%[d]]			\n"
+		"	and	r1, r3, %[CC], asr #4		\n"
+		"	cmp	%[depth], r0			\n"
+		"	bls	2f				\n"
+		//"	ldr	r0, 7b				\n"
+		"	mov	r0, r3, asr #3			\n"		
 		"	and	r3, r1, #0x7f			\n" 
-		"	and	r0, r0, %[AA], lsr #7		\n"
+		"	and	r0, r0, %[AA], asr #7		\n"
 		"	sub	r3, r1, r3			\n" 
-		"	add	r3, r3, r0, lsr #4		\n"
+		"	add	r3, r3, r0, asr #4		\n"
 		"	add	r3, r3, r3			\n"
 		"	ldrb	r3, [%[VRAM], r3]		\n"
 		"						\n"
@@ -562,13 +538,6 @@ void DrawBGMode7Background16PrioR0 (uint8 *Screen, int bg)
 		"	add	r3, r3, r0			\n"
 		"						\n"
 		"	ldrb	r0, [r3, #1]			\n"
-		"	ldrb	r3, [%[d]]			\n"
-		"	tst	r0, #0x80			\n"
-		"	andeq	r1, %[depth], #0xff		\n"
-		"	mov	r1, %[depth], lsr #8		\n" 
-		"	cmp	r1, r3				\n"
-		"	bls	2f				\n"
-
 		"	movs	r0, r0, lsl #2			\n"		
 		"	ldrne	r1, [%[colors], r0]		\n"	
 		"	strneb	%[depth], [%[d]]		\n"

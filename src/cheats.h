@@ -53,7 +53,7 @@ struct SCheat
 
 #define MAX_CHEATS 75
 
-struct SCheatData
+typedef struct
 {
     struct SCheat   c [MAX_CHEATS];
     uint32	    num_cheats;
@@ -66,7 +66,7 @@ struct SCheatData
     uint32	    WRAM_BITS [0x20000 >> 3];
     uint32	    SRAM_BITS [0x10000 >> 3];
     uint32	    IRAM_BITS [0x2000 >> 3];
-};
+}SCheatData;
 
 typedef enum
 {
@@ -81,10 +81,10 @@ typedef enum
 
 void S9xInitCheatData ();
 
-const char *S9xGameGenieToRaw (const char *code, uint32 &address, uint8 &byte);
-const char *S9xProActionReplayToRaw (const char *code, uint32 &address, uint8 &byte);
-const char *S9xGoldFingerToRaw (const char *code, uint32 &address, bool8 &sram,
-				uint8 &num_bytes, uint8 bytes[3]);
+const char *S9xGameGenieToRaw (const char *code, uint32 *address, uint8 *byte);
+const char *S9xProActionReplayToRaw (const char *code, uint32 *address, uint8 *byte);
+const char *S9xGoldFingerToRaw (const char *code, uint32* address, bool8* sram,
+				uint8* num_bytes, uint8 bytes[3]);
 void S9xApplyCheats ();
 void S9xApplyCheat (uint32 which1);
 void S9xRemoveCheats ();

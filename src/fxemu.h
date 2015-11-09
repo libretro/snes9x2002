@@ -112,7 +112,7 @@ typedef int int32;
 #endif
 
 /* The FxInfo_s structure, the link between the FxEmulator and the Snes Emulator */
-struct FxInit_s
+typedef struct
 {
     uint32	vFlags;
     uint8 *	pvRegisters;	/* 768 bytes located in the memory at address 0x3000 */
@@ -120,10 +120,10 @@ struct FxInit_s
     uint8 *	pvRam;		/* Pointer to GSU-RAM */
     uint32	nRomBanks;	/* Number of 32kb-banks in Cart-ROM */
     uint8 *	pvRom;		/* Pointer to Cart-ROM */
-};
+}FxInit_s;
 
 /* Reset the FxChip */
-extern void FxReset(struct FxInit_s *psFxInfo);
+extern void FxReset(FxInit_s *psFxInfo);
 
 /* Execute until the next stop instruction */
 extern int FxEmulate(uint32 nInstructions);

@@ -107,10 +107,10 @@ extern NormalTileRenderer DrawHiResTilePtr;
 extern ClippedTileRenderer DrawHiResClippedTilePtr;
 extern LargePixelRenderer DrawLargePixelPtr;
 
-extern struct SBG BG;
+extern SBG BG;
 
-extern struct SLineData LineData[240];
-extern struct SLineMatrixData LineMatrixData [240];
+extern SLineData LineData[240];
+extern SLineMatrixData LineMatrixData [240];
 
 extern uint8  Mode7Depths [2];
 
@@ -584,7 +584,7 @@ void RenderLine (uint8 C)
 
 	if (PPU.BGMode == 7)
 	{
-	    struct SLineMatrixData *p = &LineMatrixData [C];
+	    SLineMatrixData *p = &LineMatrixData [C];
 	    p->MatrixA = PPU.MatrixA;
 	    p->MatrixB = PPU.MatrixB;
 	    p->MatrixC = PPU.MatrixC;
@@ -677,7 +677,7 @@ void S9xSetInfoString (const char *string)
 {
  }
 
-INLINE void SelectTileRenderer (bool8_32 normal)
+static INLINE void SelectTileRenderer (bool8_32 normal)
 {
     if (normal)
     {
@@ -2127,7 +2127,7 @@ inline void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 	ClipCount = 1; \
 \
     Screen += GFX.StartY * GFX_PITCH; \
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
+    SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
 \
     for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, l++) \
     { \
@@ -2265,7 +2265,7 @@ inline void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 \
     Screen += GFX.StartY * GFX_PITCH; \
     uint8 *Depth = GFX.DB + GFX.StartY * GFX_PPL; \
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
+    SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
 \
     for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) \
     { \
@@ -2407,7 +2407,7 @@ inline void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 \
     Screen += GFX.StartY * GFX_PITCH; \
     uint8 *Depth = GFX.DB + GFX.StartY * GFX_PPL; \
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
+    SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
 \
     for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) \
     { \
@@ -2700,28 +2700,28 @@ void RenderScreen (uint8 *Screen, bool8_32 sub, bool8_32 force_no_add, uint8 D)
     {
 	if (OB)
 	{
-	    SelectTileRenderer (sub || !SUB_OR_ADD(4));
+	    SelectTileRenderer (sub || !SUB_OR_ADD(4), false);
 	    DrawOBJS (!sub, D);
 	}
 	if (BG0)
 	{
-	    SelectTileRenderer (sub || !SUB_OR_ADD(0));
+	    SelectTileRenderer (sub || !SUB_OR_ADD(0), false);
 	    DrawBackground (PPU.BGMode, 0, D + 10, D + 14);
 	}
 	if (BG1)
 	{
-	    SelectTileRenderer (sub || !SUB_OR_ADD(1));
+	    SelectTileRenderer (sub || !SUB_OR_ADD(1), false);
 	    DrawBackground (PPU.BGMode, 1, D + 9, D + 13);
 	}
 	if (BG2)
 	{
-	    SelectTileRenderer (sub || !SUB_OR_ADD(2));
+	    SelectTileRenderer (sub || !SUB_OR_ADD(2), false);
 	    DrawBackground (PPU.BGMode, 2, D + 3, 
 				PPU.BG3Priority ? D + 17 : D + 6);
 	}
 	if (BG3 && PPU.BGMode == 0)
 	{
-	    SelectTileRenderer (sub || !SUB_OR_ADD(3));
+	    SelectTileRenderer (sub || !SUB_OR_ADD(3), false);
 	    DrawBackground (PPU.BGMode, 3, D + 2, D + 5);
 	}
     }
@@ -2729,17 +2729,17 @@ void RenderScreen (uint8 *Screen, bool8_32 sub, bool8_32 force_no_add, uint8 D)
     {
 		if (OB)
 		{
-			SelectTileRenderer (sub || !SUB_OR_ADD(4));
+			SelectTileRenderer (sub || !SUB_OR_ADD(4), false);
 			DrawOBJS (!sub, D);
 		}
 		if (BG0)
 		{
-			SelectTileRenderer (sub || !SUB_OR_ADD(0));
+			SelectTileRenderer (sub || !SUB_OR_ADD(0), false);
 			DrawBackground (PPU.BGMode, 0, D + 5, D + 13);
 		}
 		if (PPU.BGMode != 6 && BG1)
 		{
-			SelectTileRenderer (sub || !SUB_OR_ADD(1));
+			SelectTileRenderer (sub || !SUB_OR_ADD(1), false);
 			DrawBackground (PPU.BGMode, 1, D + 2, D + 9);
 		}
     }
@@ -2747,7 +2747,7 @@ void RenderScreen (uint8 *Screen, bool8_32 sub, bool8_32 force_no_add, uint8 D)
     {
 		if (OB && ((SNESGameFixes.Mode7Hack && D) || !SNESGameFixes.Mode7Hack))
 		{
-			SelectTileRenderer (sub || !SUB_OR_ADD(4));
+			SelectTileRenderer (sub || !SUB_OR_ADD(4), false);
 			DrawOBJS (!sub, D);
 		}
 		if (BG0 || ((Memory.FillRAM [0x2133] & 0x40) && BG1))
@@ -2828,7 +2828,7 @@ void RenderScreen (uint8 *Screen, bool8_32 sub, bool8_32 force_no_add, uint8 D)
 		}
 		if (OB && SNESGameFixes.Mode7Hack && D==0)
 		{
-			SelectTileRenderer (sub || !SUB_OR_ADD(4));
+			SelectTileRenderer (sub || !SUB_OR_ADD(4), false);
 			DrawOBJS (!sub, D);
 		}
 
@@ -2993,7 +2993,7 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 			!((GFX.r2130 & 0x30) == 0x10 && IPPU.Clip[1].Count[5] == 0))
 		{
 			// transparency effects in use, so lets get busy!
-			struct ClipData *pClip;
+			ClipData *pClip;
 			uint32 fixedColour;
 			GFX.FixedColour = BUILD_PIXEL (IPPU.XB [PPU.FixedColourRed],
 						   IPPU.XB [PPU.FixedColourGreen],
@@ -3620,7 +3620,7 @@ else \
 				if (OB)
 				{
 				    FIXCLIP(4);
-				    DrawOBJS ();
+				    DrawOBJS (FALSE, 0);
 				}
 				if (BG0)
 				{
@@ -3650,7 +3650,7 @@ else \
 				if (OB)
 				{
 				    FIXCLIP(4);
-				    DrawOBJS ();
+				    DrawOBJS (FALSE, 0);
 				}
 				if (BG0)
 				{
@@ -3673,7 +3673,7 @@ else \
 				if (OB)
 				{
 				    FIXCLIP(4);
-				    DrawOBJS ();
+				    DrawOBJS (FALSE, 0);
 				}
 		   }
 		}

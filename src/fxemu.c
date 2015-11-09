@@ -93,7 +93,7 @@
 #include <stdio.h>
 
 /* The FxChip Emulator's internal variables */
-struct FxRegs_s GSU = FxRegs_s_null;
+FxRegs_s GSU = FxRegs_s_null;
 
 uint32 (**fx_ppfFunctionTable)(uint32) = 0;
 void (**fx_ppfPlotTable)() = 0;
@@ -486,7 +486,7 @@ static inline void fx_writeRegisterSpace()
 }
 
 /* Reset the FxChip */
-void FxReset(struct FxInit_s *psFxInfo)
+void FxReset(FxInit_s *psFxInfo)
 {
     int i;
     static uint32 (**appfFunction[])(uint32) = {
@@ -520,7 +520,7 @@ void FxReset(struct FxInit_s *psFxInfo)
     fx_ppfOpcodeTable = appfOpcode[psFxInfo->vFlags & 0x3];
     
     /* Clear all internal variables */
-    memset((uint8*)&GSU,0,sizeof(struct FxRegs_s));
+    memset((uint8*)&GSU,0,sizeof(FxRegs_s));
 
     /* Set default registers */
     GSU.pvSreg = GSU.pvDreg = &R0;

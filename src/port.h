@@ -63,6 +63,7 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
 //#include <windows.h>
 #include <limits.h>
 #include <string.h>
+#include <stdbool.h>
 //Types Defined
 typedef unsigned char	bool8;
 typedef unsigned char	uint8;

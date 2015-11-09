@@ -47,7 +47,7 @@ extern uint8 W4;
 extern uint8 APUROM[64];
 END_EXTERN_C
 
-INLINE uint8 S9xAPUGetByteZ (uint8 Address)
+static INLINE uint8 S9xAPUGetByteZ (uint8 Address)
 {
    if (Address >= 0xf0 && IAPU.DirectPage == IAPU.RAM)
    {
@@ -65,7 +65,7 @@ INLINE uint8 S9xAPUGetByteZ (uint8 Address)
    return (IAPU.DirectPage [Address]);
 }
 
-INLINE void S9xAPUSetByteZ (uint8 val, uint8 Address)
+static INLINE void S9xAPUSetByteZ (uint8 val, uint8 Address)
 {
    if (Address >= 0xf0 && IAPU.DirectPage == IAPU.RAM)
    {
@@ -94,7 +94,7 @@ INLINE void S9xAPUSetByteZ (uint8 val, uint8 Address)
       IAPU.DirectPage [Address] = val;
 }
 
-INLINE uint8 S9xAPUGetByte (uint32 Address)
+static INLINE uint8 S9xAPUGetByte (uint32 Address)
 {
    Address &= 0xffff;
 
@@ -113,7 +113,7 @@ INLINE uint8 S9xAPUGetByte (uint32 Address)
    return (IAPU.RAM [Address]);
 }
 
-INLINE void S9xAPUSetByte (uint8 val, uint32 Address)
+static INLINE void S9xAPUSetByte (uint8 val, uint32 Address)
 {
    Address &= 0xffff;
 

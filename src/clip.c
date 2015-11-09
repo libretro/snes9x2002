@@ -91,7 +91,7 @@ static int BandCompare (const void *d1, const void *d2)
     return (((struct Band *) d1)->Left - ((struct Band *) d2)->Left);
 }
 
-void ComputeClipWindow(bool8_32 invert, int w, int wok, struct ClipData *pClip) {
+void ComputeClipWindow(bool8_32 invert, int w, int wok, ClipData *pClip) {
 	    pClip->Count[w] = 0;
 
 	    if (!Settings.DisableGraphicWindows)
@@ -515,7 +515,8 @@ void ComputeClipWindow(bool8_32 invert, int w, int wok, struct ClipData *pClip) 
 			}
 			else
 			{
-			    for (int j = 0; j < B; j++)
+            int j;
+			    for (j = 0; j < B; j++)
 			    {
 				pClip->Left[j][w] = Bands[j].Left;
 				pClip->Right[j][w] = Bands[j].Right;
@@ -573,7 +574,8 @@ void ComputeClipWindow(bool8_32 invert, int w, int wok, struct ClipData *pClip) 
 			    }
 			    else
 			    {
-				for (uint32 j = 0; j < Window1Enabled; j++)
+                uint32 j;
+				for (j = 0; j < Window1Enabled; j++)
 				{
 				    pClip->Left [j][w] = Win1[j].Left;
 				    pClip->Right [j][w] = Win1[j].Right;
@@ -626,7 +628,8 @@ void ComputeClipWindow(bool8_32 invert, int w, int wok, struct ClipData *pClip) 
 			    }
 			    else
 			    {
-				for (uint32 j = 0; j < Window2Enabled; j++)
+                uint32 j;
+				for (j = 0; j < Window2Enabled; j++)
 				{
 				    pClip->Left [j][w] = Win2[j].Left;
 				    pClip->Right [j][w] = Win2[j].Right;
@@ -646,7 +649,8 @@ void ComputeClipWindow(bool8_32 invert, int w, int wok, struct ClipData *pClip) 
 			    if (pClip->Count [w] == 0)
 			    {
 				pClip->Count [w] = pClip->Count [5];
-				for (int i = pClip->Count[w]-1; i >= 0 ; i--)
+            int i;
+				for (i = pClip->Count[w]-1; i >= 0 ; i--)
 				{
 				    pClip->Left [i][w] = pClip->Left [i][5];
 				    pClip->Right [i][w] = pClip->Right [i][5];
@@ -690,7 +694,8 @@ void ComputeClipWindows ()
     if ((GFX.r2130_s & 0xc0) == 0xc0) {
 	// The whole of the main screen is switched off,
 	// completely clip everything.
-	for (int i = 0; i < 6; i++) {
+   int i;
+	for (i = 0; i < 6; i++) {
 	    IPPU.Clip [0].Count [i] = 1;
 	    IPPU.Clip [0].Left [0][i] = 1;
 	    IPPU.Clip [0].Right [0][i] = 0;
@@ -711,7 +716,8 @@ void ComputeClipWindows ()
     if ((GFX.r2130_s & 0x30) == 0x30) {
 	// The sub-screen is switched off, completely
 	// clip everything.
-	for (int i = 0; i < 6; i++) {
+   int i;
+	for (i = 0; i < 6; i++) {
 	    IPPU.Clip [1].Count [i] = 1;
 	    IPPU.Clip [1].Left [0][i] = 1;
 	    IPPU.Clip [1].Right [0][i] = 0;

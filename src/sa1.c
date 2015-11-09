@@ -112,10 +112,10 @@ void S9xSA1SetBWRAMMemMap (uint8 val)
     {
 	for (c = 0; c < 0x400; c += 16)
 	{
-	    SA1_Map [c + 6] = SA1_Map [c + 0x806] = (uint8 *) CMemory::MAP_BWRAM_BITMAP2;
-	    SA1_Map [c + 7] = SA1_Map [c + 0x807] = (uint8 *) CMemory::MAP_BWRAM_BITMAP2;
-	    SA1_WriteMap [c + 6] = SA1_WriteMap [c + 0x806] = (uint8 *) CMemory::MAP_BWRAM_BITMAP2;
-	    SA1_WriteMap [c + 7] = SA1_WriteMap [c + 0x807] = (uint8 *) CMemory::MAP_BWRAM_BITMAP2;
+	    SA1_Map [c + 6] = SA1_Map [c + 0x806] = (uint8 *) MAP_BWRAM_BITMAP2;
+	    SA1_Map [c + 7] = SA1_Map [c + 0x807] = (uint8 *) MAP_BWRAM_BITMAP2;
+	    SA1_WriteMap [c + 6] = SA1_WriteMap [c + 0x806] = (uint8 *) MAP_BWRAM_BITMAP2;
+	    SA1_WriteMap [c + 7] = SA1_WriteMap [c + 0x807] = (uint8 *) MAP_BWRAM_BITMAP2;
 	}
 	SA1.BWRAM = Memory.SRAM + (val & 0x7f) * 0x2000 / 4;
     }
@@ -123,10 +123,10 @@ void S9xSA1SetBWRAMMemMap (uint8 val)
     {
 	for (c = 0; c < 0x400; c += 16)
 	{
-	    SA1_Map [c + 6] = SA1_Map [c + 0x806] = (uint8 *) CMemory::MAP_BWRAM;
-	    SA1_Map [c + 7] = SA1_Map [c + 0x807] = (uint8 *) CMemory::MAP_BWRAM;
-	    SA1_WriteMap [c + 6] = SA1_WriteMap [c + 0x806] = (uint8 *) CMemory::MAP_BWRAM;
-	    SA1_WriteMap [c + 7] = SA1_WriteMap [c + 0x807] = (uint8 *) CMemory::MAP_BWRAM;
+	    SA1_Map [c + 6] = SA1_Map [c + 0x806] = (uint8 *) MAP_BWRAM;
+	    SA1_Map [c + 7] = SA1_Map [c + 0x807] = (uint8 *) MAP_BWRAM;
+	    SA1_WriteMap [c + 6] = SA1_WriteMap [c + 0x806] = (uint8 *) MAP_BWRAM;
+	    SA1_WriteMap [c + 7] = SA1_WriteMap [c + 0x807] = (uint8 *) MAP_BWRAM;
 	}
 	SA1.BWRAM = Memory.SRAM + (val & 7) * 0x2000;
     }
@@ -202,9 +202,9 @@ uint8 (*S9xSA1GetByte_JumpTable[(1 << (16 - 12))]) (uint32 address) = {
 uint8 S9xSA1GetByte (uint32 address)
 {
     uint8 *GetAddress = SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST) return (*(GetAddress + (address & 0xffff)));
+    if (GetAddress >= (uint8 *) MAP_LAST) return (*(GetAddress + (address & 0xffff)));
     return S9xSA1GetByte_JumpTable[(intptr_t) GetAddress](address);
-//	return (SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK] >= (uint8 *)CMemory::MAP_LAST) ? 
+//	return (SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK] >= (uint8 *)MAP_LAST) ? 
 //		(*((uint8 *)(SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK]) + (address & 0xffff))) : 
 //		S9xSA1GetByte_JumpTable[(int) SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK]](address); 
 }
@@ -213,7 +213,7 @@ uint8 S9xSA1GetByte (uint32 address)
 uint16 S9xSA1GetWord (uint32 address)
 {
     uint8 *GetAddress = SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (GetAddress >= (uint8 *) MAP_LAST)
 	return (*(GetAddress + (address & 0xffff))) | ((*(GetAddress + ((address+1) & 0xffff))) << 8);
     return (S9xSA1GetByte_JumpTable[(int) GetAddress](address)) | ((S9xSA1GetByte_JumpTable[(int) GetAddress](address+1)) << 8);
 }
@@ -287,7 +287,7 @@ void S9xSA1SetByte (uint8 byte, uint32 address)
 	// MEMMAP_MASK 0xFFF
 
     uint8 *Setaddress = SA1_WriteMap [(address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-    if (Setaddress >= (uint8 *) CMemory::MAP_LAST)
+    if (Setaddress >= (uint8 *) MAP_LAST)
     {
 	*(Setaddress + (address & 0xffff)) = byte;
 	return;
@@ -298,7 +298,7 @@ void S9xSA1SetByte (uint8 byte, uint32 address)
 void S9xSA1SetPCBase (uint32 address)
 {
     uint8 *GetAddress = SA1_Map [(address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (GetAddress >= (uint8 *) MAP_LAST)
     {
 	SA1.PCBase = GetAddress;
 	SA1.PC = GetAddress + (address & 0xffff);
@@ -307,43 +307,43 @@ void S9xSA1SetPCBase (uint32 address)
 
     switch ((intptr_t) GetAddress)
     {
-    case CMemory::MAP_PPU:
+    case MAP_PPU:
 	SA1.PCBase = Memory.FillRAM - 0x2000;
 	SA1.PC = SA1.PCBase + (address & 0xffff);
 	return;
 	
-    case CMemory::MAP_CPU:
+    case MAP_CPU:
 	SA1.PCBase = Memory.FillRAM - 0x4000;
 	SA1.PC = SA1.PCBase + (address & 0xffff);
 	return;
 	
-    case CMemory::MAP_DSP:
+    case MAP_DSP:
 	SA1.PCBase = Memory.FillRAM - 0x6000;
 	SA1.PC = SA1.PCBase + (address & 0xffff);
 	return;
 	
-    case CMemory::MAP_SA1RAM:
-    case CMemory::MAP_LOROM_SRAM:
+    case MAP_SA1RAM:
+    case MAP_LOROM_SRAM:
 	SA1.PCBase = Memory.SRAM;
 	SA1.PC = SA1.PCBase + (address & 0xffff);
 	return;
 
-    case CMemory::MAP_BWRAM:
+    case MAP_BWRAM:
 	SA1.PCBase = SA1.BWRAM - 0x6000;
 	SA1.PC = SA1.PCBase + (address & 0xffff);
 	return;
-    case CMemory::MAP_HIROM_SRAM:
+    case MAP_HIROM_SRAM:
 	SA1.PCBase = Memory.SRAM - 0x6000;
 	SA1.PC = SA1.PCBase + (address & 0xffff);
 	return;
 
-    case CMemory::MAP_DEBUG:
+    case MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("SBP %06x\n", address);
 #endif
 	
     default:
-    case CMemory::MAP_NONE:
+    case MAP_NONE:
 	SA1.PCBase = Memory.RAM;
 	SA1.PC = Memory.RAM + (address & 0xffff);
 	return;
@@ -582,7 +582,7 @@ void S9xSetSA1 (uint8 byte, uint32 address)
 		if ((Memory.FillRAM [0x2230] & 0xb0) == 0xa0)
 		{
 		    // Char conversion 2 DMA enabled
-		    memmove (&Memory.ROM [CMemory::MAX_ROM_SIZE - 0x10000] + (SA1.in_char_dma << 4),
+		    memmove (&Memory.ROM [MAX_ROM_SIZE - 0x10000] + (SA1.in_char_dma << 4),
 			     &Memory.FillRAM [0x2240], 16);
 		    SA1.in_char_dma = (SA1.in_char_dma + 1) & 7;
 		    if ((SA1.in_char_dma & 3) == 0)
@@ -656,7 +656,7 @@ static void S9xSA1CharConv2 ()
 		(Memory.FillRAM [0x2231] & 3) == 1 ? 4 : 2;
     int bytes_per_char = 8 * depth;
     uint8 *p = &Memory.FillRAM [0x3000] + dest + offset * bytes_per_char;
-    uint8 *q = &Memory.ROM [CMemory::MAX_ROM_SIZE - 0x10000] + offset * 64;
+    uint8 *q = &Memory.ROM [MAX_ROM_SIZE - 0x10000] + offset * 64;
 
     if (depth == 8)
     {
@@ -697,7 +697,7 @@ static void S9xSA1DMA ()
     {
     case 0: // ROM
 	s = SA1_Map [(src >> MEMMAP_SHIFT) & MEMMAP_MASK];
-	if (s >= (uint8 *) CMemory::MAP_LAST)
+	if (s >= (uint8 *) MAP_LAST)
 	    s += (src & 0xffff);
 	else
 	    s = Memory.ROM + (src & 0xffff);

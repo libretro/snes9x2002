@@ -95,13 +95,14 @@ typedef union
 	uint32 _padder; // make sure this whole thing takes 4 bytes
 } YAndA;
 
-struct SAPURegisters{
+typedef struct
+{
     uint8  P;
     YAndA YA;
     uint8  X;
     uint8  S;
     uint16  PC;
-};
+}SAPURegisters;
 
 //EXTERN_C struct SAPURegisters APURegisters;
 

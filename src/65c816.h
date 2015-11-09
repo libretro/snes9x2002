@@ -105,7 +105,8 @@ typedef union
     uint16 W;
 } ALIGN_BY_ONE pair;
 
-struct SRegisters{
+typedef struct
+{
     uint8  PB;
     uint8  DB;
     pair   P;
@@ -115,7 +116,7 @@ struct SRegisters{
     pair   S;
     pair   Y;
     uint16 PC;
-} PACKING;
+}PACKING SRegisters;
 
 #define Registers	CPU.Regs
 //EXTERN_C struct SRegisters Registers;

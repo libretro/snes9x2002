@@ -270,6 +270,7 @@ static inline void S9xSetEnvRate (Channel *ch, unsigned long rate, int direction
 
 static inline void S9xSetEchoEnable (uint8 byte)
 {
+   int i;
     SoundData.echo_channel_enable = byte;
     if (!SoundData.echo_write_enabled || Settings.DisableSoundEcho)
 	byte = 0;
@@ -280,7 +281,7 @@ static inline void S9xSetEchoEnable (uint8 byte)
     }
 
     SoundData.echo_enable = byte;
-    for (int i = 0; i < 8; i++)
+    for (i = 0; i < 8; i++)
     {
 	if (byte & (1 << i))
 	    SoundData.channels [i].echo_buf_ptr = EchoBuffer;

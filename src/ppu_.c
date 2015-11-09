@@ -55,8 +55,8 @@
 #ifndef ZSNES_FX
 #include "fxemu.h"
 #include "fxinst.h"
-extern struct FxInit_s SuperFX;
-extern struct FxRegs_s GSU;
+extern FxInit_s SuperFX;
+extern FxRegs_s GSU;
 #else
 EXTERN_C void S9xSuperFXWriteReg (uint8, uint32);
 EXTERN_C uint8 S9xSuperFXReadReg (uint32);
@@ -2236,7 +2236,7 @@ void S9xResetPPU ()
     S9xNextController ();
 
     for (c = 0; c < 2; c++)
-	memset (&IPPU.Clip [c], 0, sizeof (struct ClipData));
+	memset (&IPPU.Clip [c], 0, sizeof (ClipData));
 
     if (Settings.MouseMaster)
     {
@@ -2259,7 +2259,7 @@ void S9xProcessMouse (int which1)
     uint32 buttons;
     
     if ((IPPU.Controller == SNES_MOUSE || IPPU.Controller == SNES_MOUSE_SWAPPED) &&
-	S9xReadMousePosition (which1, x, y, buttons))
+	S9xReadMousePosition (which1, &x, &y, &buttons))
     {
 	int delta_x, delta_y;
 #define MOUSE_SIGNATURE 0x1
@@ -2327,7 +2327,7 @@ void ProcessSuperScope ()
     uint32 buttons;
     
     if (IPPU.Controller == SNES_SUPERSCOPE &&
-	S9xReadSuperScopePosition (x, y, buttons))
+	S9xReadSuperScopePosition (&x, &y, &buttons))
     {
 #define SUPERSCOPE_SIGNATURE 0x00ff
 	uint32 scope;

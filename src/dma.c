@@ -199,7 +199,7 @@ void S9xDoDMA (uint8 Channel)
 	int char_line_bytes = bytes_per_char * num_chars;
 	uint32 addr = (d->AAddress / char_line_bytes) * char_line_bytes;
 	uint8 *base = GetBasePointer ((d->ABank << 16) + addr) + addr;
-	uint8 *buffer = &Memory.ROM [CMemory::MAX_ROM_SIZE - 0x10000];
+	uint8 *buffer = &Memory.ROM [MAX_ROM_SIZE - 0x10000];
 	uint8 *p = buffer;
 	uint32 inc = char_line_bytes - (d->AAddress % char_line_bytes);
 	uint32 char_count = inc / bytes_per_char;
@@ -250,9 +250,11 @@ void S9xDoDMA (uint8 Channel)
 		     j++, line += 4)
 		{
 		    uint8 *q = line;
-		    for (int l = 0; l < 8; l++, q += bytes_per_line)
+          int l;
+		    for (l = 0; l < 8; l++, q += bytes_per_line)
 		    {
-			for (int b = 0; b < 4; b++)
+             int b;
+			for (b = 0; b < 4; b++)
 			{
 			    uint8 r = *(q + b);
 			    *(p +  0) = (*(p +  0) << 1) | ((r >> 0) & 1);
@@ -320,7 +322,7 @@ void S9xDoDMA (uint8 Channel)
 
 	if (in_sa1_dma)
 	{
-	    base = &Memory.ROM [CMemory::MAX_ROM_SIZE - 0x10000];
+	    base = &Memory.ROM [MAX_ROM_SIZE - 0x10000];
 	    p = 0;
 	}
 
@@ -705,7 +707,7 @@ void S9xStartHDMA ()
 
 uint8 S9xDoHDMA (uint8 byte)
 {
-    struct SDMA *p = &DMA [0];
+    SDMA *p = &DMA [0];
     
     int d = 0;
 

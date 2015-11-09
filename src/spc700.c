@@ -50,7 +50,7 @@
 
 // we only need the memhandlers
 #undef INLINE
-#define INLINE extern "C"
+#define INLINE
 #include "apumem.h"
 
 #define OP1 (*(IAPU.PC + 1))

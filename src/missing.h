@@ -41,7 +41,7 @@
 #ifndef _MISSING_H_
 #define _MISSING_H_
 
-struct HDMA
+typedef struct
 {
     uint8 used;
     uint8 bbus_address;
@@ -52,9 +52,9 @@ struct HDMA
     uint8 force_table_address_read;
     uint8 line_count_write;
     uint8 line_count_read;
-};
+}HDMA;
 
-struct Missing
+typedef struct
 {
     uint8 emulate6502;
     uint8 decimal_mode;
@@ -63,7 +63,7 @@ struct Missing
     uint8 interlace;
     uint8 lines_239;
     uint8 pseudo_512;
-    struct HDMA hdma [8];
+    HDMA hdma [8];
     uint8 modes [8];
     uint8 mode7_fx;
     uint8 mode7_flip;
@@ -108,7 +108,7 @@ struct Missing
     uint16 unknowncpu_write;
     uint16 unknowndsp_read;
     uint16 unknowndsp_write;
-};
+}Missing;
 
-EXTERN_C struct Missing missing;
+EXTERN_C Missing missing;
 #endif

@@ -105,7 +105,7 @@ extern long FilterValues[4][2];
 #define VOL_DIV16 0x0080
 #define ENVX_SHIFT 24
 
-extern "C" void DecodeBlockAsm (int8 *, int16 *, int32 *, int32 *);
+void DecodeBlockAsm (int8 *, int16 *, int32 *, int32 *);
 
 // F is channel's current frequency and M is the 16-bit modulation waveform
 // from the previous channel multiplied by the current envelope volume level.
@@ -211,7 +211,7 @@ void S9xSetEnvelopeHeight (int channel, int level)
 }
 
 #if 1
-void S9xSetSoundSample (int, uint16) 
+void S9xSetSoundSample (int channel, uint16 sample_number)
 {
 }
 #else

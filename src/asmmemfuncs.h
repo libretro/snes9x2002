@@ -3,7 +3,7 @@
 
 #ifdef ARM_ASM
 #define memset32(_dst, _c, _count) \
-({ uint32_t *dst = (_dst); register uint32_t c asm ("r7") = (_c); int count = (_count); register uint32_t dummy0 asm ("r4"), dummy1 asm ("r5"), dummy2 asm ("r6"); \
+({ uint32_t *dst = (_dst); register uint32_t c __asm__ ("r7") = (_c); int count = (_count); register uint32_t dummy0 __asm__ ("r4"), dummy1 __asm__ ("r5"), dummy2 __asm__ ("r6"); \
     __asm__ __volatile__ ( \
         "      cmp   %[count], #4\n" \
 	"      blt   2f\n" \
@@ -36,7 +36,7 @@
 })
 
 #define memset16(_dst, _c, _count) \
-({ uint16_t *dst = (_dst); register uint16_t c asm ("r7") = (_c); int count = (_count); register uint32_t dummy0 asm ("r4"), dummy1 asm ("r5"), dummy2 asm ("r6"); \
+({ uint16_t *dst = (_dst); register uint16_t c __asm__ ("r7") = (_c); int count = (_count); register uint32_t dummy0 __asm__ ("r4"), dummy1 __asm__ ("r5"), dummy2 __asm__ ("r6"); \
     __asm__ __volatile__ ( \
         "      cmp   %[count], #2\n" \
 	"      blt   3f\n" \

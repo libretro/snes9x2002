@@ -58,7 +58,7 @@
 #ifdef SUPER_FX
 #include "fxemu.h"
 
-extern struct FxInit_s SuperFX;
+extern FxInit_s SuperFX;
 
 void S9xResetSuperFX ()
 {
