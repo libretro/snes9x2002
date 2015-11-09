@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -53,11 +53,11 @@
 #define FILE_NOT_FOUND (-3)
 
 START_EXTERN_C
-bool8 S9xFreezeGame (const char *filename);
-bool8 S9xUnfreezeGame (const char *filename);
-bool8 Snapshot (const char *filename);
-bool8 S9xLoadSnapshot (const char *filename);
-bool8 S9xSPCDump (const char *filename);
+bool8 S9xFreezeGame(const char* filename);
+bool8 S9xUnfreezeGame(const char* filename);
+bool8 Snapshot(const char* filename);
+bool8 S9xLoadSnapshot(const char* filename);
+bool8 S9xSPCDump(const char* filename);
 END_EXTERN_C
 
 #endif

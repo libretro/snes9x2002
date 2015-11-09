@@ -5,11 +5,11 @@
 
 START_EXTERN_C
 
-void test_opcode(SCPUState *cpuptr);
+void test_opcode(SCPUState* cpuptr);
 
-void asmMainLoop_spcC(SCPUState *cpuptr);
-void asmMainLoop_spcAsm(SCPUState *cpuptr);
-void asmMainLoop(SCPUState *cpuptr);
+void asmMainLoop_spcC(SCPUState* cpuptr);
+void asmMainLoop_spcAsm(SCPUState* cpuptr);
+void asmMainLoop(SCPUState* cpuptr);
 
 void asm_S9xMainLoop(void);
 

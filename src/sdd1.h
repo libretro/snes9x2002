@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -40,9 +40,9 @@
  */
 #ifndef _SDD1_H_
 #define _SDD1_H_
-void S9xSetSDD1MemoryMap (uint32 bank, uint32 value);
-void S9xResetSDD1 ();
-void S9xSDD1PostLoadState ();
-void S9xSDD1SaveLoggedData ();
-void S9xSDD1LoadLoggedData ();
+void S9xSetSDD1MemoryMap(uint32 bank, uint32 value);
+void S9xResetSDD1();
+void S9xSDD1PostLoadState();
+void S9xSDD1SaveLoggedData();
+void S9xSDD1LoadLoggedData();
 #endif

@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -41,21 +41,21 @@
 
 // ARM V5 Assembly by bitrider
 
-#define FIXEDCOLOUR	(GFX.FixedColour & (~0x01860))
+#define FIXEDCOLOUR  (GFX.FixedColour & (~0x01860))
 
-#define ROPNAME	FixedAdd1_2
+#define ROPNAME   FixedAdd1_2
 
 #define ROP \
-			"	bic	r9, r9, #0b00000100000100000	\n"\
-			"	bic	r9, r9, #0b00001000001000000	\n"\
-			"	add	r9, r9, %[fixedcolour]		\n"\
-			"	mov	r9, r9, lsr #1			\n"\
-			"	tst	r9, #0b00000000000100000	\n"\
-			"	orrne	r9, r9, #0b00000000000011111	\n"\
-			"	tst	r9, #0b00000100000000000	\n"\
-			"	orrne	r9, r9, #0b00000011111100000	\n"\
-			"	tst	r9, #0b10000000000000000	\n"\
-			"	orrne	r9, r9, #0b01111100000000000	\n"
+         "	bic	r9, r9, #0b00000100000100000	\n"\
+         "	bic	r9, r9, #0b00001000001000000	\n"\
+         "	add	r9, r9, %[fixedcolour]		\n"\
+         "	mov	r9, r9, lsr #1			\n"\
+         "	tst	r9, #0b00000000000100000	\n"\
+         "	orrne	r9, r9, #0b00000000000011111	\n"\
+         "	tst	r9, #0b00000100000000000	\n"\
+         "	orrne	r9, r9, #0b00000011111100000	\n"\
+         "	tst	r9, #0b10000000000000000	\n"\
+         "	orrne	r9, r9, #0b01111100000000000	\n"
 
 
 #include "tile16f_t.h"

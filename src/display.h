@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -43,41 +43,41 @@
 
 START_EXTERN_C
 // Routines the port specific code has to implement
-void S9xSetPalette ();
-void S9xTextMode ();
-void S9xGraphicsMode ();
-void S9xExtraUsage ();
-uint32 S9xReadJoypad (int which1_0_to_4);
-bool8_32 S9xReadMousePosition (int which1_0_to_1, int* x, int* y, uint32* buttons);
-bool8_32 S9xReadSuperScopePosition (int* x, int* y, uint32* buttons);
+void S9xSetPalette();
+void S9xTextMode();
+void S9xGraphicsMode();
+void S9xExtraUsage();
+uint32 S9xReadJoypad(int which1_0_to_4);
+bool8_32 S9xReadMousePosition(int which1_0_to_1, int* x, int* y, uint32* buttons);
+bool8_32 S9xReadSuperScopePosition(int* x, int* y, uint32* buttons);
 
-void S9xUsage ();
-void S9xInitDisplay (int argc, char **argv);
-void S9xDeinitDisplay ();
-void S9xInitInputDevices ();
-void S9xSetTitle (const char *title);
-void S9xProcessEvents (bool8_32 block);
-void S9xPutImage (int width, int height);
-void S9xToggleSoundChannel (int channel);
-void S9xSetInfoString (const char *string);
-int S9xMinCommandLineArgs ();
-void S9xNextController ();
-bool8_32 S9xLoadROMImage (const char *string);
-const char *S9xSelectFilename (const char *def, const char *dir,
-			       const char *ext, const char *title);
+void S9xUsage();
+void S9xInitDisplay(int argc, char** argv);
+void S9xDeinitDisplay();
+void S9xInitInputDevices();
+void S9xSetTitle(const char* title);
+void S9xProcessEvents(bool8_32 block);
+void S9xPutImage(int width, int height);
+void S9xToggleSoundChannel(int channel);
+void S9xSetInfoString(const char* string);
+int S9xMinCommandLineArgs();
+void S9xNextController();
+bool8_32 S9xLoadROMImage(const char* string);
+const char* S9xSelectFilename(const char* def, const char* dir,
+                              const char* ext, const char* title);
 
-const char *S9xChooseFilename (bool8_32 read_only);
-bool8_32 S9xOpenSnapshotFile (const char *base, bool8_32 read_only, STREAM *file);
-void S9xCloseSnapshotFile (STREAM file);
+const char* S9xChooseFilename(bool8_32 read_only);
+bool8_32 S9xOpenSnapshotFile(const char* base, bool8_32 read_only, STREAM* file);
+void S9xCloseSnapshotFile(STREAM file);
 
-const char *S9xBasename (const char *filename);
+const char* S9xBasename(const char* filename);
 
-int S9xFStrcmp (FILE *, const char *);
-const char *S9xGetHomeDirectory ();
-const char *S9xGetSnapshotDirectory ();
-const char *S9xGetROMDirectory ();
-const char *S9xGetSRAMFilename ();
-const char *S9xGetFilename (const char *extension);
+int S9xFStrcmp(FILE*, const char*);
+const char* S9xGetHomeDirectory();
+const char* S9xGetSnapshotDirectory();
+const char* S9xGetROMDirectory();
+const char* S9xGetSRAMFilename();
+const char* S9xGetFilename(const char* extension);
 END_EXTERN_C
 
 #endif

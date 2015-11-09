@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -42,46 +42,46 @@
 #ifdef ARM_ASM
 /* ARM V5 Assembly by bitrider */
 
-#define FIXEDCOLOUR	((GFX.FixedColour >> 1) & (~0x0C30))
-#define ROPNAME	FixedSub1_2
+#define FIXEDCOLOUR  ((GFX.FixedColour >> 1) & (~0x0C30))
+#define ROPNAME   FixedSub1_2
 #define ROP \
-			"	mov	r9, r9, lsr #1			\n"\
-			"	bic	r9, r9, #0b00000010000010000	\n"\
-										\
-			"	bic	r8, r8, #0b00000100000100000	\n"\
-			"	orr	r9, r9, #0b00000100000100000	\n"\
-			"	orr	r9, r9, #0b10000000000000000	\n"\
-			"	sub	r9, r9, %[fixedcolour]		\n"\
-			"	tst	r9, #0b00000000000100000	\n"\
-			"	biceq	r9, r9, #0b00000000000011111	\n"\
-			"	tst	r9, #0b00000100000000000	\n"\
-			"	biceq	r9, r9, #0b00000011111100000	\n"\
-			"	tst	r9, #0b10000000000000000	\n"\
-			"	biceq	r9, r9, #0b01111100000000000	\n"\
+         "	mov	r9, r9, lsr #1			\n"\
+         "	bic	r9, r9, #0b00000010000010000	\n"\
+                              \
+         "	bic	r8, r8, #0b00000100000100000	\n"\
+         "	orr	r9, r9, #0b00000100000100000	\n"\
+         "	orr	r9, r9, #0b10000000000000000	\n"\
+         "	sub	r9, r9, %[fixedcolour]		\n"\
+         "	tst	r9, #0b00000000000100000	\n"\
+         "	biceq	r9, r9, #0b00000000000011111	\n"\
+         "	tst	r9, #0b00000100000000000	\n"\
+         "	biceq	r9, r9, #0b00000011111100000	\n"\
+         "	tst	r9, #0b10000000000000000	\n"\
+         "	biceq	r9, r9, #0b01111100000000000	\n"\
 
 
 #include "tile16f_t.h"
 
 #else
 
-void DrawTile16FixedSub1_2 (uint32 Tile, uint32 Offset, uint32 StartLine,
-			    uint32 LineCount)
+void DrawTile16FixedSub1_2(uint32 Tile, uint32 Offset, uint32 StartLine,
+                           uint32 LineCount)
 {
-    TILE_PREAMBLE
-    register uint8 *bp;
+   TILE_PREAMBLE
+   register uint8* bp;
 
-    RENDER_TILE(WRITE_4PIXELS16_SUBF1_2, WRITE_4PIXELS16_FLIPPED_SUBF1_2, 4)
+   RENDER_TILE(WRITE_4PIXELS16_SUBF1_2, WRITE_4PIXELS16_FLIPPED_SUBF1_2, 4)
 }
 
-void DrawClippedTile16FixedSub1_2 (uint32 Tile, uint32 Offset,
-				   uint32 StartPixel, uint32 Width,
-				   uint32 StartLine, uint32 LineCount)
+void DrawClippedTile16FixedSub1_2(uint32 Tile, uint32 Offset,
+                                  uint32 StartPixel, uint32 Width,
+                                  uint32 StartLine, uint32 LineCount)
 {
-    TILE_PREAMBLE
-    register uint8 *bp;
+   TILE_PREAMBLE
+   register uint8* bp;
 
-    TILE_CLIP_PREAMBLE
-    RENDER_CLIPPED_TILE(WRITE_4PIXELS16_SUBF1_2, 
-			WRITE_4PIXELS16_FLIPPED_SUBF1_2, 4)
+   TILE_CLIP_PREAMBLE
+   RENDER_CLIPPED_TILE(WRITE_4PIXELS16_SUBF1_2,
+                       WRITE_4PIXELS16_FLIPPED_SUBF1_2, 4)
 }
 #endif

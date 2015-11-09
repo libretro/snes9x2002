@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -60,110 +60,110 @@
 
 extern FxInit_s SuperFX;
 
-void S9xResetSuperFX ()
+void S9xResetSuperFX()
 {
-    SuperFX.vFlags = 0; //FX_FLAG_ROM_BUFFER;// | FX_FLAG_ADDRESS_CHECKING;
-    FxReset (&SuperFX);
+   SuperFX.vFlags = 0; //FX_FLAG_ROM_BUFFER;// | FX_FLAG_ADDRESS_CHECKING;
+   FxReset(&SuperFX);
 }
 #endif
 
-void S9xResetCPU ()
+void S9xResetCPU()
 {
-    Registers.PB = 0;
-    Registers.PC = S9xGetWord (0xFFFC);
-    Registers.D.W = 0;
-    Registers.DB = 0;
-    Registers.SH = 1;
-    Registers.SL = 0xFF;
-    Registers.XH = 0;
-    Registers.YH = 0;
-    Registers.P.W = 0;
+   Registers.PB = 0;
+   Registers.PC = S9xGetWord(0xFFFC);
+   Registers.D.W = 0;
+   Registers.DB = 0;
+   Registers.SH = 1;
+   Registers.SL = 0xFF;
+   Registers.XH = 0;
+   Registers.YH = 0;
+   Registers.P.W = 0;
 
-    ICPU.ShiftedPB = 0;
-    ICPU.ShiftedDB = 0;
-    SetFlags (MemoryFlag | IndexFlag | IRQ | Emulation);
-    ClearFlags (Decimal);
+   ICPU.ShiftedPB = 0;
+   ICPU.ShiftedDB = 0;
+   SetFlags(MemoryFlag | IndexFlag | IRQ | Emulation);
+   ClearFlags(Decimal);
 
-    CPU.Flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
-    CPU.BranchSkip = FALSE;
-    CPU.NMIActive = FALSE;
-    CPU.IRQActive = FALSE;
-    CPU.WaitingForInterrupt = FALSE;
-    CPU.InDMA = FALSE;
-    CPU.WhichEvent = HBLANK_START_EVENT;
-    
-    CPU.PC = NULL;
-    CPU.PCBase = NULL;
-    CPU.PCAtOpcodeStart = NULL;
-    CPU.WaitAddress = NULL;
-    CPU.WaitCounter = 0;
-    CPU.Cycles = 0;
-    CPU.NextEvent = Settings.HBlankStart;
-    CPU.V_Counter = 0;
-    CPU.MemSpeed = SLOW_ONE_CYCLE;
-    CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
-    CPU.FastROMSpeed = SLOW_ONE_CYCLE;
-    CPU.AutoSaveTimer = 0;
-    CPU.SRAMModified = FALSE;
-    // CPU.NMITriggerPoint = 4; // Set when ROM image loaded
-    CPU.BRKTriggered = FALSE;
-    //CPU.TriedInterleavedMode2 = FALSE; // Reset when ROM image loaded
-    CPU.NMICycleCount = 0;
-    CPU.IRQCycleCount = 0;
-    S9xSetPCBase (Registers.PC);
+   CPU.Flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
+   CPU.BranchSkip = FALSE;
+   CPU.NMIActive = FALSE;
+   CPU.IRQActive = FALSE;
+   CPU.WaitingForInterrupt = FALSE;
+   CPU.InDMA = FALSE;
+   CPU.WhichEvent = HBLANK_START_EVENT;
+
+   CPU.PC = NULL;
+   CPU.PCBase = NULL;
+   CPU.PCAtOpcodeStart = NULL;
+   CPU.WaitAddress = NULL;
+   CPU.WaitCounter = 0;
+   CPU.Cycles = 0;
+   CPU.NextEvent = Settings.HBlankStart;
+   CPU.V_Counter = 0;
+   CPU.MemSpeed = SLOW_ONE_CYCLE;
+   CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
+   CPU.FastROMSpeed = SLOW_ONE_CYCLE;
+   CPU.AutoSaveTimer = 0;
+   CPU.SRAMModified = FALSE;
+   // CPU.NMITriggerPoint = 4; // Set when ROM image loaded
+   CPU.BRKTriggered = FALSE;
+   //CPU.TriedInterleavedMode2 = FALSE; // Reset when ROM image loaded
+   CPU.NMICycleCount = 0;
+   CPU.IRQCycleCount = 0;
+   S9xSetPCBase(Registers.PC);
 
 #ifndef ASMCPU
 #ifndef VAR_CYCLES
-    ICPU.Speed = S9xE1M1X1;
+   ICPU.Speed = S9xE1M1X1;
 #endif
-    ICPU.S9xOpcodes = S9xOpcodesM1X1;
-    S9xUnpackStatus();
+   ICPU.S9xOpcodes = S9xOpcodesM1X1;
+   S9xUnpackStatus();
 #endif
 
-    ICPU.CPUExecuting = TRUE;
+   ICPU.CPUExecuting = TRUE;
 }
 
 
-void S9xReset (void)
+void S9xReset(void)
 {
 #ifdef SUPER_FX
-    if (Settings.SuperFX)
-        S9xResetSuperFX ();
+   if (Settings.SuperFX)
+      S9xResetSuperFX();
 #endif
 
-    ZeroMemory (Memory.FillRAM, 0x8000);
-    memset (Memory.VRAM, 0x00, 0x10000);
-    memset (Memory.RAM, 0x55, 0x20000);
+   ZeroMemory(Memory.FillRAM, 0x8000);
+   memset(Memory.VRAM, 0x00, 0x10000);
+   memset(Memory.RAM, 0x55, 0x20000);
 
-/*	if(Settings.SPC7110)
-		S9xSpc7110Reset();*/
-    S9xResetCPU ();
-    S9xResetPPU ();
-    S9xResetSRTC ();
-    if (Settings.SDD1)
-        S9xResetSDD1 ();
+   /* if(Settings.SPC7110)
+         S9xSpc7110Reset();*/
+   S9xResetCPU();
+   S9xResetPPU();
+   S9xResetSRTC();
+   if (Settings.SDD1)
+      S9xResetSDD1();
 
-    S9xResetDMA ();
-    S9xResetAPU ();
-    S9xResetDSP1 ();
+   S9xResetDMA();
+   S9xResetAPU();
+   S9xResetDSP1();
 #ifdef USE_SA1
-    S9xSA1Init ();
+   S9xSA1Init();
 #endif
 
-	if (Settings.C4)
-		S9xInitC4 ();
+   if (Settings.C4)
+      S9xInitC4();
 
-	S9xResetSound(1);
+   S9xResetSound(1);
 
-    Settings.Paused = FALSE;
-    
-       //Init CPU Map & co
-    CPU.Memory_Map=(uint8*)&(Memory.Map);
-    CPU.Memory_WriteMap=(uint8*)&(Memory.WriteMap);
-    CPU.Memory_MemorySpeed=Memory.MemorySpeed;
-    CPU.Memory_BlockIsRAM=(uint8*)&(Memory.BlockIsRAM);
-    CPU.Memory_SRAM=Memory.SRAM;
-    CPU.Memory_BWRAM=Memory.BWRAM;
-//    CPU.Memory_SRAMMask=Memory.SRAMMask;
-	
+   Settings.Paused = FALSE;
+
+   //Init CPU Map & co
+   CPU.Memory_Map = (uint8*) & (Memory.Map);
+   CPU.Memory_WriteMap = (uint8*) & (Memory.WriteMap);
+   CPU.Memory_MemorySpeed = Memory.MemorySpeed;
+   CPU.Memory_BlockIsRAM = (uint8*) & (Memory.BlockIsRAM);
+   CPU.Memory_SRAM = Memory.SRAM;
+   CPU.Memory_BWRAM = Memory.BWRAM;
+   //    CPU.Memory_SRAMMask=Memory.SRAMMask;
+
 }

@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -47,38 +47,39 @@
 
 #define DO_HBLANK_CHECK() \
     if (CPU.Cycles >= CPU.NextEvent) \
-	S9xDoHBlankProcessing ();
-
-typedef struct{
-#ifdef __WIN32__
-	void (__cdecl *S9xOpcode)( void);
-#else
-	void (*S9xOpcode)( void);
-#endif
-}SOpcodes;
+   S9xDoHBlankProcessing ();
 
 typedef struct
 {
-    uint8  *Speed;
-    SOpcodes *S9xOpcodes;
-    uint8  _Carry;
-    uint8  _Zero;
-    uint8  _Negative;
-    uint8  _Overflow;
-	bool8  CPUExecuting;
-    uint32 ShiftedPB;
-    uint32 ShiftedDB;
-    uint32 Frame;
-    uint32 Scanline;
-    uint32 FrameAdvanceCount;
-}SICPU;
+#ifdef __WIN32__
+   void (__cdecl* S9xOpcode)(void);
+#else
+   void (*S9xOpcode)(void);
+#endif
+} SOpcodes;
+
+typedef struct
+{
+   uint8*  Speed;
+   SOpcodes* S9xOpcodes;
+   uint8  _Carry;
+   uint8  _Zero;
+   uint8  _Negative;
+   uint8  _Overflow;
+   bool8  CPUExecuting;
+   uint32 ShiftedPB;
+   uint32 ShiftedDB;
+   uint32 Frame;
+   uint32 Scanline;
+   uint32 FrameAdvanceCount;
+} SICPU;
 
 START_EXTERN_C
-void S9xMainLoop (void);
-void S9xReset (void);
-void S9xDoHBlankProcessing ();
-void S9xClearIRQ (uint32);
-void S9xSetIRQ (uint32);
+void S9xMainLoop(void);
+void S9xReset(void);
+void S9xDoHBlankProcessing();
+void S9xClearIRQ(uint32);
+void S9xSetIRQ(uint32);
 
 extern SOpcodes S9xOpcodesM1X1 [256];
 extern SOpcodes S9xOpcodesM1X0 [256];
@@ -96,90 +97,89 @@ extern uint8 S9xE0M0X1 [256];
 extern SICPU ICPU;
 END_EXTERN_C
 
-STATIC inline void CLEAR_IRQ_SOURCE (uint32 M)
+STATIC inline void CLEAR_IRQ_SOURCE(uint32 M)
 {
-    CPU.IRQActive &= ~M;
-    if (!CPU.IRQActive)
-	CPU.Flags &= ~IRQ_PENDING_FLAG;
+   CPU.IRQActive &= ~M;
+   if (!CPU.IRQActive)
+      CPU.Flags &= ~IRQ_PENDING_FLAG;
 }
 
 STATIC inline void S9xUnpackStatus()
 {
-    ICPU._Zero = (Registers.PL & Zero) == 0;
-    ICPU._Negative = (Registers.PL & Negative);
-    ICPU._Carry = (Registers.PL & Carry);
-    ICPU._Overflow = (Registers.PL & Overflow) >> 6;
+   ICPU._Zero = (Registers.PL & Zero) == 0;
+   ICPU._Negative = (Registers.PL & Negative);
+   ICPU._Carry = (Registers.PL & Carry);
+   ICPU._Overflow = (Registers.PL & Overflow) >> 6;
 }
 
 STATIC inline void S9xPackStatus()
 {
-    Registers.PL &= ~(Zero | Negative | Carry | Overflow);
-    Registers.PL |= ICPU._Carry | ((ICPU._Zero == 0) << 1) |
-		    (ICPU._Negative & 0x80) | (ICPU._Overflow << 6);
+   Registers.PL &= ~(Zero | Negative | Carry | Overflow);
+   Registers.PL |= ICPU._Carry | ((ICPU._Zero == 0) << 1) |
+                   (ICPU._Negative & 0x80) | (ICPU._Overflow << 6);
 }
 
-STATIC inline void S9xFixCycles ()
-{	
-    if (CheckEmulation ())
-    {
+STATIC inline void S9xFixCycles()
+{
+   if (CheckEmulation())
+   {
 #ifndef VAR_CYCLES
-	ICPU.Speed = S9xE1M1X1;
+      ICPU.Speed = S9xE1M1X1;
 #endif
-	ICPU.S9xOpcodes = S9xOpcodesM1X1;
-    }
-    else
-    if (CheckMemory ())
-    {
-	if (CheckIndex ())
-	{
+      ICPU.S9xOpcodes = S9xOpcodesM1X1;
+   }
+   else if (CheckMemory())
+   {
+      if (CheckIndex())
+      {
 #ifndef VAR_CYCLES
-	    ICPU.Speed = S9xE0M1X1;
+         ICPU.Speed = S9xE0M1X1;
 #endif
-	    ICPU.S9xOpcodes = S9xOpcodesM1X1;
-	}
-	else
-	{
+         ICPU.S9xOpcodes = S9xOpcodesM1X1;
+      }
+      else
+      {
 #ifndef VAR_CYCLES
-	    ICPU.Speed = S9xE0M1X0;
+         ICPU.Speed = S9xE0M1X0;
 #endif
-	    ICPU.S9xOpcodes = S9xOpcodesM1X0;
-	}
-    }
-    else
-    {
-	if (CheckIndex ())
-	{
+         ICPU.S9xOpcodes = S9xOpcodesM1X0;
+      }
+   }
+   else
+   {
+      if (CheckIndex())
+      {
 #ifndef VAR_CYCLES
-	    ICPU.Speed = S9xE0M0X1;
+         ICPU.Speed = S9xE0M0X1;
 #endif
-	    ICPU.S9xOpcodes = S9xOpcodesM0X1;
-	}
-	else
-	{
+         ICPU.S9xOpcodes = S9xOpcodesM0X1;
+      }
+      else
+      {
 #ifndef VAR_CYCLES
-	    ICPU.Speed = S9xE0M0X0;
+         ICPU.Speed = S9xE0M0X0;
 #endif
-	    ICPU.S9xOpcodes = S9xOpcodesM0X0;
-	}
-    }
+         ICPU.S9xOpcodes = S9xOpcodesM0X0;
+      }
+   }
 }
 
 
 #define S9xReschedule() { \
-	uint8 which; \
+   uint8 which; \
   long max; \
   if (CPU.WhichEvent == HBLANK_START_EVENT || CPU.WhichEvent == HTIMER_AFTER_EVENT) { \
-		which = HBLANK_END_EVENT; \
-		max = Settings.H_Max; \
+      which = HBLANK_END_EVENT; \
+      max = Settings.H_Max; \
   } else { \
-		which = HBLANK_START_EVENT; \
-		max = Settings.HBlankStart; \
+      which = HBLANK_START_EVENT; \
+      max = Settings.HBlankStart; \
   } \
  \
-  if (PPU.HTimerEnabled && (long) PPU.HTimerPosition < max &&	(long) PPU.HTimerPosition > CPU.NextEvent && \
-		(!PPU.VTimerEnabled || (PPU.VTimerEnabled && CPU.V_Counter == PPU.IRQVBeamPos))) { \
-		which = (long) PPU.HTimerPosition < Settings.HBlankStart ? HTIMER_BEFORE_EVENT : HTIMER_AFTER_EVENT; \
-		max = PPU.HTimerPosition; \
+  if (PPU.HTimerEnabled && (long) PPU.HTimerPosition < max &&  (long) PPU.HTimerPosition > CPU.NextEvent && \
+      (!PPU.VTimerEnabled || (PPU.VTimerEnabled && CPU.V_Counter == PPU.IRQVBeamPos))) { \
+      which = (long) PPU.HTimerPosition < Settings.HBlankStart ? HTIMER_BEFORE_EVENT : HTIMER_AFTER_EVENT; \
+      max = PPU.HTimerPosition; \
   } \
   CPU.NextEvent = max; \
   CPU.WhichEvent = which; \
@@ -195,19 +195,19 @@ void asm_APU_EXECUTE2(void);
 {\
    if (CPU.APU_APUExecuting == MODE) {\
         if (Settings.asmspc700) {\
-		if(CPU.APU_Cycles < CPU.Cycles) {\
-			int cycles = CPU.Cycles - CPU.APU_Cycles;\
-			CPU.APU_Cycles += cycles - spc700_execute(cycles);\
-		}\
-	}\
-	else\
-	{\
-		while (CPU.APU_Cycles <= CPU.Cycles)\
-		{\
-			CPU.APU_Cycles += S9xAPUCycles [*IAPU.PC];\
-			(*S9xApuOpcodes[*IAPU.PC]) ();\
-		}\
-	}\
+      if(CPU.APU_Cycles < CPU.Cycles) {\
+         int cycles = CPU.Cycles - CPU.APU_Cycles;\
+         CPU.APU_Cycles += cycles - spc700_execute(cycles);\
+      }\
+   }\
+   else\
+   {\
+      while (CPU.APU_Cycles <= CPU.Cycles)\
+      {\
+         CPU.APU_Cycles += S9xAPUCycles [*IAPU.PC];\
+         (*S9xApuOpcodes[*IAPU.PC]) ();\
+      }\
+   }\
   }\
 }
 
@@ -216,19 +216,19 @@ void asm_APU_EXECUTE2(void);
 {\
     if  (CPU.APU_APUExecuting == 1) {\
         if (Settings.asmspc700) {\
-		if (CPU.APU_Cycles < CPU.NextEvent) {\
-			int cycles = CPU.NextEvent - CPU.APU_Cycles;\
-			CPU.APU_Cycles += cycles - spc700_execute(cycles);\
-		}\
-	}\
-	else\
-	{\
-		do\
-		{\
-			CPU.APU_Cycles += S9xAPUCycles [*IAPU.PC];\
-			(*S9xApuOpcodes[*IAPU.PC]) ();\
-		} while (CPU.APU_Cycles < CPU.NextEvent);\
-	}\
+      if (CPU.APU_Cycles < CPU.NextEvent) {\
+         int cycles = CPU.NextEvent - CPU.APU_Cycles;\
+         CPU.APU_Cycles += cycles - spc700_execute(cycles);\
+      }\
+   }\
+   else\
+   {\
+      do\
+      {\
+         CPU.APU_Cycles += S9xAPUCycles [*IAPU.PC];\
+         (*S9xApuOpcodes[*IAPU.PC]) ();\
+      } while (CPU.APU_Cycles < CPU.NextEvent);\
+   }\
   }\
 }
 

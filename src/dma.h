@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -42,10 +42,10 @@
 #define _DMA_H_
 
 START_EXTERN_C
-void S9xResetDMA (void);
-uint8 S9xDoHDMA (uint8);
-void S9xStartHDMA ();
-void S9xDoDMA (uint8);
+void S9xResetDMA(void);
+uint8 S9xDoHDMA(uint8);
+void S9xStartHDMA();
+void S9xDoDMA(uint8);
 END_EXTERN_C
 
 #endif

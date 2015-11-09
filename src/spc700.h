@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -87,22 +87,28 @@
 typedef union
 {
 #ifdef LSB_FIRST
-    struct { uint8 A, Y; } B;
+   struct
+   {
+      uint8 A, Y;
+   } B;
 #else
-    struct { uint8 Y, A; } B;
+   struct
+   {
+      uint8 Y, A;
+   } B;
 #endif
-    uint16 W;
-	uint32 _padder; // make sure this whole thing takes 4 bytes
+   uint16 W;
+   uint32 _padder; // make sure this whole thing takes 4 bytes
 } YAndA;
 
 typedef struct
 {
-    uint8  P;
-    YAndA YA;
-    uint8  X;
-    uint8  S;
-    uint16  PC;
-}SAPURegisters;
+   uint8  P;
+   YAndA YA;
+   uint8  X;
+   uint8  S;
+   uint16  PC;
+} SAPURegisters;
 
 //EXTERN_C struct SAPURegisters APURegisters;
 
@@ -117,7 +123,7 @@ typedef struct
 // 1.953us := 1.024065.54MHz
 
 #ifdef SPCTOOL
-EXTERN_C int32 ESPC (int32);
+EXTERN_C int32 ESPC(int32);
 
 #define APU_EXECUTE() \
 { \

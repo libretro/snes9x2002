@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -42,15 +42,15 @@
 #define _PORT_H_
 
 /*
-This port.h is really a right-of-passage for anyone trying to port the emulator 
-	to another platform.  It must have started out as a set of defines for a
-	single platform, and instead of using define blocks as new platforms were
-	added, individual coders simply added exceptions and sprinkled #ifdef and #ifndef
-	statements throughout the original list.
+This port.h is really a right-of-passage for anyone trying to port the emulator
+   to another platform.  It must have started out as a set of defines for a
+   single platform, and instead of using define blocks as new platforms were
+   added, individual coders simply added exceptions and sprinkled #ifdef and #ifndef
+   statements throughout the original list.
 
 I can't take it anymore, it's too convoluted.  So I've commented out the entire
-	section, and preemptively rewritten the first #define segment the way god intended,
-	with a single define-block for each target platform.
+   section, and preemptively rewritten the first #define segment the way god intended,
+   with a single define-block for each target platform.
 */
 
 #if 1
@@ -65,30 +65,30 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
 #include <string.h>
 #include <stdbool.h>
 //Types Defined
-typedef unsigned char	bool8;
-typedef unsigned char	uint8;
-typedef unsigned short	uint16;
-typedef unsigned int	bool32;
-typedef unsigned int	uint32;
-typedef signed char		int8;
-typedef short			int16;
-typedef int				int32;
-typedef long long		int64;
+typedef unsigned char   bool8;
+typedef unsigned char   uint8;
+typedef unsigned short  uint16;
+typedef unsigned int bool32;
+typedef unsigned int uint32;
+typedef signed char     int8;
+typedef short        int16;
+typedef int          int32;
+typedef long long    int64;
 
 //CSNES Types for conversion to 32 bit
-/*typedef unsigned long	bool8_32;
-typedef unsigned long	uint8_32;
-typedef unsigned long	uint16_32;
-typedef long			int8_32;
-typedef long			int16_32;*/
+/*typedef unsigned long bool8_32;
+typedef unsigned long   uint8_32;
+typedef unsigned long   uint16_32;
+typedef long         int8_32;
+typedef long         int16_32;*/
 
 //For Debugging Purposes:
 
-typedef unsigned char	bool8_32;
-typedef unsigned char	uint8_32;
-typedef unsigned short	uint16_32;
-typedef signed char		int8_32;
-typedef short			int16_32;
+typedef unsigned char   bool8_32;
+typedef unsigned char   uint8_32;
+typedef unsigned short  uint16_32;
+typedef signed char     int8_32;
+typedef short        int16_32;
 
 
 //Defines for Extern C
@@ -137,15 +137,15 @@ typedef short			int16_32;
 #undef  FAST_LSB_WORD_ACCESS
 #define SUPER_FX
 #ifdef ASMCPU
-	#define ASM_SPC700
+#define ASM_SPC700
 #endif
 
-EXTERN_C void S9xGenerateSound ();
+EXTERN_C void S9xGenerateSound();
 
-void _makepath (char *path, const char *drive, const char *dir,
-		const char *fname, const char *ext);
-void _splitpath (const char *path, char *drive, char *dir, char *fname,
-		 char *ext);
+void _makepath(char* path, const char* drive, const char* dir,
+               const char* fname, const char* ext);
+void _splitpath(const char* path, char* drive, char* dir, char* fname,
+                char* ext);
 #define strcasecmp strcmp
 #define strncasecmp strncmp
 

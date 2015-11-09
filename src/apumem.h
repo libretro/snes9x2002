@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -47,7 +47,7 @@ extern uint8 W4;
 extern uint8 APUROM[64];
 END_EXTERN_C
 
-static INLINE uint8 S9xAPUGetByteZ (uint8 Address)
+static INLINE uint8 S9xAPUGetByteZ(uint8 Address)
 {
    if (Address >= 0xf0 && IAPU.DirectPage == IAPU.RAM)
    {
@@ -58,50 +58,47 @@ static INLINE uint8 S9xAPUGetByteZ (uint8 Address)
          return (t);
       }
       else if (Address == 0xf3)
-         return (S9xGetAPUDSP ());
+         return (S9xGetAPUDSP());
 
       return (IAPU.RAM [Address]);
    }
    return (IAPU.DirectPage [Address]);
 }
 
-static INLINE void S9xAPUSetByteZ (uint8 val, uint8 Address)
+static INLINE void S9xAPUSetByteZ(uint8 val, uint8 Address)
 {
    if (Address >= 0xf0 && IAPU.DirectPage == IAPU.RAM)
    {
       if (Address == 0xf3)
-         S9xSetAPUDSP (val);
-      else
-         if (Address >= 0xf4 && Address <= 0xf7)
-            APU.OutPorts [Address - 0xf4] = val;
-         else
-            if (Address == 0xf1)
-               S9xSetAPUControl (val);
+         S9xSetAPUDSP(val);
+      else if (Address >= 0xf4 && Address <= 0xf7)
+         APU.OutPorts [Address - 0xf4] = val;
+      else if (Address == 0xf1)
+         S9xSetAPUControl(val);
+      else if (Address < 0xfd)
+      {
+         IAPU.RAM [Address] = val;
+         if (Address >= 0xfa)
+         {
+            if (val == 0)
+               APU.TimerTarget [Address - 0xfa] = 0x100;
             else
-               if (Address < 0xfd)
-               {
-                  IAPU.RAM [Address] = val;
-                  if (Address >= 0xfa)
-                  {
-                     if (val == 0)
-                        APU.TimerTarget [Address - 0xfa] = 0x100;
-                     else
-                        APU.TimerTarget [Address - 0xfa] = val;
-                  }
-               }
+               APU.TimerTarget [Address - 0xfa] = val;
+         }
+      }
    }
    else
       IAPU.DirectPage [Address] = val;
 }
 
-static INLINE uint8 S9xAPUGetByte (uint32 Address)
+static INLINE uint8 S9xAPUGetByte(uint32 Address)
 {
    Address &= 0xffff;
 
    if (Address <= 0xff && Address >= 0xf3)
    {
       if (Address == 0xf3)
-         return (S9xGetAPUDSP ());
+         return (S9xGetAPUDSP());
       if (Address >= 0xfd)
       {
          uint8 t = IAPU.RAM [Address];
@@ -113,32 +110,29 @@ static INLINE uint8 S9xAPUGetByte (uint32 Address)
    return (IAPU.RAM [Address]);
 }
 
-static INLINE void S9xAPUSetByte (uint8 val, uint32 Address)
+static INLINE void S9xAPUSetByte(uint8 val, uint32 Address)
 {
    Address &= 0xffff;
 
    if (Address <= 0xff && Address >= 0xf0)
    {
       if (Address == 0xf3)
-         S9xSetAPUDSP (val);
-      else
-         if (Address >= 0xf4 && Address <= 0xf7)
-            APU.OutPorts [Address - 0xf4] = val;
-         else
-            if (Address == 0xf1)
-               S9xSetAPUControl (val);
+         S9xSetAPUDSP(val);
+      else if (Address >= 0xf4 && Address <= 0xf7)
+         APU.OutPorts [Address - 0xf4] = val;
+      else if (Address == 0xf1)
+         S9xSetAPUControl(val);
+      else if (Address < 0xfd)
+      {
+         IAPU.RAM [Address] = val;
+         if (Address >= 0xfa)
+         {
+            if (val == 0)
+               APU.TimerTarget [Address - 0xfa] = 0x100;
             else
-               if (Address < 0xfd)
-               {
-                  IAPU.RAM [Address] = val;
-                  if (Address >= 0xfa)
-                  {
-                     if (val == 0)
-                        APU.TimerTarget [Address - 0xfa] = 0x100;
-                     else
-                        APU.TimerTarget [Address - 0xfa] = val;
-                  }
-               }
+               APU.TimerTarget [Address - 0xfa] = val;
+         }
+      }
    }
    else
    {

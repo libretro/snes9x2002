@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -96,30 +96,28 @@
 
 #include "cpuops.c"
 
-void S9xSA1MainLoop ()
+void S9xSA1MainLoop()
 {
-    int i;
+   int i;
 
-    if (SA1.Flags & IRQ_PENDING_FLAG)
-    {
-			if (SA1.IRQActive)
-			{
-			    if (SA1.WaitingForInterrupt)
-			    {
-						SA1.WaitingForInterrupt = FALSE;
-						SA1.PC++;
-			    }
-			    if (!SA1CheckFlag (IRQ))
-						S9xSA1Opcode_IRQ ();
-			}
-			else
-			    SA1.Flags &= ~IRQ_PENDING_FLAG;
-    }
+   if (SA1.Flags & IRQ_PENDING_FLAG)
+   {
+      if (SA1.IRQActive)
+      {
+         if (SA1.WaitingForInterrupt)
+         {
+            SA1.WaitingForInterrupt = FALSE;
+            SA1.PC++;
+         }
+         if (!SA1CheckFlag(IRQ))
+            S9xSA1Opcode_IRQ();
+      }
+      else
+         SA1.Flags &= ~IRQ_PENDING_FLAG;
+   }
 
-    for (i = 0; i < 3 && SA1.Executing; i++)
-    {
-			(*SA1.S9xOpcodes [*SA1.PC++].S9xOpcode) ();
-    }
+   for (i = 0; i < 3 && SA1.Executing; i++)
+      (*SA1.S9xOpcodes [*SA1.PC++].S9xOpcode)();
 }
 
 #endif // USE_SA1

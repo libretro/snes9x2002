@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -53,51 +53,51 @@ typedef union
 
 typedef struct
 {
-    int32  Cycles;	// 0x00
-    bool8  ShowROM;	// 0x04
-    uint8  Flags;	// 0x05
-    uint8  KeyedChannels;	// 0x06
-    uint8  OutPorts [4];	// 0x07
-    uint8  DSP [0x80];		// 0x0B
-    uint8  ExtraRAM [64];
-    uint16 Timer [3];
-    uint16 TimerTarget [3];
-    bool8  TimerEnabled [3];
-    bool8  TimerValueWritten [3];
-}SAPU;
+   int32  Cycles;   // 0x00
+   bool8  ShowROM;  // 0x04
+   uint8  Flags; // 0x05
+   uint8  KeyedChannels;  // 0x06
+   uint8  OutPorts [4];   // 0x07
+   uint8  DSP [0x80];     // 0x0B
+   uint8  ExtraRAM [64];
+   uint16 Timer [3];
+   uint16 TimerTarget [3];
+   bool8  TimerEnabled [3];
+   bool8  TimerValueWritten [3];
+} SAPU;
 
 typedef struct
 {
-    uint8  *DirectPage;        // 0x00
-    uint32 Address;            // 0x04  c core only
-    uint8  *WaitAddress1;      // 0x08
-    uint8  *WaitAddress2;      // 0x0C
-    uint32 WaitCounter;        // 0x10
-    uint8  *ShadowRAM;         // 0x14
-    uint8  *CachedSamples;     // 0x18
-    uint8  _Carry;             // 0x1C  c core only
-    uint8  _Overflow;          // 0x1D  c core only
-    uint8  Bit;                // 0x1E  c core only
-    uint8  pad0;
-    uint32 TimerErrorCounter;  // 0x20
-    uint32 Scanline;           // 0x24
-    int32  OneCycle;           // 0x28
-    int32  TwoCycles;          // 0x2C
-    // notaz: reordered and moved everything here, for faster context load/save
-	uint32 *asmJumpTab;        // 0x30
-    uint8  *PC;                // 0x34
-    YAndA  YA;                 // 0x38  0x0000YYAA
-	uint8  P;                  // 0x3C  flags: NODBHIZC
-    uint8  pad1;
-    uint8  pad2;
-	uint8  _Zero;              // 0x3F  Z=0, when this!=0; also stores neg flag in &0x80
-    uint8  X;                  // 0x40
-    uint8  S;                  // 0x41  stack pointer, default: 0xff
-    uint16 pad3;
-    uint8  *RAM;               // 0x44
+   uint8*  DirectPage;        // 0x00
+   uint32 Address;            // 0x04  c core only
+   uint8*  WaitAddress1;      // 0x08
+   uint8*  WaitAddress2;      // 0x0C
+   uint32 WaitCounter;        // 0x10
+   uint8*  ShadowRAM;         // 0x14
+   uint8*  CachedSamples;     // 0x18
+   uint8  _Carry;             // 0x1C  c core only
+   uint8  _Overflow;          // 0x1D  c core only
+   uint8  Bit;                // 0x1E  c core only
+   uint8  pad0;
+   uint32 TimerErrorCounter;  // 0x20
+   uint32 Scanline;           // 0x24
+   int32  OneCycle;           // 0x28
+   int32  TwoCycles;          // 0x2C
+   // notaz: reordered and moved everything here, for faster context load/save
+   uint32* asmJumpTab;        // 0x30
+   uint8*  PC;                // 0x34
+   YAndA  YA;                 // 0x38  0x0000YYAA
+   uint8  P;                  // 0x3C  flags: NODBHIZC
+   uint8  pad1;
+   uint8  pad2;
+   uint8  _Zero;              // 0x3F  Z=0, when this!=0; also stores neg flag in &0x80
+   uint8  X;                  // 0x40
+   uint8  S;                  // 0x41  stack pointer, default: 0xff
+   uint16 pad3;
+   uint8*  RAM;               // 0x44
 
-	uint8  *ExtraRAM;          // 0x48  shortcut to APU.ExtraRAM
-}SIAPU;
+   uint8*  ExtraRAM;          // 0x48  shortcut to APU.ExtraRAM
+} SIAPU;
 
 
 EXTERN_C SAPU APU;
@@ -106,51 +106,51 @@ EXTERN_C SIAPU IAPU;
 STATIC inline void S9xAPUUnpackStatus()
 {
 
-    IAPU._Zero     =((IAPU.P & Zero) == 0) | (IAPU.P & Negative);
-	
-	if (!Settings.asmspc700)
-	{
-		IAPU._Carry    = (IAPU.P & Carry);
-		IAPU._Overflow = (IAPU.P & Overflow);
-	}
+   IAPU._Zero     = ((IAPU.P & Zero) == 0) | (IAPU.P & Negative);
+
+   if (!Settings.asmspc700)
+   {
+      IAPU._Carry    = (IAPU.P & Carry);
+      IAPU._Overflow = (IAPU.P & Overflow);
+   }
 }
 
 STATIC inline void S9xAPUPackStatus()
-{	
-	if (Settings.asmspc700)
-	{
-		IAPU.P &= ~(Zero | Negative);
-		if(!IAPU._Zero)       IAPU.P |= Zero;
-		if(IAPU._Zero & 0x80) IAPU.P |= Negative;	
+{
+   if (Settings.asmspc700)
+   {
+      IAPU.P &= ~(Zero | Negative);
+      if (!IAPU._Zero)       IAPU.P |= Zero;
+      if (IAPU._Zero & 0x80) IAPU.P |= Negative;
 
-	}
-	else
-	{
-		IAPU.P &= ~(Zero | Negative | Carry | Overflow);
-		if(IAPU._Carry)       IAPU.P |= Carry;
-		if(!IAPU._Zero)       IAPU.P |= Zero;
-		if(IAPU._Overflow)    IAPU.P |= Overflow;
-		if(IAPU._Zero & 0x80) IAPU.P |= Negative;
-	}
+   }
+   else
+   {
+      IAPU.P &= ~(Zero | Negative | Carry | Overflow);
+      if (IAPU._Carry)       IAPU.P |= Carry;
+      if (!IAPU._Zero)       IAPU.P |= Zero;
+      if (IAPU._Overflow)    IAPU.P |= Overflow;
+      if (IAPU._Zero & 0x80) IAPU.P |= Negative;
+   }
 }
 
 START_EXTERN_C
-void S9xResetAPU (void);
-bool8 S9xInitAPU ();
-void S9xDeinitAPU ();
-void S9xDecacheSamples ();
-int S9xTraceAPU ();
-int S9xAPUOPrint (char *buffer, uint16 Address);
-void S9xSetAPUControl (uint8 byte);
-void S9xSetAPUDSP (uint8 byte);
-uint8 S9xGetAPUDSP ();
-void S9xSetAPUTimer (uint16 Address, uint8 byte);
-void S9xOpenCloseSoundTracingFile (bool8);
-void S9xPrintAPUState ();
-extern int32 S9xAPUCycles [256];	// Scaled cycle lengths
-extern int32 S9xAPUCycleLengths [256];	// Raw data.
-extern void (*S9xApuOpcodes [256]) (void);
-extern void (*S9xApuOpcodesReal [256]) (void);
+void S9xResetAPU(void);
+bool8 S9xInitAPU();
+void S9xDeinitAPU();
+void S9xDecacheSamples();
+int S9xTraceAPU();
+int S9xAPUOPrint(char* buffer, uint16 Address);
+void S9xSetAPUControl(uint8 byte);
+void S9xSetAPUDSP(uint8 byte);
+uint8 S9xGetAPUDSP();
+void S9xSetAPUTimer(uint16 Address, uint8 byte);
+void S9xOpenCloseSoundTracingFile(bool8);
+void S9xPrintAPUState();
+extern int32 S9xAPUCycles [256]; // Scaled cycle lengths
+extern int32 S9xAPUCycleLengths [256]; // Raw data.
+extern void (*S9xApuOpcodes [256])(void);
+extern void (*S9xApuOpcodesReal [256])(void);
 END_EXTERN_C
 
 

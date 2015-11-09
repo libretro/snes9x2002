@@ -4,7 +4,7 @@
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
  *                           Jerremy Koot (jkoot@snes9x.com)
  *
- * Super FX C emulator code 
+ * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
@@ -40,6 +40,8 @@
  */
 #ifndef _65c816_h_
 #define _65c816_h_
+
+#include "port.h"
 
 #define AL A.B.l
 #define AH A.B.h
@@ -98,27 +100,33 @@
 typedef union
 {
 #ifdef LSB_FIRST
-    struct { uint8 l,h; } PACKING B;
+   struct
+   {
+      uint8 l, h;
+   } PACKING B;
 #else
-    struct { uint8 h,l; } PACKING B;
+   struct
+   {
+      uint8 h, l;
+   } PACKING B;
 #endif
-    uint16 W;
+   uint16 W;
 } ALIGN_BY_ONE pair;
 
 typedef struct
 {
-    uint8  PB;
-    uint8  DB;
-    pair   P;
-    pair   A;
-    pair   D;
-    pair   X;
-    pair   S;
-    pair   Y;
-    uint16 PC;
-}PACKING SRegisters;
+   uint8  PB;
+   uint8  DB;
+   pair   P;
+   pair   A;
+   pair   D;
+   pair   X;
+   pair   S;
+   pair   Y;
+   uint16 PC;
+} PACKING SRegisters;
 
-#define Registers	CPU.Regs
+#define Registers CPU.Regs
 //EXTERN_C struct SRegisters Registers;
 
 #endif
