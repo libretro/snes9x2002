@@ -660,9 +660,11 @@ static void S9xSA1CharConv2 ()
 
     if (depth == 8)
     {
-	 		for (int l = 0; l < 8; l++, q += 8)
+       int l;
+	 		for (l = 0; l < 8; l++, q += 8)
 			{
-		    for (int b = 0; b < 8; b++)
+            int b;
+		    for (b = 0; b < 8; b++)
 		    {
 					uint8 r = *(q + b);
 					*(p +  0) = (*(p +  0) << 1) | ((r >> 0) & 1);

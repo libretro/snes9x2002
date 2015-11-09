@@ -178,7 +178,8 @@ void S9xFixSoundAfterSnapshotLoad ()
     S9xSetFilterCoefficient (6, (signed char) APU.DSP [APU_C6]);
     S9xSetFilterCoefficient (7, (signed char) APU.DSP [APU_C7]);
  
-	for (int i = 0; i < 8; i++)
+    int i;
+	for (i = 0; i < 8; i++)
     {
 		SoundData.channels[i].needs_decode = TRUE;
 		S9xSetSoundFrequency (i, SoundData.channels[i].hertz);
@@ -353,7 +354,8 @@ static void MixStereo (int sample_count)
 {
     int pitch_mod = SoundData.pitch_mod & (0xFFFFFFFF^APU.DSP[APU_NON]);//~APU.DSP[APU_NON];
 
-    for (uint32 J = 0; J < NUM_CHANNELS; J++) 
+    uint32 J;
+    for (J = 0; J < NUM_CHANNELS; J++)
     {
 	int32 VL, VR;
 	Channel *ch = &SoundData.channels[J];
@@ -382,7 +384,8 @@ static void MixStereo (int sample_count)
 	VL = (ch->sample * ch-> left_vol_level) / 128;
 	VR = (ch->sample * ch->right_vol_level) / 128;
 
-	for (uint32 I = 0; I < (uint32) sample_count; I += 2)
+   uint32 I;
+	for (I = 0; I < (uint32) sample_count; I += 2)
 	{
 	    unsigned long freq = freq0;
 
@@ -614,7 +617,8 @@ static void MixMono (int sample_count)
 {
     int pitch_mod = SoundData.pitch_mod & (0xFFFFFFFF^APU.DSP[APU_NON]);
 
-    for (uint32 J = 0; J < NUM_CHANNELS; J++) 
+    uint32 J;
+    for (J = 0; J < NUM_CHANNELS; J++)
     {
 	Channel *ch = &SoundData.channels[J];
 	unsigned long freq0 = ch->frequency;
@@ -641,7 +645,8 @@ static void MixMono (int sample_count)
 	}
 	int32 V = (ch->sample * ch->left_vol_level) / 128;
 
-	for (uint32 I = 0; I < (uint32) sample_count; I++)
+   uint32 I;
+	for (I = 0; I < (uint32) sample_count; I++)
 	{
 	    unsigned long freq = freq0;
 
@@ -1058,7 +1063,8 @@ END_OF_FUNCTION(S9xMixSamplesO);
 
 void S9xResetSound (bool8 full)
 {
-    for (int i = 0; i < 8; i++)
+   int i;
+    for (i = 0; i < 8; i++)
     {
 	SoundData.channels[i].state = SOUND_SILENT;
 	SoundData.channels[i].mode = MODE_NONE;
@@ -1179,7 +1185,8 @@ void S9xSetPlaybackRate (uint32 playback_rate)
 	}
 
     S9xSetEchoDelay (APU.DSP [APU_EDL] & 0xf);
-    for (int i = 0; i < 8; i++)
+    int i;
+    for (i = 0; i < 8; i++)
 	S9xSetSoundFrequency (i, SoundData.channels [i].hertz);
 }
 

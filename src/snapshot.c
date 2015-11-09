@@ -594,7 +594,8 @@ static int Unfreeze()
     IPPU.OBJChanged = TRUE;
     CPU.InDMA = FALSE;
     // Restore colors from PPU
-    for (unsigned int i = 0; i < 256; i++) {
+    unsigned int i;
+    for (i = 0; i < 256; i++) {
 	    IPPU.Red[i] = PPU.CGDATA[i] & 0x1f;
 	    IPPU.Green[i] = (PPU.CGDATA[i] >> 5) & 0x1f;
 	    IPPU.Blue[i] = (PPU.CGDATA[i] >> 10) & 0x1f;
@@ -648,7 +649,8 @@ static int Unfreeze()
 		    return (result);
 	    
 	    // notaz: just to be sure
-		for(int u=0; u<8; u++) {
+      int u;
+		for(u=0; u<8; u++) {
 			SoundData.channels[u].env_ind_attack &= 0xf;
 			SoundData.channels[u].env_ind_decay  &= 0x7;
 			SoundData.channels[u].env_ind_sustain&= 0x1f;

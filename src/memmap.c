@@ -74,7 +74,8 @@ extern bool8 LoadZip(const char* , int32 *, int32 *);
 
 bool8_32 AllASCII (uint8 *b, int size)
 {
-    for (int i = 0; i < size; i++)
+   int i;
+    for (i = 0; i < size; i++)
     {
 	if (b[i] < 32 || b[i] > 126)
 	    return (FALSE);
@@ -149,7 +150,8 @@ char *Safe (const char *s)
 	safe = (char *) malloc (safe_len = len + 1);
     }
 
-    for (int i = 0; i < len; i++)
+    int i;
+    for (i = 0; i < len; i++)
     {
 	if (s [i] >= 32 && s [i] < 127)
 	    safe [i] = s[i];
@@ -596,7 +598,8 @@ again:
 	{
 	    for (i = 0; i < nblocks * 2; i++)
 	    {
-		for (int j = i; j < nblocks * 2; j++)
+          int j;
+		for (j = i; j < nblocks * 2; j++)
 		{
 		    if (blocks [j] == i)
 		    {
@@ -672,7 +675,8 @@ void S9xDeinterleaveMode2 ()
     {
 	for (i = 0; i < nblocks * 2; i++)
 	{
-	    for (int j = i; j < nblocks * 2; j++)
+      int j;
+	    for (j = i; j < nblocks * 2; j++)
 	    {
 		if (blocks [j] == i)
 		{
@@ -1049,7 +1053,8 @@ void FixROMSpeed ()
 void WriteProtectROM ()
 {
     memmove ((void *) Memory.WriteMap, (void *) Memory.Map, sizeof (Memory.Map));
-    for (int c = 0; c < 0x1000; c++)
+    int c;
+    for (c = 0; c < 0x1000; c++)
     {
 	if (Memory.BlockIsROM [c])
 	    Memory.WriteMap [c] = (uint8 *) MAP_NONE;
@@ -2434,7 +2439,8 @@ void ApplyROMFixes ()
 	strcmp (Memory.ROMName, "HOME ALONE") == 0)
     {
 	// Banks 00->3f and 80->bf
-	for (int c = 0; c < 0x400; c += 16)
+       int c;
+	for (c = 0; c < 0x400; c += 16)
 	{
 	    Memory.Map [c + 6] = Memory.Map [c + 0x806] = Memory.SRAM;
 	    Memory.Map [c + 7] = Memory.Map [c + 0x807] = Memory.SRAM;
@@ -2475,7 +2481,8 @@ void ApplyROMFixes ()
 
 	// CAPCOM's protect
 	// Banks 0x808000, 0x408000 are mirroring.
-	for (int c = 0; c < 8; c++)
+       int c;
+	for (c = 0; c < 8; c++)
 	    Memory.Map [0x408 + c] = Memory.ROM - 0x8000;
     }
 
@@ -2507,7 +2514,8 @@ void ApplyROMFixes ()
     if (strcmp (Memory.ROMName, "DRAGON KNIGHT 4") == 0)
     {
 	// Banks 70->7e, S-RAM
-	for (int c = 0; c < 0xe0; c++)
+       int c;
+	for (c = 0; c < 0xe0; c++)
 	{
 	    Memory.Map [c + 0x700] = (uint8 *) MAP_LOROM_SRAM;
 	    Memory.BlockIsRAM [c + 0x700] = TRUE;
@@ -2751,7 +2759,8 @@ const uint32 crc32Table[256] = {
 //CRC32 for char arrays
 uint32 caCRC32(uint8 *array, uint32 size) {
    register uint32 crc32 = 0xFFFFFFFF;
-  for (register uint32 i = 0; i < size; i++) {
+   register uint32 i;
+  for (i = 0; i < size; i++) {
     crc32 = ((crc32 >> 8) & 0x00FFFFFF) ^ crc32Table[(crc32 ^ array[i]) & 0xFF];
   }
   return ~crc32;

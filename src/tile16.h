@@ -161,7 +161,8 @@ extern uint32 TileBlank;
 	    pixel = PIXEL; \
 	    for (l = LineCount; l != 0; l--, sp += GFX_PPL, Depth += GFX_PPL) \
 	    { \
-		for (int z = Pixels - 1; z >= 0; z--) \
+      int z ;\
+		for (z = Pixels - 1; z >= 0; z--) \
 		    if (GFX.Z1 > Depth [z]) \
 		    { \
 			sp [z] = FUNCTION(sp + z, pixel); \
@@ -179,7 +180,8 @@ extern uint32 TileBlank;
 	    pixel = PIXEL; \
 	    for (l = LineCount; l != 0; l--, sp += GFX_PPL, Depth += GFX_PPL) \
 	    { \
-		for (int z = Pixels - 1; z >= 0; z--) \
+      int z ;\
+		for (z = Pixels - 1; z >= 0; z--) \
 		    if (GFX.Z1 > Depth [z]) \
 		    { \
 			sp [z] = FUNCTION(sp + z, pixel); \
@@ -197,7 +199,8 @@ extern uint32 TileBlank;
 	    pixel = PIXEL; \
 	    for (l = LineCount; l != 0; l--, sp += GFX_PPL, Depth += GFX_PPL) \
 	    { \
-		for (int z = Pixels - 1; z >= 0; z--) \
+      int z ;\
+		for (z = Pixels - 1; z >= 0; z--) \
 		    if (GFX.Z1 > Depth [z]) \
 		    { \
 			sp [z] = FUNCTION(sp + z, pixel); \
@@ -213,7 +216,8 @@ extern uint32 TileBlank;
 	    pixel = PIXEL; \
 	    for (l = LineCount; l != 0; l--, sp += GFX_PPL, Depth += GFX_PPL) \
 	    { \
-		for (int z = Pixels - 1; z >= 0; z--) \
+      int z ;\
+		for (z = Pixels - 1; z >= 0; z--) \
 		    if (GFX.Z1 > Depth [z]) \
 		    { \
 			sp [z] = FUNCTION(sp + z, pixel); \

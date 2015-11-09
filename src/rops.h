@@ -160,7 +160,8 @@ extern unsigned int ROpCount;
 #define ADD_ROP(drop, dval)	{rops[ROpCount].line = IPPU.CurrentLine; rops[ROpCount].rop = drop; rops[ROpCount].value = dval; ROpCount++;}
 #define RESET_ROPS(from)	\
 	{ \
-	for (unsigned int c = from; c < ROpCount; c++) doRaster(&rops[c]);\
+   unsigned int c;\
+	for (c = from; c < ROpCount; c++) doRaster(&rops[c]);\
 	ROpCount = 0;\
 	}
 
