@@ -26,7 +26,7 @@ endif
 CORE_DIR     := ../src
 LIBRETRO_DIR := ../libretro
 
-include Makefile.common
+include ../Makefile.common
 
 LOCAL_SRC_FILES := $(SOURCES)
 LOCAL_CFLAGS    += $(DEFINES) $(COMMON_DEFINES) $(INCLUDES)
