@@ -26,8 +26,8 @@
 #include "../src/os9x_asm_cpu.h"
 
 #ifdef _3DS
-extern "C" void* linearMemAlign(size_t size, size_t alignment);
-extern "C" void linearFree(void* mem);
+void* linearMemAlign(size_t size, size_t alignment);
+void linearFree(void* mem);
 #endif
 
 #define MAP_BUTTON(id, name) S9xMapButton((id), S9xGetCommandT((name)), false)
@@ -391,13 +391,25 @@ static void report_buttons (void)
 	}
 }
 
+//#define FRAME_SKIP
+
 void retro_run (void)
 {
+#ifdef FRAME_SKIP
+   IPPU.RenderThisFrame = !IPPU.RenderThisFrame;
+#else
    IPPU.RenderThisFrame = TRUE;
+#endif
+
    S9xMainLoop();
 //   asm_S9xMainLoop();
    S9xMixSamples(audio_buf, avail);
    audio_batch_cb((int16_t *) audio_buf, avail >> 1);
+
+#ifdef FRAME_SKIP
+   if(!IPPU.RenderThisFrame)
+      video_cb(NULL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX_PITCH);
+#endif
 
    poll_cb();
 
