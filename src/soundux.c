@@ -187,6 +187,7 @@ void S9xFixSoundAfterSnapshotLoad()
       S9xSetSoundFrequency(i, SoundData.channels[i].hertz);
       SoundData.channels [i].envxx = SoundData.channels [i].envx << ENVX_SHIFT;
       SoundData.channels [i].next_sample = 0;
+      SoundData.channels [i].interpolate = 0;
       SoundData.channels [i].previous [0] = (int32) SoundData.channels [i].previous16 [0];
       SoundData.channels [i].previous [1] = (int32) SoundData.channels [i].previous16 [1];
    }
@@ -380,6 +381,11 @@ static void MixStereo(int sample_count)
             ch->sample_pointer = SOUND_DECODE_LENGTH - 1;
 
          ch->next_sample = ch->block[ch->sample_pointer];
+         ch->interpolate = 0;
+
+         if (Settings.InterpolatedSound && freq0 < FIXED_POINT && !mod)
+            ch->interpolate = ((ch->next_sample - ch->sample) *
+                               (long) freq0) / (long) FIXED_POINT;
       }
       VL = (ch->sample * ch-> left_vol_level) / 128;
       VR = (ch->sample * ch->right_vol_level) / 128;
@@ -587,16 +593,48 @@ static void MixStereo(int sample_count)
             else
                ch->next_sample = ch->block [ch->sample_pointer];
 
-            if (ch->type != SOUND_SAMPLE)
+            if (ch->type == SOUND_SAMPLE)
             {
+               if (Settings.InterpolatedSound && freq < FIXED_POINT && !mod)
+               {
+                  ch->interpolate = ((ch->next_sample - ch->sample) *
+                                     (long) freq) / (long) FIXED_POINT;
+                  ch->sample = (int16_t)(ch->sample + (((ch->next_sample - ch->sample) *
+                                                      (long)(ch->count)) / (long) FIXED_POINT));
+               }
+               else
+                  ch->interpolate = 0;
+            }
+            else
+            {
+#if 1
+               // Snes9x 1.53's SPC_DSP.cpp, by blargg
+               int feedback = (so.noise_gen << 13) ^ (so.noise_gen << 14);
+               so.noise_gen = (feedback & 0x4000) ^ (so.noise_gen >> 1);
+               ch->sample = (so.noise_gen << 17) >> 17;
+               ch->interpolate = 0;
+#else
                for (; VL > 0; VL--)
                   if ((so.noise_gen <<= 1) & 0x80000000L)
                      so.noise_gen ^= 0x0040001L;
                ch->sample = (so.noise_gen << 17) >> 17;
+#endif
             }
 
             VL = (ch->sample * ch-> left_vol_level) / 128;
             VR = (ch->sample * ch->right_vol_level) / 128;
+         }
+         else
+         {
+            if (ch->interpolate)
+            {
+               int32_t s = (int32_t) ch->sample + ch->interpolate;
+
+               CLIP16(s);
+               ch->sample = (int16_t) s;
+               VL = (ch->sample * ch-> left_vol_level) / 128;
+               VR = (ch->sample * ch->right_vol_level) / 128;
+            }
          }
 
          if (pitch_mod & (1 << (J + 1)))

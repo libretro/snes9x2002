@@ -252,6 +252,8 @@ static void snes_init (void)
 	Settings.SpeedHacks = TRUE;
 
 	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
+
+   Settings.InterpolatedSound = TRUE;
    /*
    	Settings.SoundPlaybackRate = 5;
     Settings.Stereo = TRUE;
