@@ -86,7 +86,7 @@ DEFINES += -fomit-frame-pointer
 
 DEFINES += -ffast-math -funroll-loops -fomit-frame-pointer
 
-INCLUDES   = -Ilibretro -Isrc -I.
+INCLUDES   = -I$(LIBRETRO_DIR) -I$(CORE_DIR) -I.
 DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline
 DEFINES    += -DUSE_SA1
 
