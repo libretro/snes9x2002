@@ -230,7 +230,6 @@ static void DrawBGMode7Background16R1R2(uint8* Screen, int bg, int depth)
    int DD;
    uint32 Line;
    uint32 clip;
-   uint8 b;
    uint32 AndByY;
    uint32 AndByX = 0xffffffff;
    if (Settings.Dezaemon && PPU.Mode7Repeat == 2) AndByX = 0x7ff;

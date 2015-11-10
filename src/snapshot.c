@@ -39,11 +39,6 @@
  * Nintendo Co., Limited and its subsidiary companies.
  */
 
-#ifndef __GP32__
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#endif
 #if defined(__unix) || defined(__linux) || defined(__sun) || defined(__DJGPP)
 #include <unistd.h>
 #include <sys/types.h>

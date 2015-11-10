@@ -418,12 +418,8 @@ again:
 			"Found multiple ROM file headers (and ignored them).");
     }
 
-    CheckForIPSPatch (filename, Memory.HeaderCount != 0, &TotalFileSize);
-    int orig_hi_score, orig_lo_score;
-    int hi_score, lo_score;
-
-    orig_hi_score = hi_score = ScoreHiROM (FALSE);
-    orig_lo_score = lo_score = ScoreLoROM (FALSE);
+    int hi_score = ScoreHiROM (FALSE);
+    int lo_score = ScoreLoROM (FALSE);
     
     if (Memory.HeaderCount == 0 && !Settings.ForceNoHeader &&
 	((hi_score > lo_score && ScoreHiROM (TRUE) > hi_score) ||
@@ -2599,115 +2595,6 @@ if (ROM [adr] == ov) \
 	RomPatch (0x1e5, 0xfb, 0xea);
     }
 
-}
-
-// Read variable size MSB int from a file
-static long ReadInt (FILE *f, unsigned nbytes)
-{
-    long v = 0;
-    while (nbytes--)
-    {
-	int c = fgetc(f);
-	if (c == EOF) 
-	    return -1;
-	v = (v << 8) | (c & 0xFF);
-    }
-    return (v);
-}
-
-#define IPS_EOF 0x00454F46l
-
-void CheckForIPSPatch (const char *rom_filename, bool8_32 header,
-				int32* rom_size)
-{
-    char  dir [_MAX_DIR + 1];
-    char  drive [_MAX_DRIVE + 1];
-    char  name [_MAX_FNAME + 1];
-    char  ext [_MAX_EXT + 1];
-    char  fname [_MAX_PATH + 1];
-    FILE  *patch_file  = NULL;
-    long  offset = header ? 512 : 0;
-
-    if (!(patch_file = fopen(S9xGetFilename (".ips"), "rb"))) return;
-
-    if (fread (fname, 1, 5, patch_file) != 5 || strncmp (fname, "PATCH", 5) != 0)
-    {
-	    fclose (patch_file);
-	    return;
-    }
-
-    int32 ofs;
-
-    for (;;)
-    {
-	long len;
-	long rlen;
-	int  rchar;
-
-	ofs = ReadInt (patch_file, 3);
-	if (ofs == -1)
-	    goto err_eof;
-
-	if (ofs == IPS_EOF) 
-	    break;
-
-	ofs -= offset;
-
-        len = ReadInt (patch_file, 2);
-	if (len == -1)
-	    goto err_eof;
-
-	/* Apply patch block */
-	if (len)
-	{
-	    if (ofs + len > MAX_ROM_SIZE)
-		goto err_eof;
-
-	    while (len--)
-	    {
-		rchar = fgetc (patch_file);
-		if (rchar == EOF) 
-		    goto err_eof;
-		Memory.ROM [ofs++] = (uint8) rchar;
-            }
-	    if (ofs > *rom_size)
-		*rom_size = ofs;
-	}
-	else
-	{
-	    rlen = ReadInt (patch_file, 2);
-	    if (rlen == -1) 
-		goto err_eof;
-
-
-	    rchar = fgetc (patch_file);
-	    if (rchar == EOF) 
-		goto err_eof;
-
-	    if (ofs + rlen > MAX_ROM_SIZE)
-		goto err_eof;
-
-	    while (rlen--) 
-		Memory.ROM [ofs++] = (uint8) rchar;
-
-	    if (ofs > *rom_size)
-		*rom_size = ofs;
-	}
-    }
-
-    // Check if ROM image needs to be truncated
-    ofs = ReadInt (patch_file, 3);
-    if (ofs != -1 && ofs - offset < *rom_size)
-    {
-	// Need to truncate ROM image
-	*rom_size = ofs - offset;
-    }
-    fclose (patch_file);
-    return;
-
-err_eof:
-    if (patch_file) 
-	fclose (patch_file);
 }
 
 const uint32 crc32Table[256] = {

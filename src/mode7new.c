@@ -53,7 +53,6 @@ void DrawBGMode7Background16New(uint8* Screen)
 
 void DrawBGMode7Background16NewR3(uint8* Screen)
 {
-   uint8* VRAM1 = Memory.VRAM + 1;
    int aa, cc;
    int startx;
    uint32 Left = 0;
@@ -287,7 +286,6 @@ void DrawBGMode7Background16NewR1R2(uint8* Screen)
    int DD;
    uint32 Line;
    uint32 clip;
-   uint8 b;
    uint32 AndByY;
    uint32 AndByX = 0xffffffff;
    if (Settings.Dezaemon && PPU.Mode7Repeat == 2) AndByX = 0x7ff;
@@ -397,7 +395,6 @@ void DrawBGMode7Background16NewR1R2(uint8* Screen)
 
 void DrawBGMode7Background16NewR0(uint8* Screen)
 {
-   uint8* VRAM1 = Memory.VRAM + 1;
    int aa, cc;
    int startx;
    uint32 Left;
@@ -409,7 +406,6 @@ void DrawBGMode7Background16NewR0(uint8* Screen)
    int32 CentreX;
    int32 CentreY;
    uint16* p;
-   uint8* z;
    int yy;
    int xx;
    int BB;
