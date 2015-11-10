@@ -96,14 +96,5 @@ void S9xAddCheat(bool8 enable, bool8 save_current_value, uint32 address,
 void S9xDeleteCheats();
 void S9xDeleteCheat(uint32 which1);
 bool8 S9xLoadCheatFile(const char* filename);
-bool8 S9xSaveCheatFile(const char* filename);
-
-void S9xStartCheatSearch(SCheatData*);
-void S9xSearchForChange(SCheatData*, S9xCheatComparisonType cmp,
-                        S9xCheatDataSize size, bool8 is_signed, bool8 update);
-void S9xSearchForValue(SCheatData*, S9xCheatComparisonType cmp,
-                       S9xCheatDataSize size, uint32 value,
-                       bool8 is_signed, bool8 update);
-void S9xOutputCheatSearchResults(SCheatData*);
 
 #endif
