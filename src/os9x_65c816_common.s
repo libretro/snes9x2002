@@ -799,13 +799,13 @@ reg_cpu_var .req R14
 		@  in  : rscratch=address   (0x00hhmmll)
 		MOV	R1,\regValue, LSR #16
 		STMFD	R13!,{PC} @ Push return address
-      B	asmS9xSetWord
+		B	asmS9xSetWord
 		MOV	R0,R0		
 .endm
 .macro		S9xSetWordZero	
 		@  in  : rscratch=address   (0x00hhmmll)
 		MOV	R1,#0
-      STMFD	R13!,{PC} @ Push return address
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetWord
 		MOV	R0,R0		
 .endm
@@ -813,7 +813,7 @@ reg_cpu_var .req R14
 		@  in  : regValue  (0x0000hhll)
 		@  in  : rscratch=address   (0x00hhmmll)
 		MOV	R1,\regValue
-      STMFD	R13!,{PC} @ Push return address
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetWord
 		MOV	R0,R0		
 .endm
@@ -821,14 +821,14 @@ reg_cpu_var .req R14
 		@  in  : regValue  (0xll000000)
 		@  in  : rscratch=address   (0x00hhmmll)
 		MOV	R1,\regValue, LSR #24
-      STMFD	R13!,{PC} @ Push return address
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetByte
 		MOV	R0,R0		
 .endm
 .macro		S9xSetByteZero			
 		@  in  : rscratch=address   (0x00hhmmll)
 		MOV	R1,#0
-      STMFD	R13!,{PC} @ Push return address
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetByte
 		MOV	R0,R0		
 .endm
@@ -836,7 +836,7 @@ reg_cpu_var .req R14
 		@  in  : regValue  (0x000000ll)
 		@  in  : rscratch=address   (0x00hhmmll)
 		MOV	R1,\regValue
-      STMFD	R13!,{PC} @ Push return address
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetByte
 		MOV	R0,R0
 .endm
@@ -889,7 +889,7 @@ CPUFlagsNMI_FLAG_cleared:
 	 	LDRB	rscratch2,[reg_cpu_var,#WaitingForInterrupt_ofs]
 		MOVS	rscratch2,rscratch2
 		BEQ	NotCPUaitingForInterruptIRQ
-	        MOV	rscratch2,#0
+		MOV	rscratch2,#0
 		ADD	rpc,rpc,#1
 		STRB	rscratch2,[reg_cpu_var,#WaitingForInterrupt_ofs]
 NotCPUaitingForInterruptIRQ:
