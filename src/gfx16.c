@@ -2607,6 +2607,7 @@ static void S9xUpdateScreenTransparency()  // ~30-50ms! (called from FLUSH_REDRA
                         "    bmi     2f				\n"
                         "    mov     r1, r0	\n"
                         "    mov     r2, r0	\n"
+                        "    bic     %[p], #3 \n"
 
                         "1:	\n"
                         "    subs    %[width], %[width], #8	\n"
@@ -2616,6 +2617,7 @@ static void S9xUpdateScreenTransparency()  // ~30-50ms! (called from FLUSH_REDRA
                         "2:	\n"
                         "    tst     %[width], #1		\n"
                         "    strneh  %[fixedcolour], [%[p]], #2	\n"
+                        "    bic     %[p], #3 \n"
 
                         "    tst     %[width], #2		\n"
                         "    strne   %[fixedcolour], [%[p]], #4	\n"
