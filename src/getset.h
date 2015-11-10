@@ -47,22 +47,10 @@
 #include "cpuexec.h"
 #include "sa1.h"
 
-//#define __memcheck__
-//#define __show_io__
 extern int oppause;
-//extern uint16 mem_check;
 
 static INLINE uint8 S9xGetByte(uint32 Address)
 {
-#ifdef __show_io__
-   char str[64];
-   sprintf(str, "rd @ %04X", Address);
-   S9xMessage(0, 0, str);
-   gp32_pause();
-#endif
-#ifdef __memcheck__
-   mem_check += (Address >> 16) + Address;
-#endif
 #if defined(VAR_CYCLES) || defined(CPU_SHUTDOWN)
    int block;
    uint8* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
@@ -141,15 +129,6 @@ static INLINE uint8 S9xGetByte(uint32 Address)
 
 static INLINE uint16 S9xGetWord(uint32 Address)
 {
-#ifdef __show_io__
-   char str[64];
-   sprintf(str, "rd @ %04X", Address);
-   S9xMessage(0, 0, str);
-   gp32_pause();
-#endif
-#ifdef __memcheck__
-   mem_check += (Address >> 16) + Address;
-#endif
    if ((Address & 0x1fff) == 0x1fff)
       return (S9xGetByte(Address) | (S9xGetByte(Address + 1) << 8));
 #if defined(VAR_CYCLES) || defined(CPU_SHUTDOWN)
@@ -246,16 +225,6 @@ static INLINE uint16 S9xGetWord(uint32 Address)
 
 static INLINE void S9xSetByte(uint8 Byte, uint32 Address)
 {
-#ifdef __show_io__
-   char str[64];
-   sprintf(str, "wr @ %04X %02X", Address, Byte);
-   S9xMessage(0, 0, str);
-   gp32_pause();
-#endif
-#ifdef __memcheck__
-   mem_check += Byte;
-#endif
-
 #if defined(CPU_SHUTDOWN)
    CPU.WaitAddress = NULL;
 #endif
@@ -376,15 +345,6 @@ static INLINE void S9xSetByte(uint8 Byte, uint32 Address)
 
 static INLINE void S9xSetWord(uint16 Word, uint32 Address)
 {
-#ifdef __show_io__
-   char str[64];
-   sprintf(str, "wr @ %04X %04X", Address, Word);
-   S9xMessage(0, 0, str);
-   gp32_pause();
-#endif
-#ifdef __memcheck__
-   mem_check += Word;
-#endif
 #if defined(CPU_SHUTDOWN)
    CPU.WaitAddress = NULL;
 #endif
@@ -704,5 +664,3 @@ static INLINE void S9xSetPCBase(uint32 Address)
    }
 }
 #endif
-
-
