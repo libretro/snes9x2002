@@ -45,11 +45,6 @@
 #include "soundux.h"
 #include "cpuexec.h"
 
-/* For note-triggered SPC dump support */
-//#include "snapshot.h"
-
-//extern int NoiseFreq [32];
-
 #undef ABS
 #define ABS(a) ((a) < 0 ? -(a) : (a))
 #define ENVX_SHIFT 24

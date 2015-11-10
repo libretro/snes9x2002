@@ -57,7 +57,6 @@ bool8 S9xFreezeGame(const char* filename);
 bool8 S9xUnfreezeGame(const char* filename);
 bool8 Snapshot(const char* filename);
 bool8 S9xLoadSnapshot(const char* filename);
-bool8 S9xSPCDump(const char* filename);
 END_EXTERN_C
 
 #endif
