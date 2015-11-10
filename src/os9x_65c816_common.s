@@ -797,46 +797,46 @@ reg_cpu_var .req R14
 .macro		S9xSetWord	regValue		
 		@  in  : regValue  (0xhhll0000)
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,\regValue, LSR #16
-		B	asmS9xSetWord
+		STMFD	R13!,{PC} @ Push return address
+      B	asmS9xSetWord
 		MOV	R0,R0		
 .endm
 .macro		S9xSetWordZero	
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,#0
+      STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetWord
 		MOV	R0,R0		
 .endm
 .macro		S9xSetWordLow	regValue		
 		@  in  : regValue  (0x0000hhll)
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,\regValue
+      STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetWord
 		MOV	R0,R0		
 .endm
 .macro		S9xSetByte	regValue
 		@  in  : regValue  (0xll000000)
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,\regValue, LSR #24
+      STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetByte
 		MOV	R0,R0		
 .endm
 .macro		S9xSetByteZero			
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,#0
+      STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetByte
 		MOV	R0,R0		
 .endm
 .macro		S9xSetByteLow	regValue
 		@  in  : regValue  (0x000000ll)
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,\regValue
+      STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetByte
 		MOV	R0,R0
 .endm
