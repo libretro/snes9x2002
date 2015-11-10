@@ -122,7 +122,6 @@ typedef short        int16_32;
 //Misc Items
 #define VAR_CYCLES
 //#define SPC700_SHUTDOWN
-#define LSB_FIRST
 #define STATIC static
 #define FASTCALL
 #define PIXEL_FORMAT RGB565
@@ -133,7 +132,6 @@ typedef short        int16_32;
 #define ZeroMemory(a,b) memset((a),0,(b))
 #define PACKING __attribute__ ((packed))
 #define ALIGN_BY_ONE  __attribute__ ((aligned (1), packed))
-#define LSB_FIRST
 #undef  FAST_LSB_WORD_ACCESS
 #define SUPER_FX
 #ifdef ASMCPU

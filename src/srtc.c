@@ -469,9 +469,7 @@ void S9xSRTCPreSaveState()
       SRAM [s + 3 + MAX_RTC_INDEX] = rtc.index;
       SRAM [s + 4 + MAX_RTC_INDEX] = rtc.mode;
 
-#ifdef LSB_FIRST
-      memmove(&SRAM [s + 5 + MAX_RTC_INDEX], &rtc.system_timestamp, 8);
-#else
+#ifdef MSB_FIRST
       SRAM [s + 5  + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >>  0);
       SRAM [s + 6  + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >>  8);
       SRAM [s + 7  + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 16);
@@ -480,6 +478,8 @@ void S9xSRTCPreSaveState()
       SRAM [s + 10 + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 40);
       SRAM [s + 11 + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 48);
       SRAM [s + 12 + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 56);
+#else
+      memmove(&SRAM [s + 5 + MAX_RTC_INDEX], &rtc.system_timestamp, 8);
 #endif
    }
 }
@@ -499,9 +499,7 @@ void S9xSRTCPostLoadState()
       rtc.index = SRAM [s + 3 + MAX_RTC_INDEX];
       rtc.mode = SRAM [s + 4 + MAX_RTC_INDEX];
 
-#ifdef LSB_FIRST
-      memmove(&rtc.system_timestamp, &SRAM [s + 5 + MAX_RTC_INDEX], 8);
-#else
+#ifdef MSB_FIRST
       rtc.system_timestamp |= (SRAM [s +  5 + MAX_RTC_INDEX] <<  0);
       rtc.system_timestamp |= (SRAM [s +  6 + MAX_RTC_INDEX] <<  8);
       rtc.system_timestamp |= (SRAM [s +  7 + MAX_RTC_INDEX] << 16);
@@ -510,6 +508,8 @@ void S9xSRTCPostLoadState()
       rtc.system_timestamp |= (SRAM [s + 10 + MAX_RTC_INDEX] << 40);
       rtc.system_timestamp |= (SRAM [s + 11 + MAX_RTC_INDEX] << 48);
       rtc.system_timestamp |= (SRAM [s + 12 + MAX_RTC_INDEX] << 56);
+#else
+      memmove(&rtc.system_timestamp, &SRAM [s + 5 + MAX_RTC_INDEX], 8);
 #endif
       S9xUpdateSrtcTime();
    }

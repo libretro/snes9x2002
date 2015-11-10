@@ -117,7 +117,6 @@ EXTERN_C void S9xGenerateSound ();
 #define SLASH_STR "\\"
 #define SLASH_CHAR '\\'
 
-#define LSB_FIRST
 #define STATIC static
 #define FASTCALL 
 #define INLINE inline
@@ -431,7 +430,6 @@ typedef void (*SignalHandler)(int);
 
 #if defined(__i386__) || defined(__i486__) || defined(__i586__) || \
     defined(__WIN32kk__) || defined(__alpha__)
-#define LSB_FIRST
 #define FAST_LSB_WORD_ACCESS
 #define PACKING
 #define ALIGN_BY_ONE
@@ -439,14 +437,12 @@ typedef void (*SignalHandler)(int);
 #else
 
 #ifdef __GP32__
-#define LSB_FIRST
 #define STATIC static
 #define FASTCALL 
 #define INLINE inline
 #define VOID void
 #else
 // must be gp2x
-#define LSB_FIRST
 #define STATIC static
 #define FASTCALL 
 #define INLINE inline

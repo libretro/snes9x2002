@@ -86,10 +86,10 @@
 
 typedef union
 {
-#ifdef LSB_FIRST
-    struct { uint8 A, Y; } B;
-#else
+#ifdef MSB_FIRST
     struct { uint8 Y, A; } B;
+#else
+    struct { uint8 A, Y; } B;
 #endif
     uint16 W;
 	uint32 _padder; // make sure this whole thing takes 4 bytes

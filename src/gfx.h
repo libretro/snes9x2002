@@ -183,18 +183,16 @@ extern uint8 mul_brightness [16][32];
 #define READ_2BYTES(s) (*(uint16 *) (s))
 #define WRITE_2BYTES(s, d) *(uint16 *) (s) = (d)
 #else
-#ifdef LSB_FIRST
-#define READ_2BYTES(s) (*(uint16 *) (s))
-#define WRITE_2BYTES(s, d) *(uint16 *) (s) = (d)
 
-//#define READ_2BYTES(s) (*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8))
-//#define WRITE_2BYTES(s, d) *(uint8 *) (s) = (d), \
-//          *((uint8 *) (s) + 1) = (d) >> 8
-#else  // else MSB_FISRT
+#ifdef MSB_FIRST
 #define READ_2BYTES(s) (*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8))
 #define WRITE_2BYTES(s, d) *(uint8 *) (s) = (d), \
             *((uint8 *) (s) + 1) = (d) >> 8
-#endif // LSB_FIRST
+#else
+#define READ_2BYTES(s) (*(uint16 *) (s))
+#define WRITE_2BYTES(s, d) *(uint16 *) (s) = (d)
+#endif
+
 #endif // i386
 
 #define SUB_SCREEN_DEPTH 0

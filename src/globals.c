@@ -268,19 +268,19 @@ int NoiseFreq [32] =
 
 uint32 HeadMask [4] =
 {
-#ifdef LSB_FIRST
-   0xffffffff, 0xffffff00, 0xffff0000, 0xff000000
-#else
+#ifdef MSB_FIRST
    0xffffffff, 0x00ffffff, 0x0000ffff, 0x000000ff
+#else
+   0xffffffff, 0xffffff00, 0xffff0000, 0xff000000
 #endif
 };
 
 uint32 TailMask [5] =
 {
-#ifdef LSB_FIRST
-   0x00000000, 0x000000ff, 0x0000ffff, 0x00ffffff, 0xffffffff
-#else
+#ifdef MSB_FIRST
    0x00000000, 0xff000000, 0xffff0000, 0xffffff00, 0xffffffff
+#else
+   0x00000000, 0x000000ff, 0x0000ffff, 0x00ffffff, 0xffffffff
 #endif
 };
 

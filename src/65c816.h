@@ -99,15 +99,15 @@
 
 typedef union
 {
-#ifdef LSB_FIRST
+#ifdef MSB_FIRST
    struct
    {
-      uint8 l, h;
+      uint8 h, l;
    } PACKING B;
 #else
    struct
    {
-      uint8 h, l;
+      uint8 l, h;
    } PACKING B;
 #endif
    uint16 W;

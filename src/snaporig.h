@@ -94,15 +94,15 @@ struct SOrigAPU
 
 typedef union
 {
-#ifdef LSB_FIRST
+#ifdef MSB_FIRST
    struct
    {
-      uint8 A, Y;
+      uint8 Y, A;
    } B;
 #else
    struct
    {
-      uint8 Y, A;
+      uint8 A, Y;
    } B;
 #endif
    uint16 W;
@@ -320,15 +320,15 @@ struct SOrigDMA
 
 typedef union
 {
-#ifdef LSB_FIRST
+#ifdef MSB_FIRST
    struct
    {
-      uint8 l, h;
+      uint8 h, l;
    } B;
 #else
    struct
    {
-      uint8 h, l;
+      uint8 l, h;
    } B;
 #endif
    uint16 W;
