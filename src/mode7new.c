@@ -74,8 +74,6 @@ void DrawBGMode7Background16NewR3(uint8* Screen)
    int Line;
    uint32 clip;
 
-   //FILE *f = fopen("mode7.log", "a");
-
    if (!ClipCount) ClipCount = 1;
 
    Screen += GFX.StartY * GFX_PITCH;
@@ -130,9 +128,6 @@ void DrawBGMode7Background16NewR3(uint8* Screen)
 
          int width = Right - Left;
          xx3 = (startx + HOffset);
-
-         //fprintf(f, "AA:%d, CC:%d, daa: %d, dcc: %d, MA: %d, MB: %d, MC: %d, MD: %d\n", AA, CC, aa, cc, l->MatrixA, l->MatrixB, l->MatrixC, l->MatrixD);
-
 
          if (dir == 1)
          {
@@ -262,9 +257,6 @@ void DrawBGMode7Background16NewR3(uint8* Screen)
          }
       }
    }
-
-   //fclose(f);
-
 }
 
 void DrawBGMode7Background16NewR1R2(uint8* Screen)
