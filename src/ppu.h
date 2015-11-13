@@ -505,11 +505,8 @@ STATIC INLINE void REGISTER_2119_linear(uint8 Byte)
    //    Memory.FillRAM [0x2119] = Byte;
 }
 
-#ifdef __OLD_RASTER_FX__
-STATIC INLINE void REGISTER_2122_delayedRasterFx(uint8 Byte)
-#else
+#ifndef __OLD_RASTER_FX__
 STATIC INLINE void REGISTER_2122(uint8 Byte)
-#endif
 {
    // CG-RAM (palette) write
    
@@ -548,8 +545,8 @@ STATIC INLINE void REGISTER_2122(uint8 Byte)
    //    Memory.FillRAM [0x2122] = Byte;
 }
 
-#ifdef __OLD_RASTER_FX__
-STATIC INLINE void REGISTER_2122_normalRasterFx(uint8 Byte)
+#else // __OLD_RASTER_FX__
+STATIC INLINE void REGISTER_2122(uint8 Byte)
 {
    // CG-RAM (palette) write
    
@@ -601,12 +598,6 @@ STATIC INLINE void REGISTER_2122_normalRasterFx(uint8 Byte)
    //    Memory.FillRAM [0x2122] = Byte;
 }
 
-
-STATIC INLINE void REGISTER_2122(uint8 Byte)
-{
-   if (snesMenuOptions.delayedRasterFX) REGISTER_2122_delayedRasterFx(Byte);
-   else REGISTER_2122_normalRasterFx(Byte);
-}
 #endif
 
 STATIC INLINE void REGISTER_2180(uint8 Byte)

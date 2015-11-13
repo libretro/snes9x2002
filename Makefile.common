@@ -31,16 +31,14 @@ SOURCES += $(CORE_DIR)/snapshot.c
 SOURCES += $(CORE_DIR)/soundux.c
 SOURCES += $(CORE_DIR)/spc700.c
 SOURCES += $(CORE_DIR)/srtc.c
-SOURCES += $(CORE_DIR)/rops.c
 SOURCES += $(LIBRETRO_DIR)/libretro.c
 SOURCES += $(LIBRETRO_DIR)/memstream.c
 
 ifeq ($(ARM_ASM), 1)
 SOURCES += $(CORE_DIR)/spc700a.s
 SOURCES += $(CORE_DIR)/spc_decode.S
-
 SOURCES += $(CORE_DIR)/ppu.c
-
+SOURCES += $(CORE_DIR)/rops.c
 SOURCES += $(CORE_DIR)/mode7new.c
 SOURCES += $(CORE_DIR)/mode7.c
 SOURCES += $(CORE_DIR)/mode7add.c
@@ -53,7 +51,6 @@ SOURCES += $(CORE_DIR)/mode7add1_2prio.c
 SOURCES += $(CORE_DIR)/mode7subprio.c
 SOURCES += $(CORE_DIR)/mode7sub1_2prio.c
 SOURCES += $(CORE_DIR)/gfx16.c
-
 SOURCES += $(CORE_DIR)/tile16.c
 SOURCES += $(CORE_DIR)/tile16add.c
 SOURCES += $(CORE_DIR)/tile16add1_2.c
@@ -61,19 +58,21 @@ SOURCES += $(CORE_DIR)/tile16fadd1_2.c
 SOURCES += $(CORE_DIR)/tile16sub.c
 SOURCES += $(CORE_DIR)/tile16sub1_2.c
 SOURCES += $(CORE_DIR)/tile16fsub1_2.c
-
 SOURCES += $(CORE_DIR)/os9x_65c816_global.s
 SOURCES += $(CORE_DIR)/os9x_65c816_spcasm.s
 SOURCES += $(CORE_DIR)/os9x_65c816_spcc.s
-
 #SOURCES += $(CORE_DIR)/os9x_65c816.s
-
 SOURCES += $(CORE_DIR)/os9x_asm_cpu.c
 
+DEFINES += -mstructure-size-boundary=32
+DEFINES += -DARM_ASM
+DEFINES += -DRIGHTSHIFT_IS_SAR
 else
 SOURCES += $(CORE_DIR)/ppu_.c
 SOURCES += $(CORE_DIR)/gfx.c
 SOURCES += $(CORE_DIR)/tile.c
+
+DEFINES += -D__OLD_RASTER_FX__
 endif
 
 
@@ -96,13 +95,6 @@ INCLUDES   = -I$(LIBRETRO_DIR) -I$(CORE_DIR) -I.
 DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline
 #DEFINES += -DRIGHTSHIFT_IS_SAR
 DEFINES    += -DUSE_SA1
-
-
-ifeq ($(ARM_ASM), 1)
-DEFINES += -mstructure-size-boundary=32 
-DEFINES += -DARM_ASM
-DEFINES += -DRIGHTSHIFT_IS_SAR
-endif
 
 ifeq ($(platform), sncps3)
 WARNINGS_DEFINES =
