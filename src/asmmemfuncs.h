@@ -204,10 +204,10 @@
     ); _dst; \
 })
 #else
-#define memset32(_dst, _c, _count) memset(_dst, _c, _count)
-#define memset16(_dst, _c, _count) memset(_dst, _c, _count)
-#define memcpy32(_dst, _src, _count) memcpy(_dst, _src, _count)
-#define memcpy16(_dst, _src, _count) memcpy(_dst, _src, _count)
+#define memset32(_dst, _c, _count) memset(_dst, _c, (_count)<<2)
+#define memset16(_dst, _c, _count) memset(_dst, _c, (_count)<<1)
+#define memcpy32(_dst, _src, _count) memcpy(_dst, _src, (_count)<<2)
+#define memcpy16(_dst, _src, _count) memcpy(_dst, _src, (_count)<<1)
 #endif
 
 #endif

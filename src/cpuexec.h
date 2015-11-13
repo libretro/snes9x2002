@@ -190,7 +190,7 @@ extern "C" {
 void asm_APU_EXECUTE(int Mode);
 void asm_APU_EXECUTE2(void);
 }*/
-
+#ifdef ASMCPU
 #define asm_APU_EXECUTE(MODE)\
 {\
    if (CPU.APU_APUExecuting == MODE) {\
@@ -231,6 +231,24 @@ void asm_APU_EXECUTE2(void);
    }\
   }\
 }
+#else
 
+#define asm_APU_EXECUTE(MODE)\
+   do { if (CPU.APU_APUExecuting == MODE) \
+      while (CPU.APU_Cycles <= CPU.Cycles)\
+      {\
+         CPU.APU_Cycles += S9xAPUCycles [*IAPU.PC];\
+         (*S9xApuOpcodes[*IAPU.PC]) ();\
+      }}while(0)
+
+
+#define asm_APU_EXECUTE2() \
+    if  (CPU.APU_APUExecuting == 1) do\
+      {\
+         CPU.APU_Cycles += S9xAPUCycles [*IAPU.PC];\
+         (*S9xApuOpcodes[*IAPU.PC]) ();\
+      } while (CPU.APU_Cycles < CPU.NextEvent)
+
+#endif
 
 #endif

@@ -107,8 +107,9 @@ STATIC inline void S9xAPUUnpackStatus()
 {
 
    IAPU._Zero     = ((IAPU.P & Zero) == 0) | (IAPU.P & Negative);
-
+#ifdef ASMCPU
    if (!Settings.asmspc700)
+#endif
    {
       IAPU._Carry    = (IAPU.P & Carry);
       IAPU._Overflow = (IAPU.P & Overflow);
@@ -117,6 +118,7 @@ STATIC inline void S9xAPUUnpackStatus()
 
 STATIC inline void S9xAPUPackStatus()
 {
+#ifdef ASMCPU
    if (Settings.asmspc700)
    {
       IAPU.P &= ~(Zero | Negative);
@@ -125,6 +127,7 @@ STATIC inline void S9xAPUPackStatus()
 
    }
    else
+#endif
    {
       IAPU.P &= ~(Zero | Negative | Carry | Overflow);
       if (IAPU._Carry)       IAPU.P |= Carry;

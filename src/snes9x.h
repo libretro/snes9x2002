@@ -395,8 +395,9 @@ typedef struct
    bool8  DaffyDuck;
    uint8  APURAMInitialValue;
    bool8  SDD1Pack;
-
+#ifdef ASMCPU
    bool8 asmspc700;
+#endif
    bool8 SpeedHacks;
 #ifdef __WIN32__
    int    SoundDriver;

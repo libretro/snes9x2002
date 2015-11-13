@@ -15,9 +15,13 @@ endif
 endif
 
 ifeq ($(platform), unix)
-   TARGET := libretro.so
+   TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
-   SHARED := -shared -Wl,--version-script=libretro/link.T
+   SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
+   CFLAGS += -fno-builtin \
+            -fno-exceptions -ffunction-sections \
+             -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
+             -fweb -fpeel-loops
 else ifeq ($(platform), osx)
    TARGET := libretro.dylib
    fpic := -fPIC
@@ -87,7 +91,7 @@ $(TARGET): $(OBJECTS)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
-	$(CXX) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS) -lm
+	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS) -lm
 endif
 
 %.o: %.c

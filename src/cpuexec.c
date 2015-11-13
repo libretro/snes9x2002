@@ -332,7 +332,8 @@ S9xMainLoop(void)
    if (Settings.APUEnabled == 1)
    {
 #ifdef USE_SA1
-      if (Settings.SA1) S9xMainLoop_SA1_APU();
+      if (Settings.SA1)
+         S9xMainLoop_SA1_APU();
       else
 #endif
          S9xMainLoop_NoSA1_APU();
@@ -340,10 +341,11 @@ S9xMainLoop(void)
    else
    {
 #ifdef USE_SA1
-      if (Settings.SA1) S9xMainLoop_SA1_NoAPU();
-      else S9xMainLoop_NoSA1_NoAPU();
+      if (Settings.SA1)
+         S9xMainLoop_SA1_NoAPU();
+      else
 #endif
-
+         S9xMainLoop_NoSA1_NoAPU();
    }
 #else
    if (Settings.asmspc700) asmMainLoop_spcAsm(&CPU);
