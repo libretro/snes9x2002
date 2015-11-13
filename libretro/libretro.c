@@ -311,7 +311,6 @@ static void snes_init (void)
    // hack to make sure GFX.Delta is always  (2048 * 512 * 2) >> 1, needed for tile16_t.h
 #ifdef _3DS
    GFX.Screen_buffer = (uint8 *) linearMemAlign(2048 * 512 * 2 * 2 + safety, 0x80);
-   memset(GFX.Screen, 0x0, 2048 * 512 * 2 * 2);
 #else
    GFX.Screen_buffer = (uint8 *) calloc(1, 2048 * 512 * 2 * 2 + safety);
 #endif
