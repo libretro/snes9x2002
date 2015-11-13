@@ -1450,11 +1450,9 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
    if (Address <= 0x2183)
    {
 #ifdef __OLD_RASTER_FX__
-
-      if (!snesMenuOptions.delayedRasterFX) SetPPU[Address - 0x2100](Byte, Address);
-      else
+      SetPPU[Address - 0x2100](Byte, Address);
 #endif
-         SetPPU_delayedRasterFx[Address - 0x2100](Byte, Address);
+      SetPPU_delayedRasterFx[Address - 0x2100](Byte, Address);
       return;
    }
    else

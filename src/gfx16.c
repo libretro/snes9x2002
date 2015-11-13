@@ -3241,11 +3241,8 @@ else \
    IPPU.PreviousLine = IPPU.CurrentLine;
 }
 
-#ifdef __OLD_RASTER_FX__
-static void S9xUpdateScreen_delayedRasterFx()  // ~30-50ms! (called from FLUSH_REDRAW())
-#else
+#ifndef __OLD_RASTER_FX__
 void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
-#endif
 {
    int StartY, EndY, CurrentLine, CurrentROp;
 
@@ -3340,9 +3337,9 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
    PPU.BG[3].OffsetsChanged = 0;
 }
 
-#ifdef __OLD_RASTER_FX__
+#else // __OLD_RASTER_FX__
 
-static void S9xUpdateScreen_normalRasterFx()  // ~30-50ms! (called from FLUSH_REDRAW())
+void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
 {
    GFX.StartY = IPPU.PreviousLine;
    if ((GFX.EndY = IPPU.CurrentLine - 1) >= PPU.ScreenHeight) GFX.EndY = PPU.ScreenHeight - 1;
@@ -3395,12 +3392,6 @@ static void S9xUpdateScreen_normalRasterFx()  // ~30-50ms! (called from FLUSH_RE
    PPU.BG[1].OffsetsChanged = 0;
    PPU.BG[2].OffsetsChanged = 0;
    PPU.BG[3].OffsetsChanged = 0;
-}
-
-void S9xUpdateScreen()
-{
-   if (snesMenuOptions.delayedRasterFX) S9xUpdateScreen_delayedRasterFx();
-   else S9xUpdateScreen_normalRasterFx();
 }
 #endif
 
