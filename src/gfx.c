@@ -160,8 +160,6 @@ void DrawLargePixel(uint32 Tile, int32 Offset,
 
 void DrawTile16(uint32 Tile, int32 Offset, uint32 StartLine,
                 uint32 LineCount);
-void DrawTile16_OBJ(uint32 Tile, int32 Offset, uint32 StartLine,
-                    uint32 LineCount);
 void DrawClippedTile16(uint32 Tile, int32 Offset,
                        uint32 StartPixel, uint32 Width,
                        uint32 StartLine, uint32 LineCount);
@@ -829,8 +827,6 @@ void DrawOBJS(bool8_32 OnMain, uint8 D)
 
    GFX.Z1 = D + 2;
 
-   if (DrawTilePtr == DrawTile16)
-      DrawTilePtr = DrawTile16_OBJ;
    int I = 0;
    for (int S = GFX.OBJList [I++]; S >= 0; S = GFX.OBJList [I++])
    {
@@ -843,11 +839,7 @@ void DrawOBJS(bool8_32 OnMain, uint8 D)
          continue;
 
       if (OnMain && SUB_OR_ADD(4))
-      {
          SelectTileRenderer(!GFX.Pseudo && PPU.OBJ [S].Palette < 4, false);
-         if (DrawTilePtr == DrawTile16)
-            DrawTilePtr = DrawTile16_OBJ;
-      }
 
       BaseTile = PPU.OBJ[S].Name | (PPU.OBJ[S].Palette << 10);
 
@@ -2095,9 +2087,6 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
    BG.PaletteMask = PaletteMasks[BGMode][bg];
    BG.DirectColourMode = (BGMode == 3 || BGMode == 4) && bg == 0 &&
                          (GFX.r2130 & 1);
-
-   if (DrawTilePtr == DrawTile16_OBJ)
-      DrawTilePtr = DrawTile16;
 
    if (PPU.BGMosaic [bg] && PPU.Mosaic > 1)
    {

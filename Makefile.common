@@ -82,7 +82,7 @@ endif
 #DEFINES += -DVAR_CYCLES
 #DEFINES += -D_C_GW_
 #DEFINES += -DUSE_SA1
-# -DFAST_LSB_WORD_ACCESS
+#DEFINES +=  -DFAST_LSB_WORD_ACCESS
 DEFINES += -ffast-math
 #DEFINES += -msoft-float
 DEFINES += -finline -finline-functions -fexpensive-optimizations

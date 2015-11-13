@@ -552,116 +552,11 @@ static INLINE void WRITE_4PIXELS16_FLIPPEDx2x2(int32 Offset, uint8* Pixels)
 #undef FN
 }
 
-void DrawTile16_OBJ(uint32 Tile, int32 Offset, uint32 StartLine, uint32 LineCount)
-{
-   // TILE_PREAMBLE
-
-   uint8* pCache;
-   uint32 TileAddr = BG.TileAddress + ((Tile & 0x3ff) << 5);
-   if (Tile & 0x100)
-      TileAddr += BG.NameSelect;
-
-   TileAddr &= 0xffff;
-
-   uint32 TileNumber;
-   pCache = &BG.Buffer[(TileNumber = (TileAddr >> 5)) << 6];
-
-   if (!BG.Buffered [TileNumber])
-      BG.Buffered[TileNumber] = ConvertTile(pCache, TileAddr);
-
-   if (BG.Buffered [TileNumber] == BLANK_TILE)
-   {
-      TileBlank = Tile & 0xFFFFFFFF;
-      return;
-   }
-
-   GFX.ScreenColors = &IPPU.ScreenColors [(((Tile >> 10) & 7) << 4) + 128];
-
-   register uint8*  bp;
-   register int   inc;
-
-   if (Tile & V_FLIP)
-   {
-      bp  = pCache + 56 - StartLine;
-      inc = -8;
-   }
-   else
-   {
-      bp  = pCache + StartLine;
-      inc = 8;
-   }
-
-   uint16* Screen = (uint16*) GFX.S + Offset;
-   uint16* Colors =  GFX.ScreenColors;
-   uint8*  Depth = GFX.DB + Offset;
-   int      GFX_Z1  = GFX.Z1;
-   int      GFX_Z2  = GFX.Z2;
-
-   if (!(Tile & H_FLIP))
-   {
-#define FN(N) \
-    if (GFX_Z1 > Depth[N] && bp[N]){ \
-      Screen[N] = Colors[bp[N]]; \
-      Depth[N]  = GFX_Z2; \
-   }
-      while (LineCount--)
-      {
-         if (*(uint32*)bp)
-         {
-            FN(0);
-            FN(1);
-            FN(2);
-            FN(3);
-         }
-
-         if (*(uint32*)(bp + 4))
-         {
-            FN(4);
-            FN(5);
-            FN(6);
-            FN(7);
-         }
-         bp += inc;
-         Screen += GFX_PPL;
-         Depth  += GFX_PPL;
-      }
-#undef FN
-   }
-   else
-   {
-#define FN(N, B) \
-   if (GFX_Z1 > Depth[N] && bp[B]){ \
-      Screen[N] = Colors[bp[B]]; \
-      Depth[N]  = GFX_Z2; \
-    }
-      while (LineCount--)
-      {
-         if (*(uint32*)(bp + 4))
-         {
-            FN(0, 7);
-            FN(1, 6);
-            FN(2, 5);
-            FN(3, 4);
-         }
-
-         if (*(uint32*)bp)
-         {
-            FN(4, 3);
-            FN(5, 2);
-            FN(6, 1);
-            FN(7, 0);
-         }
-         bp += inc;
-         Screen += GFX_PPL;
-         Depth  += GFX_PPL;
-      }
-#undef FN
-   }
-}
-
 void DrawTile16(uint32 Tile, int32 Offset, uint32 StartLine, uint32 LineCount)
 {
-   // TILE_PREAMBLE
+#if 1
+   TILE_PREAMBLE
+#else
 
    uint8* pCache;
    uint32 TileAddr = BG.TileAddress + ((Tile & 0x3ff) << BG.TileShift);
@@ -689,86 +584,12 @@ void DrawTile16(uint32 Tile, int32 Offset, uint32 StartLine, uint32 LineCount)
    else
       GFX.ScreenColors = &IPPU.ScreenColors [(((Tile >> 10) & BG.PaletteMask) << BG.PaletteShift) + BG.StartPalette];
 
+//      GFX.ScreenColors = &GFX.ScreenColorsPre[(Tile & GFX.PaletteMask) >> GFX.PaletteShift];
+
+   register uint32 l;
+#endif
    register uint8*  bp;
-   register int   inc;
-
-   if (Tile & V_FLIP)
-   {
-      bp  = pCache + 56 - StartLine;
-      inc = -8;
-   }
-   else
-   {
-      bp  = pCache + StartLine;
-      inc = 8;
-   }
-
-   uint16* Screen = (uint16*) GFX.S + Offset;
-   uint16* Colors =  GFX.ScreenColors;
-   uint8*  Depth = GFX.DB + Offset;
-   int      GFX_Z1  = GFX.Z1;
-   // int      GFX_Z2  = GFX.Z2;
-
-   if (!(Tile & H_FLIP))
-   {
-#define FN(N) \
-    if (GFX_Z1 > Depth[N] && bp[N]){ \
-      Screen[N] = Colors[bp[N]]; \
-      Depth[N]  = GFX_Z1; \
-   }
-      while (LineCount--)
-      {
-         if (*(uint32*)bp)
-         {
-            FN(0);
-            FN(1);
-            FN(2);
-            FN(3);
-         }
-
-         if (*(uint32*)(bp + 4))
-         {
-            FN(4);
-            FN(5);
-            FN(6);
-            FN(7);
-         }
-         bp += inc;
-         Screen += GFX_PPL;
-         Depth  += GFX_PPL;
-      }
-#undef FN
-   }
-   else
-   {
-#define FN(N, B) \
-   if (GFX_Z1 > Depth[N] && bp[B]){ \
-      Screen[N] = Colors[bp[B]]; \
-      Depth[N]  = GFX_Z1; \
-    }
-      while (LineCount--)
-      {
-         if (*(uint32*)(bp + 4))
-         {
-            FN(0, 7);
-            FN(1, 6);
-            FN(2, 5);
-            FN(3, 4);
-         }
-
-         if (*(uint32*)bp)
-         {
-            FN(4, 3);
-            FN(5, 2);
-            FN(6, 1);
-            FN(7, 0);
-         }
-         bp += inc;
-         Screen += GFX_PPL;
-         Depth  += GFX_PPL;
-      }
-#undef FN
-   }
+   RENDER_TILE(WRITE_4PIXELS16, WRITE_4PIXELS16_FLIPPED, 4)
 }
 
 void DrawClippedTile16(uint32 Tile, int32 Offset,
