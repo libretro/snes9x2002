@@ -73,7 +73,7 @@ typedef struct
    uint32* ScreenColorsPre;
    uint32 PaletteMask;
    uint32 PaletteShift;
-   uint32 DepthDelta;
+   intptr_t DepthDelta;
    uint8  Z1;
    uint8  Z2;
    uint32 FixedColour;
