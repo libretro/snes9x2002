@@ -49,6 +49,8 @@
 #include "cheats.h"
 #include <stdint.h>
 #include "asmmemfuncs.h"
+#include "tile.h"
+
 uint32 TileBlank;
 
 const int tx_table[16] =
