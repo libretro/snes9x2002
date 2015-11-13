@@ -247,8 +247,9 @@ static void snes_init (void)
 	Settings.TurboSkipFrames = 15;
 	Settings.ThreadSound = FALSE;
 	Settings.SoundSync = FALSE;
+#ifdef ASMCPU
 	Settings.asmspc700 = TRUE;
-//   Settings.asmspc700 = FALSE;
+#endif
 	Settings.SpeedHacks = TRUE;
 
 	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
@@ -306,16 +307,21 @@ static void snes_init (void)
 
    GFX.Pitch = use_overscan ? 1024 : 2048;
    
+   const int safety = 128;
    // hack to make sure GFX.Delta is always  (2048 * 512 * 2) >> 1, needed for tile16_t.h
 #ifdef _3DS
-   GFX.Screen = (uint8 *) linearMemAlign(2048 * 512 * 2 * 2, 0x80);
+   GFX.Screen_buffer = (uint8 *) linearMemAlign(2048 * 512 * 2 * 2 + safety, 0x80);
    memset(GFX.Screen, 0x0, 2048 * 512 * 2 * 2);
 #else
-   GFX.Screen = (uint8 *) calloc(1, 2048 * 512 * 2 * 2);
+   GFX.Screen_buffer = (uint8 *) calloc(1, 2048 * 512 * 2 * 2 + safety);
 #endif
+   GFX.Screen = GFX.Screen_buffer + safety;
+
    GFX.SubScreen = GFX.Screen + 2048 * 512 * 2;
-   GFX.ZBuffer = (uint8 *) calloc(1, GFX.Pitch * 512 * sizeof(uint16));
-   GFX.SubZBuffer = (uint8 *) calloc(1, GFX.Pitch * 512 * sizeof(uint16));
+   GFX.ZBuffer_buffer = (uint8 *) calloc(1, GFX.Pitch * 512 * sizeof(uint16) + safety);
+   GFX.ZBuffer = GFX.ZBuffer_buffer + safety;
+   GFX.SubZBuffer_buffer = (uint8 *) calloc(1, GFX.Pitch * 512 * sizeof(uint16) + safety);
+   GFX.SubZBuffer = GFX.SubZBuffer_buffer + safety;
    GFX.Delta = 1048576; //(GFX.SubScreen - GFX.Screen) >> 1;
 
    if (GFX.Delta != ((GFX.SubScreen - GFX.Screen) >> 1))
@@ -356,13 +362,25 @@ void retro_deinit(void)
    MemoryDeinit();
    S9xGraphicsDeinit();
    //S9xUnmapAllControls();
-   if(GFX.Screen)
+   if(GFX.Screen_buffer)
 #ifdef _3DS
-      linearFree(GFX.Screen);
+      linearFree(GFX.Screen_buffer);
 #else
-      free(GFX.Screen);
+      free(GFX.Screen_buffer);
 #endif
+   GFX.Screen_buffer = NULL;
    GFX.Screen = NULL;
+   GFX.SubScreen = NULL;
+
+   if(GFX.ZBuffer_buffer)
+      free(GFX.ZBuffer_buffer);
+   GFX.ZBuffer_buffer = NULL;
+
+   if(GFX.SubZBuffer_buffer)
+      free(GFX.SubZBuffer_buffer);
+
+   GFX.SubZBuffer_buffer = NULL;
+
 
 }
 
@@ -510,7 +528,6 @@ bool retro_load_game(const struct retro_game_info *game)
 
    //S9xGraphicsInit();
    S9xReset();
-//   Settings.asmspc700 = false;
    CPU.APU_APUExecuting = Settings.APUEnabled = 1;
    Settings.SixteenBitSound = true;
    so.stereo = Settings.Stereo;

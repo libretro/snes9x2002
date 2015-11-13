@@ -137,109 +137,109 @@ extern uint8  Mode7Depths [2];
 
 #define BLACK BUILD_PIXEL(0,0,0)
 
-void DrawTile(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile(uint32 Tile, int32 Offset, uint32 StartLine,
               uint32 LineCount);
-void DrawClippedTile(uint32 Tile, uint32 Offset,
+void DrawClippedTile(uint32 Tile, int32 Offset,
                      uint32 StartPixel, uint32 Width,
                      uint32 StartLine, uint32 LineCount);
-void DrawTilex2(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTilex2(uint32 Tile, int32 Offset, uint32 StartLine,
                 uint32 LineCount);
-void DrawClippedTilex2(uint32 Tile, uint32 Offset,
+void DrawClippedTilex2(uint32 Tile, int32 Offset,
                        uint32 StartPixel, uint32 Width,
                        uint32 StartLine, uint32 LineCount);
-void DrawTilex2x2(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTilex2x2(uint32 Tile, int32 Offset, uint32 StartLine,
                   uint32 LineCount);
-void DrawClippedTilex2x2(uint32 Tile, uint32 Offset,
+void DrawClippedTilex2x2(uint32 Tile, int32 Offset,
                          uint32 StartPixel, uint32 Width,
                          uint32 StartLine, uint32 LineCount);
-void DrawLargePixel(uint32 Tile, uint32 Offset,
+void DrawLargePixel(uint32 Tile, int32 Offset,
                     uint32 StartPixel, uint32 Pixels,
                     uint32 StartLine, uint32 LineCount);
 
-void DrawTile16(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16(uint32 Tile, int32 Offset, uint32 StartLine,
                 uint32 LineCount);
-void DrawTile16_OBJ(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16_OBJ(uint32 Tile, int32 Offset, uint32 StartLine,
                     uint32 LineCount);
-void DrawClippedTile16(uint32 Tile, uint32 Offset,
+void DrawClippedTile16(uint32 Tile, int32 Offset,
                        uint32 StartPixel, uint32 Width,
                        uint32 StartLine, uint32 LineCount);
-void DrawTile16x2(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16x2(uint32 Tile, int32 Offset, uint32 StartLine,
                   uint32 LineCount);
-void DrawClippedTile16x2(uint32 Tile, uint32 Offset,
+void DrawClippedTile16x2(uint32 Tile, int32 Offset,
                          uint32 StartPixel, uint32 Width,
                          uint32 StartLine, uint32 LineCount);
-void DrawTile16x2x2(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16x2x2(uint32 Tile, int32 Offset, uint32 StartLine,
                     uint32 LineCount);
-void DrawClippedTile16x2x2(uint32 Tile, uint32 Offset,
+void DrawClippedTile16x2x2(uint32 Tile, int32 Offset,
                            uint32 StartPixel, uint32 Width,
                            uint32 StartLine, uint32 LineCount);
-void DrawLargePixel16(uint32 Tile, uint32 Offset,
+void DrawLargePixel16(uint32 Tile, int32 Offset,
                       uint32 StartPixel, uint32 Pixels,
                       uint32 StartLine, uint32 LineCount);
 
-void DrawTile16Add(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16Add(uint32 Tile, int32 Offset, uint32 StartLine,
                    uint32 LineCount);
 
-void DrawClippedTile16Add(uint32 Tile, uint32 Offset,
+void DrawClippedTile16Add(uint32 Tile, int32 Offset,
                           uint32 StartPixel, uint32 Width,
                           uint32 StartLine, uint32 LineCount);
 
-void DrawTile16Add1_2(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16Add1_2(uint32 Tile, int32 Offset, uint32 StartLine,
                       uint32 LineCount);
 
-void DrawClippedTile16Add1_2(uint32 Tile, uint32 Offset,
+void DrawClippedTile16Add1_2(uint32 Tile, int32 Offset,
                              uint32 StartPixel, uint32 Width,
                              uint32 StartLine, uint32 LineCount);
 
-void DrawTile16FixedAdd1_2(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16FixedAdd1_2(uint32 Tile, int32 Offset, uint32 StartLine,
                            uint32 LineCount);
 
-void DrawClippedTile16FixedAdd1_2(uint32 Tile, uint32 Offset,
+void DrawClippedTile16FixedAdd1_2(uint32 Tile, int32 Offset,
                                   uint32 StartPixel, uint32 Width,
                                   uint32 StartLine, uint32 LineCount);
 
-void DrawTile16Sub(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16Sub(uint32 Tile, int32 Offset, uint32 StartLine,
                    uint32 LineCount);
 
-void DrawClippedTile16Sub(uint32 Tile, uint32 Offset,
+void DrawClippedTile16Sub(uint32 Tile, int32 Offset,
                           uint32 StartPixel, uint32 Width,
                           uint32 StartLine, uint32 LineCount);
 
-void DrawTile16Sub1_2(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16Sub1_2(uint32 Tile, int32 Offset, uint32 StartLine,
                       uint32 LineCount);
 
-void DrawClippedTile16Sub1_2(uint32 Tile, uint32 Offset,
+void DrawClippedTile16Sub1_2(uint32 Tile, int32 Offset,
                              uint32 StartPixel, uint32 Width,
                              uint32 StartLine, uint32 LineCount);
 
-void DrawTile16FixedSub1_2(uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16FixedSub1_2(uint32 Tile, int32 Offset, uint32 StartLine,
                            uint32 LineCount);
 
-void DrawClippedTile16FixedSub1_2(uint32 Tile, uint32 Offset,
+void DrawClippedTile16FixedSub1_2(uint32 Tile, int32 Offset,
                                   uint32 StartPixel, uint32 Width,
                                   uint32 StartLine, uint32 LineCount);
 
-void DrawLargePixel16Add(uint32 Tile, uint32 Offset,
+void DrawLargePixel16Add(uint32 Tile, int32 Offset,
                          uint32 StartPixel, uint32 Pixels,
                          uint32 StartLine, uint32 LineCount);
 
-void DrawLargePixel16Add1_2(uint32 Tile, uint32 Offset,
+void DrawLargePixel16Add1_2(uint32 Tile, int32 Offset,
                             uint32 StartPixel, uint32 Pixels,
                             uint32 StartLine, uint32 LineCount);
 
-void DrawLargePixel16Sub(uint32 Tile, uint32 Offset,
+void DrawLargePixel16Sub(uint32 Tile, int32 Offset,
                          uint32 StartPixel, uint32 Pixels,
                          uint32 StartLine, uint32 LineCount);
 
-void DrawLargePixel16Sub1_2(uint32 Tile, uint32 Offset,
+void DrawLargePixel16Sub1_2(uint32 Tile, int32 Offset,
                             uint32 StartPixel, uint32 Pixels,
                             uint32 StartLine, uint32 LineCount);
 
-void DrawHiResClippedTile16(uint32 Tile, uint32 Offset,
+void DrawHiResClippedTile16(uint32 Tile, int32 Offset,
                             uint32 StartPixel, uint32 Width,
                             uint32 StartLine, uint32 LineCount);
 
-void DrawHiResTile16(uint32 Tile, uint32 Offset,
+void DrawHiResTile16(uint32 Tile, int32 Offset,
                      uint32 StartLine, uint32 LineCount);
 
 bool8_32 S9xGraphicsInit()
@@ -252,9 +252,11 @@ bool8_32 S9xGraphicsInit()
       S9xSetRenderPixelFormat(RGB565);
 #endif
 
-   for (uint8 bitshift = 0; bitshift < 4; bitshift++)
+   uint8 bitshift;
+   for (bitshift = 0; bitshift < 4; bitshift++)
    {
-      for (register int i = 0; i < 16; i++)
+      register int i;
+      for (i = 0; i < 16; i++)
       {
          register uint32 h = 0;
          register uint32 l = 0;
@@ -676,7 +678,7 @@ void S9xSetInfoString(const char* string)
 {
 }
 
-static INLINE void SelectTileRenderer(bool8_32 normal)
+static INLINE void SelectTileRenderer(bool8_32 normal, bool NoZ)
 {
    if (normal)
    {
@@ -803,7 +805,7 @@ void S9xSetupOBJ()
    IPPU.OBJChanged = FALSE;
 }
 
-void DrawOBJS(bool8_32 OnMain = FALSE, uint8 D = 0)
+void DrawOBJS(bool8_32 OnMain, uint8 D)
 {
    uint32 O;
    uint32 BaseTile, Tile;
@@ -820,6 +822,8 @@ void DrawOBJS(bool8_32 OnMain = FALSE, uint8 D = 0)
    BG.Buffered = IPPU.TileCached [TILE_4BIT];
    BG.NameSelect = PPU.OBJNameSelect;
    BG.DirectColourMode = FALSE;
+
+   SelectPalette();
 
    GFX.Z1 = D + 2;
 
@@ -838,7 +842,7 @@ void DrawOBJS(bool8_32 OnMain = FALSE, uint8 D = 0)
 
       if (OnMain && SUB_OR_ADD(4))
       {
-         SelectTileRenderer(!GFX.Pseudo && PPU.OBJ [S].Palette < 4);
+         SelectTileRenderer(!GFX.Pseudo && PPU.OBJ [S].Palette < 4, false);
          if (DrawTilePtr == DrawTile16)
             DrawTilePtr = DrawTile16_OBJ;
       }
@@ -972,6 +976,8 @@ void DrawBackgroundMosaic(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
       BG.StartPalette = bg << 5;
    else
       BG.StartPalette = 0;
+
+   SelectPalette();
 
    SC0 = (uint16*) &Memory.VRAM[PPU.BG[bg].SCBase << 1];
 
@@ -1197,6 +1203,7 @@ void DrawBackgroundOffset(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
    uint8 depths [2] = {Z1, Z2};
 
    BG.StartPalette = 0;
+   SelectPalette();
 
    BPS0 = (uint16*) &Memory.VRAM[PPU.BG[2].SCBase << 1];
 
@@ -1316,7 +1323,7 @@ void DrawBackgroundOffset(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
          uint32 VOffset;
          uint32 HOffset;
          uint32 LineHOffset = LineData [Y].BG[bg].HOffset;
-         uint32 Offset;
+         int32 Offset;
          uint32 HPos;
          uint32 Quot;
          uint32 Count;
@@ -1451,7 +1458,7 @@ void DrawBackgroundOffset(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
    }
 }
 
-void DrawBackgroundMode5(uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
+void DrawBackgroundMode5(uint32 BGMODE, uint32 bg, uint8 Z1, uint8 Z2)
 {
    CHECK_SOUND();
 
@@ -1465,6 +1472,7 @@ void DrawBackgroundMode5(uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
    uint32 Width;
 
    BG.StartPalette = 0;
+   SelectPalette();
 
    SC0 = (uint16*) &Memory.VRAM[PPU.BG[bg].SCBase << 1];
 
@@ -1866,7 +1874,7 @@ void DrawBackground_8(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
          // Left hand edge clipped tile
          if (HPos & 7)
          {
-            uint32 Offset = (HPos & 7);
+            int32 Offset = (HPos & 7);
             Count = 8 - Offset;
             if (Count > Width) Count = Width;
             s -= Offset;
@@ -2018,7 +2026,7 @@ void DrawBackground_16(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
          // Left hand edge clipped tile
          if (HPos & 7)
          {
-            uint32 Offset = (HPos & 7);
+            int32 Offset = (HPos & 7);
             Count = 8 - Offset;
             if (Count > Width) Count = Width;
             s -= Offset;
@@ -2070,7 +2078,7 @@ void DrawBackground_16(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
    GFX.Z1 = GFX.Z2 = depths [(Tile & 0x2000) >> 13];
 }
 
-inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
+static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 {
    //StartAnalyze();
 
@@ -2112,6 +2120,8 @@ inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
    if (BGMode == 0)
       BG.StartPalette = bg << 5;
    else BG.StartPalette = 0;
+
+   SelectPalette();
 
    if (BG.TileSize == 8)
       DrawBackground_8(BGMode, bg, Z1, Z2);
@@ -3557,7 +3567,7 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
          back = black;
       else
       {
-         SelectTileRenderer(TRUE);   //selects the tile renderers to be used
+         SelectTileRenderer(TRUE, FALSE);   //selects the tile renderers to be used
          // TRUE means to use the default
          // FALSE means use best renderer based on current
          // graphics register settings
