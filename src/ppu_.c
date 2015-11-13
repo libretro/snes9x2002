@@ -218,7 +218,7 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
 
       case 0x2104:
          // Sprite register write
-         REGISTER_2104(Byte, &Memory, &IPPU, &PPU);
+         REGISTER_2104(Byte);
 
          break;
 
@@ -405,13 +405,13 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
       case 0x2118:
          // VRAM write data (low)
          IPPU.FirstVRAMRead = TRUE;
-         REGISTER_2118(Byte, &Memory, &IPPU, &PPU);
+         REGISTER_2118(Byte);
          break;
 
       case 0x2119:
          // VRAM write data (high)
          IPPU.FirstVRAMRead = TRUE;
-         REGISTER_2119(Byte, &Memory, &IPPU, &PPU);
+         REGISTER_2119(Byte);
          break;
 
       case 0x211a:
@@ -459,7 +459,7 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
          break;
 
       case 0x2122:
-         REGISTER_2122(Byte, &Memory, &IPPU, &PPU);
+         REGISTER_2122(Byte);
          break;
 
       case 0x2123:
@@ -840,7 +840,7 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
 #endif // SPCTOOL
          break;
       case 0x2180:
-         REGISTER_2180(Byte, &Memory, &IPPU, &PPU);
+         REGISTER_2180(Byte);
          break;
       case 0x2181:
          PPU.WRAM &= 0x1FF00;
@@ -947,7 +947,7 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
             default:
                Memory.FillRAM[Address] = Byte;
                if (Address >= 0x3100)
-                  FxCacheWriteAccess(Address, &GSU);
+                  FxCacheWriteAccess(Address);
                break;
             }
 #endif
@@ -1636,7 +1636,7 @@ void S9xSetCPU(uint8 byte, uint16 Address)
             else
                CPU.FastROMSpeed = SLOW_ONE_CYCLE;
 
-            Memory.FixROMSpeed();
+            FixROMSpeed();
          }
       /* FALL */
       case 0x420e:
