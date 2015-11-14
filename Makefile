@@ -23,29 +23,29 @@ ifeq ($(platform), unix)
              -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
              -fweb -fpeel-loops
 else ifeq ($(platform), osx)
-   TARGET := libretro.dylib
+   TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
 else ifeq ($(platform), ps3)
-   TARGET := libretro.a
+   TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
    CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
    STATIC_LINKING := 1
 else ifeq ($(platform), sncps3)
-   TARGET := libretro.a
+   TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
    CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
    STATIC_LINKING := 1
 else ifeq ($(platform), xenon)
-   TARGET := libretro.a
+   TARGET := $(TARGET_NAME)_libretro_xenon360.a
    CC = xenon-gcc
    AR = xenon-ar
    CFLAGS += -D__LIBXENON__ -m32 -D__ppc__
    STATIC_LINKING := 1
 else ifeq ($(platform), wii)
-   TARGET := libretro.a
+   TARGET := $(TARGET_NAME)_libretro_wii.a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
@@ -65,7 +65,7 @@ else ifeq ($(platform), ctr)
    PLATFORM_DEFINES := -D_3DS
    STATIC_LINKING := 1
 else
-   TARGET := retro.dll
+   TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
    fpic := 
    LD_FLAGS := 
