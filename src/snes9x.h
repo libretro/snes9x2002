@@ -46,18 +46,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef __WIN32__
-#include "..\wsnes9x.h"
-#include "..\zlib\zlib.h"
-#endif
-
 #include "port.h"
 #include "65c816.h"
 #include "messages.h"
 
 #define ROM_NAME_LEN 23
 
-#ifdef __LIBRETRO__
 #include "../libretro/memstream.h"
 #define STREAM memstream_t *
 #define READ_STREAM(p, l, s)     memstream_read(s, p, l)
@@ -65,36 +59,6 @@
 #define OPEN_STREAM(f, m)        memstream_open()
 #define CLOSE_STREAM(s)          memstream_close(s)
 #define SEEK_STREAM(p,r,s)   memstream_seek(p,r,s)
-#elif defined(ZLIB)
-//#ifndef __WIN32__
-//#include "zlib.h"
-//#endif
-#define STREAM gzFile
-#define READ_STREAM(p,l,s) gzread (s,p,l)
-#define WRITE_STREAM(p,l,s) gzwrite (s,p,l)
-#define OPEN_STREAM(f,m) gzopen (f,m)
-#define CLOSE_STREAM(s) gzclose (s)
-#define SEEK_STREAM(p,r,s) gzseek(s,p,r)
-#else
-#ifdef __GP32__
-#define STREAM long * //F_HANDLE * 
-#define READ_STREAM(p,l,s) gp32_fread ((unsigned char*)p,(long)l,s)
-#define WRITE_STREAM(p,l,s) gp32_fwrite ((unsigned char*)p,(long)l,s)
-#define OPEN_STREAM(f,m) gp32_fopen ((char*)f,(char*)m)
-#define CLOSE_STREAM(s) gp32_fclose (s)
-#define SEEK_STREAM(p,r,s) gp32_fseek(p,r,s)
-
-#else
-#define STREAM FILE *
-#define READ_STREAM(p,l,s) fread (p,1,l,s)
-#define WRITE_STREAM(p,l,s) fwrite (p,1,l,s)
-#define OPEN_STREAM(f,m) fopen (f,m)
-#define CLOSE_STREAM(s) fclose (s)
-#define SEEK_STREAM(p,r,s) fseek(s,p,r)
-#define FROM_CURRENT SEEK_CUR
-#endif
-#endif
-
 
 /* SNES screen width and height */
 #define SNES_WIDTH      256
@@ -399,9 +363,6 @@ typedef struct
    bool8 asmspc700;
 #endif
    bool8 SpeedHacks;
-#ifdef __WIN32__
-   int    SoundDriver;
-#endif
 } SSettings;
 
 typedef struct
