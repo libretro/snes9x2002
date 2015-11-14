@@ -82,12 +82,14 @@ endif
 #DEFINES += -D_C_GW_
 #DEFINES += -DUSE_SA1
 #DEFINES +=  -DFAST_LSB_WORD_ACCESS
+ifeq ($(platform), 3ds)
+# Do we need all this? Causes issues on non-GCC compilers, etc. 
 DEFINES += -ffast-math
-#DEFINES += -msoft-float
 DEFINES += -finline -finline-functions -fexpensive-optimizations
 DEFINES += -falign-functions=16 -falign-loops -falign-labels
 DEFINES += -falign-jumps -fstrict-aliasing -fsigned-char -frename-registers -fweb
 DEFINES += -fomit-frame-pointer
+endif
 
 DEFINES += -ffast-math -funroll-loops -fomit-frame-pointer
 
