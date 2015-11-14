@@ -471,8 +471,10 @@ void retro_cheat_set(unsigned index, bool enable, const char* in_code)
 {
     // clean input
     char clean_code[strlen(in_code)];
-    int i,j =0;
-    for (i = 0; i<strlen(in_code); i++)          
+    int j =0;
+    unsigned i;
+
+    for (i = 0; i < strlen(in_code); i++)          
     {
         switch (in_code[i])
         {
@@ -501,7 +503,7 @@ void retro_cheat_set(unsigned index, bool enable, const char* in_code)
         S9xAddCheat(true, true, address, byte);
     else if ( S9xGameGenieToRaw(clean_code, &address, &byte) == NULL)
         S9xAddCheat(true, true, address, byte);
-    // else, silently ignore
+    /* else, silently ignore */
 }
 
 bool retro_load_game(const struct retro_game_info *game)
