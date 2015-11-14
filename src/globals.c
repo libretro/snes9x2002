@@ -99,13 +99,7 @@ SSNESGameFixes SNESGameFixes;
 
 END_EXTERN_C
 
-#ifndef ZSNES_FX
 FxInit_s SuperFX;
-#else
-START_EXTERN_C
-uint8* SFXPlotTable = NULL;
-END_EXTERN_C
-#endif
 
 SPPU PPU;
 InternalPPU IPPU;

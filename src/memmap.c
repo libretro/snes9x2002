@@ -56,14 +56,8 @@
 #include "srtc.h"
 #include "sdd1.h"
 
-#ifndef ZSNES_FX
 #include "fxemu.h"
 extern FxInit_s SuperFX;
-#else
-START_EXTERN_C
-extern uint8 *SFXPlotTable;
-END_EXTERN_C
-#endif
 
 static uint8 bytes0x2000 [0x2000];
 
@@ -205,15 +199,11 @@ bool8_32 MemoryInit ()
     SRAM   = Memory.SRAM;
     RegRAM = Memory.FillRAM;
 
-#ifdef ZSNES_FX
-    SFXPlotTable = ROM + 0x400000;
-#else
     SuperFX.pvRegisters = &Memory.FillRAM [0x3000];
     SuperFX.nRamBanks = 1;
     SuperFX.pvRam = SRAM;
     SuperFX.nRomBanks = (2 * 1024 * 1024) / (32 * 1024);
     SuperFX.pvRom = (uint8 *) Memory.ROM;
-#endif
 
     ZeroMemory (IPPU.TileCached [TILE_2BIT], MAX_2BIT_TILES);
     ZeroMemory (IPPU.TileCached [TILE_4BIT], MAX_4BIT_TILES);
@@ -695,9 +685,7 @@ void S9xDeinterleaveMode2 ()
 
 void InitROM (bool8_32 Interleaved)
 {
-#ifndef ZSNES_FX
     SuperFX.nRomBanks = Memory.CalculatedSize >> 15;
-#endif
     Settings.MultiPlayer5Master = Settings.MultiPlayer5;
     Settings.MouseMaster = Settings.Mouse;
     Settings.SuperScopeMaster = Settings.SuperScope;

@@ -427,14 +427,5 @@ void C4Op0D()
    */
 }
 
-#ifdef ZSNES_C4
-void C4LoaDMem(char* C4RAM)
-{
-   memmove(C4RAM + (READ_WORD(C4RAM + 0x1f45) & 0x1fff),
-           C4GetMemPointer(READ_3WORD(C4RAM + 0x1f40)),
-           READ_WORD(C4RAM + 0x1f43));
-}
-#endif
-
 END_EXTERN_C
 

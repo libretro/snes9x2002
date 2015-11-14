@@ -71,14 +71,6 @@ extern void (*statef_close)();
 
 extern uint8* SRAM;
 
-#ifdef ZSNES_FX
-START_EXTERN_C
-void S9xSuperFXPreSaveState();
-void S9xSuperFXPostSaveState();
-void S9xSuperFXPostLoadState();
-END_EXTERN_C
-#endif
-
 //bool8 S9xUnfreezeZSNES (const char *filename);
 
 typedef struct
@@ -480,10 +472,6 @@ static void Freeze()
    int i;
 
    S9xSetSoundMute(TRUE);
-#ifdef ZSNES_FX
-   if (Settings.SuperFX)
-      S9xSuperFXPreSaveState();
-#endif
 
    S9xSRTCPreSaveState();
 
@@ -536,10 +524,6 @@ static void Freeze()
    }
 #endif
    S9xSetSoundMute(FALSE);
-#ifdef ZSNES_FX
-   if (Settings.SuperFX)
-      S9xSuperFXPostSaveState();
-#endif
 }
 
 static int Unfreeze()
@@ -697,10 +681,6 @@ static int Unfreeze()
    S9xFixCycles();  // also not needed?
 #endif
    S9xReschedule();
-#ifdef ZSNES_FX
-   if (Settings.SuperFX)
-      S9xSuperFXPostLoadState();
-#endif
 
    S9xSRTCPostLoadState();
    if (Settings.SDD1)  S9xSDD1PostLoadState();

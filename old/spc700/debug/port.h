@@ -174,8 +174,6 @@ void gp32_fseek (long position,int ref,long *s);
 #define CPU_SHUTDOWN
 #define VAR_CYCLES
 #define SPC700_C
-//#define ZSNES_C4
-//#define ZSNES_FX
 #define EXECUTE_SUPERFX_PER_LINE
 //#define THREADCPU
 

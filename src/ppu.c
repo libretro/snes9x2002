@@ -53,15 +53,10 @@
 
 #include "port.h"
 
-#ifndef ZSNES_FX
 #include "fxemu.h"
 #include "fxinst.h"
 extern FxInit_s SuperFX;
 extern FxRegs_s GSU;
-#else
-EXTERN_C void S9xSuperFXWriteReg(uint8, uint32);
-EXTERN_C uint8 S9xSuperFXReadReg(uint32);
-#endif
 extern uint8* HDMAMemPointers [8];
 
 void S9xUpdateHTimer()
