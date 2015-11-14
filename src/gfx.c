@@ -94,8 +94,6 @@ const int tx_table[16] =
 #define M8 19
 
 void ComputeClipWindows();
-static void S9xDisplayFrameRate();
-static void S9xDisplayString(const char* string);
 
 extern uint8 BitShifts[8][4];
 extern uint8 TileShifts[8][4];
@@ -1493,19 +1491,10 @@ void DrawBackgroundMode5(uint32 BGMODE, uint32 bg, uint8 Z1, uint8 Z2)
    if (((uint8*)SC3 - Memory.VRAM) >= 0x10000)
       SC3 -= 0x08000;
    int Lines;
-   int VOffsetMask;
-   int VOffsetShift;
+   int VOffsetShift = 3;
 
    if (BG.TileSize == 16)
-   {
-      VOffsetMask = 0x3ff;
       VOffsetShift = 4;
-   }
-   else
-   {
-      VOffsetMask = 0x1ff;
-      VOffsetShift = 3;
-   }
    int endy = GFX.EndY;
 
    for (int Y = GFX.StartY; Y <= endy; Y += Lines)
@@ -2854,50 +2843,6 @@ void DisplayChar(uint8* Screen, uint8 c)
          else if (p == '.')
             *s = BLACK;
       }
-   }
-}
-
-static void S9xDisplayFrameRate()
-{
-   uint8* Screen = GFX.Screen + 2 +
-                   (IPPU.RenderedScreenHeight - font_height - 1) * GFX_PITCH;
-   char string [10];
-   int len = 5;
-
-   sprintf(string, "%02d/%02d", IPPU.DisplayedRenderedFrameCount,
-           (int) Memory.ROMFramesPerSecond);
-
-   int i;
-   for (i = 0; i < len; i++)
-   {
-      DisplayChar(Screen, string [i]);
-      Screen += (font_width - 1) * sizeof(uint16);
-   }
-}
-
-static void S9xDisplayString(const char* string)
-{
-   uint8* Screen = GFX.Screen + 2 +
-                   (IPPU.RenderedScreenHeight - font_height * 5) * GFX_PITCH;
-   int len = strlen(string);
-   int max_chars = IPPU.RenderedScreenWidth / (font_width - 1);
-   int char_count = 0;
-   int i;
-
-   for (i = 0; i < len; i++, char_count++)
-   {
-      if (char_count >= max_chars || string [i] < 32)
-      {
-         Screen -= (font_width - 1) * sizeof(uint16) * max_chars;
-         Screen += font_height * GFX_PITCH;
-         if (Screen >= GFX.Screen + GFX_PITCH * IPPU.RenderedScreenHeight)
-            break;
-         char_count -= max_chars;
-      }
-      if (string [i] < 32)
-         continue;
-      DisplayChar(Screen, string [i]);
-      Screen += (font_width - 1) * sizeof(uint16);
    }
 }
 
