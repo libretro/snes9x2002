@@ -82,7 +82,8 @@ endif
 #DEFINES += -D_C_GW_
 #DEFINES += -DUSE_SA1
 #DEFINES +=  -DFAST_LSB_WORD_ACCESS
-ifeq ($(platform), ctr)
+
+ifeq ($(ARM_ASM), 1)
 # Do we need all this? Causes issues on non-GCC compilers, etc. 
 DEFINES += -ffast-math
 DEFINES += -finline -finline-functions -fexpensive-optimizations
