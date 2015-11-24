@@ -359,7 +359,7 @@ typedef struct
    bool8  DaffyDuck;
    uint8  APURAMInitialValue;
    bool8  SDD1Pack;
-#ifdef ASMCPU
+#ifdef ASM_SPC700
    bool8 asmspc700;
 #endif
    bool8 SpeedHacks;

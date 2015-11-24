@@ -107,7 +107,7 @@ STATIC inline void S9xAPUUnpackStatus()
 {
 
    IAPU._Zero     = ((IAPU.P & Zero) == 0) | (IAPU.P & Negative);
-#ifdef ASMCPU
+#ifdef ASM_SPC700
    if (!Settings.asmspc700)
 #endif
    {
@@ -118,7 +118,7 @@ STATIC inline void S9xAPUUnpackStatus()
 
 STATIC inline void S9xAPUPackStatus()
 {
-#ifdef ASMCPU
+#ifdef ASM_SPC700
    if (Settings.asmspc700)
    {
       IAPU.P &= ~(Zero | Negative);

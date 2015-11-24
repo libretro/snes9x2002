@@ -134,8 +134,8 @@ typedef short        int16_32;
 #define ALIGN_BY_ONE  __attribute__ ((aligned (1), packed))
 #undef  FAST_LSB_WORD_ACCESS
 #define SUPER_FX
-#ifdef ASMCPU
-#define ASM_SPC700
+#if defined(ASM_SPC700) && defined(SPC700_SHUTDOWN)
+#undef SPC700_SHUTDOWN
 #endif
 
 EXTERN_C void S9xGenerateSound();

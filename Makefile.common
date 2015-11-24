@@ -35,8 +35,6 @@ SOURCES += $(LIBRETRO_DIR)/libretro.c
 SOURCES += $(LIBRETRO_DIR)/memstream.c
 
 ifeq ($(ARM_ASM), 1)
-SOURCES += $(CORE_DIR)/spc700a.s
-SOURCES += $(CORE_DIR)/spc_decode.S
 SOURCES += $(CORE_DIR)/ppu.c
 SOURCES += $(CORE_DIR)/rops.c
 SOURCES += $(CORE_DIR)/mode7new.c
@@ -58,15 +56,34 @@ SOURCES += $(CORE_DIR)/tile16fadd1_2.c
 SOURCES += $(CORE_DIR)/tile16sub.c
 SOURCES += $(CORE_DIR)/tile16sub1_2.c
 SOURCES += $(CORE_DIR)/tile16fsub1_2.c
+
+ifeq ($(ASM_SPC700), 1)
+SOURCES += $(CORE_DIR)/spc700a.s
+SOURCES += $(CORE_DIR)/spc_decode.S
+
+DEFINES += -DASM_SPC700
+endif
+
+ifeq ($(ASM_CPU), 1)
 SOURCES += $(CORE_DIR)/os9x_65c816_global.s
 SOURCES += $(CORE_DIR)/os9x_65c816_spcasm.s
 SOURCES += $(CORE_DIR)/os9x_65c816_spcc.s
 #SOURCES += $(CORE_DIR)/os9x_65c816.s
 SOURCES += $(CORE_DIR)/os9x_asm_cpu.c
 
+DEFINES += -DASMCPU
+endif
+
 DEFINES += -mstructure-size-boundary=32
 DEFINES += -DARM_ASM
 DEFINES += -DRIGHTSHIFT_IS_SAR
+# Do we need all this? Causes issues on non-GCC compilers, etc.
+DEFINES += -ffast-math
+DEFINES += -finline -finline-functions -fexpensive-optimizations
+DEFINES += -falign-functions=32 -falign-loops -falign-labels
+DEFINES += -falign-jumps -fstrict-aliasing -fsigned-char -frename-registers -fweb
+DEFINES += -fomit-frame-pointer
+
 else
 SOURCES += $(CORE_DIR)/ppu_.c
 SOURCES += $(CORE_DIR)/gfx.c
@@ -77,20 +94,9 @@ endif
 
 
 #DEFINES += -D__GP2X__
-#DEFINES += -DASMCPU
 #DEFINES += -DVAR_CYCLES
 #DEFINES += -D_C_GW_
-#DEFINES += -DUSE_SA1
 #DEFINES +=  -DFAST_LSB_WORD_ACCESS
-
-ifeq ($(ARM_ASM), 1)
-# Do we need all this? Causes issues on non-GCC compilers, etc. 
-DEFINES += -ffast-math
-DEFINES += -finline -finline-functions -fexpensive-optimizations
-DEFINES += -falign-functions=16 -falign-loops -falign-labels
-DEFINES += -falign-jumps -fstrict-aliasing -fsigned-char -frename-registers -fweb
-DEFINES += -fomit-frame-pointer
-endif
 
 DEFINES += -ffast-math -funroll-loops -fomit-frame-pointer
 

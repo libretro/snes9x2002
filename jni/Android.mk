@@ -6,6 +6,8 @@ LOCAL_MODULE    := retro
 
 ifeq ($(TARGET_ARCH),arm)
 ARM_ASM         = 1
+ASM_CPU         = 0
+ASM_SPC700      = 0
 LOCAL_CFLAGS   += -DANDROID_ARM
 LOCAL_ARM_MODE := arm
 endif

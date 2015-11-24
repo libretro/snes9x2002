@@ -57,6 +57,8 @@ else ifeq ($(platform), ctr)
    CXX = $(DEVKITARM)/bin/arm-none-eabi-g++$(EXE_EXT)
    AR = $(DEVKITARM)/bin/arm-none-eabi-ar$(EXE_EXT)
 	ARM_ASM = 1
+   ASM_CPU = 0
+   ASM_SPC700 = 0
    CFLAGS += -DARM11 -D_3DS 
    CFLAGS += -march=armv6k -mtune=mpcore -mfloat-abi=hard
    CFLAGS += -Wall -mword-relocations

@@ -256,7 +256,7 @@ static void DecodeBlock(Channel* ch)
 
    int16* raw = ch->block = ch->decoded;
 
-#ifdef ARM
+#ifdef ASM_SPC700
    DecodeBlockAsm(compressed, raw, &ch->previous [0], &ch->previous [1]);
 #else
    int32 out;

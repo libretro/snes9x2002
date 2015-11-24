@@ -348,8 +348,12 @@ S9xMainLoop(void)
          S9xMainLoop_NoSA1_NoAPU();
    }
 #else
-   if (Settings.asmspc700) asmMainLoop_spcAsm(&CPU);
-   else asmMainLoop_spcC(&CPU);
+#ifdef ASM_SPC700
+   if (Settings.asmspc700)
+      asmMainLoop_spcAsm(&CPU);
+   else
+#endif
+      asmMainLoop_spcC(&CPU);
 #endif
    Registers.PC = CPU.PC - CPU.PCBase;
 

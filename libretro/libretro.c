@@ -247,7 +247,7 @@ static void snes_init (void)
 	Settings.TurboSkipFrames = 15;
 	Settings.ThreadSound = FALSE;
 	Settings.SoundSync = FALSE;
-#ifdef ASMCPU
+#ifdef ASM_SPC700
 	Settings.asmspc700 = TRUE;
 #endif
 	Settings.SpeedHacks = TRUE;

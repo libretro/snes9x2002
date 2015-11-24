@@ -190,7 +190,7 @@ extern "C" {
 void asm_APU_EXECUTE(int Mode);
 void asm_APU_EXECUTE2(void);
 }*/
-#ifdef ASMCPU
+#ifdef ASM_SPC700
 #define asm_APU_EXECUTE(MODE)\
 {\
    if (CPU.APU_APUExecuting == MODE) {\
