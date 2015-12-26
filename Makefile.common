@@ -74,15 +74,19 @@ SOURCES += $(CORE_DIR)/os9x_asm_cpu.c
 DEFINES += -DASMCPU
 endif
 
-DEFINES += -mstructure-size-boundary=32
+
 DEFINES += -DARM_ASM
 DEFINES += -DRIGHTSHIFT_IS_SAR
-# Do we need all this? Causes issues on non-GCC compilers, etc.
-DEFINES += -ffast-math
-DEFINES += -finline -finline-functions -fexpensive-optimizations
-DEFINES += -falign-functions=32 -falign-loops -falign-labels
-DEFINES += -falign-jumps -fstrict-aliasing -fsigned-char -frename-registers -fweb
+DEFINES += -finline -fsigned-char
 DEFINES += -fomit-frame-pointer
+DEFINES += -ffast-math -fstrict-aliasing
+
+ifeq ($(HAVE_GCC), 1)
+DEFINES += -mstructure-size-boundary=32
+DEFINES += -finline-functions -fexpensive-optimizations
+DEFINES += -falign-functions=32 -falign-loops -falign-labels
+DEFINES += -falign-jumps -frename-registers -fweb
+endif
 
 else
 SOURCES += $(CORE_DIR)/ppu_.c
