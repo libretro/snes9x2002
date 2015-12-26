@@ -40,7 +40,6 @@ else ifneq (,$(findstring ios,$(platform)))
    ARM_ASM = 1
    ASM_CPU = 0
    ASM_SPC700 = 0
-   HAVE_GCC = 1
    ifeq ($(platform),ios9)
       CC += -miphoneos-version-min=8.0
       CXX += -miphoneos-version-min=8.0
