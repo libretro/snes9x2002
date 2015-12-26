@@ -28,25 +28,28 @@ else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
-else ifeq ($(platform), ios)
-	TARGET := $(TARGET_NAME)_libretro_ios.dylib
-	fpic := -fPIC
-	SHARED := -dynamiclib
-	ifeq ($(IOSSDK),)
-		IOSSDK := $(shell xcodebuild -version -sdk iphoneos Path)
-	endif
-	CC = clang -arch armv7 -isysroot $(IOSSDK)
-	CXX = clang++ -arch armv7 -isysroot $(IOSSDK)
-	OSXVER = `sw_vers -productVersion | cut -d. -f 2`
-	OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
-	ifeq ($(OSX_LT_MAVERICKS),"YES")
-		CC += -miphoneos-version-min=5.0
-		CXX += -miphoneos-version-min=5.0
-		PLATFORM_DEFINES := -miphoneos-version-min=5.0
-	endif
+else ifneq (,$(findstring ios,$(platform)))
+   TARGET := $(TARGET_NAME)_libretro_ios.dylib
+   fpic := -fPIC
+   SHARED := -dynamiclib
+   ifeq ($(IOSSDK),)
+      IOSSDK := $(shell xcodebuild -version -sdk iphoneos Path)
+   endif
+   CC = cc -arch armv7 -isysroot $(IOSSDK)
+   CXX = c++ -arch armv7 -isysroot $(IOSSDK)
    ARM_ASM = 1
    ASM_CPU = 0
    ASM_SPC700 = 0
+   HAVE_GCC = 1
+   ifeq ($(platform),ios9)
+      CC += -miphoneos-version-min=8.0
+      CXX += -miphoneos-version-min=8.0
+      PLATFORM_DEFINES := -miphoneos-version-min=8.0
+   else
+      CC += -miphoneos-version-min=5.0
+      CXX += -miphoneos-version-min=5.0
+      PLATFORM_DEFINES := -miphoneos-version-min=5.0
+   endif
 else ifeq ($(platform), theos_ios)
    DEPLOYMENT_IOSVERSION = 5.0
    TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
