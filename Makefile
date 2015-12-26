@@ -47,6 +47,17 @@ else ifeq ($(platform), ios)
    ARM_ASM = 1
    ASM_CPU = 0
    ASM_SPC700 = 0
+else ifeq ($(platform), theos_ios)
+   DEPLOYMENT_IOSVERSION = 5.0
+   TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
+   ARCHS = armv7 armv7s
+   TARGET_IPHONEOS_DEPLOYMENT_VERSION=$(DEPLOYMENT_IOSVERSION)
+   THEOS_BUILD_DIR := objs
+   include $(THEOS)/makefiles/common.mk
+   LIBRARY_NAME = $(TARGET_NAME)_libretro_ios
+   ARM_ASM = 1
+   ASM_CPU = 0
+   ASM_SPC700 = 0
 else ifeq ($(platform), ps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
@@ -102,20 +113,28 @@ LIBRETRO_DIR := ./libretro
 
 include Makefile.common
 
-OBJECTS := $(SOURCES:.c=.o)
-OBJECTS := $(OBJECTS:.cpp=.o)
-OBJECTS := $(OBJECTS:.S=.o)
-OBJECTS := $(OBJECTS:.s=.o)
+OBJS := $(SOURCES:.c=.o)
+OBJS := $(OBJS:.cpp=.o)
+OBJS := $(OBJS:.S=.o)
+OBJS := $(OBJS:.s=.o)
 
 CFLAGS += $(DEFINES) $(COMMON_DEFINES) $(INCLUDES)
 
+
+ifeq ($(platform), theos_ios)
+COMMON_FLAGS := -DIOS $(COMMON_DEFINES) $(INCFLAGS) -I$(THEOS_INCLUDE_PATH) -Wno-error
+$(LIBRARY_NAME)_CFLAGS += $(CFLAGS) $(COMMON_FLAGS)
+$(LIBRARY_NAME)_CXXFLAGS += $(CXXFLAGS) $(COMMON_FLAGS)
+${LIBRARY_NAME}_FILES = $(SOURCES_CXX) $(SOURCES_C)
+include $(THEOS_MAKE_PATH)/library.mk
+else
 all: $(TARGET)
 
-$(TARGET): $(OBJECTS)
+$(TARGET): $(OBJS)
 ifeq ($(STATIC_LINKING), 1)
-	$(AR) rcs $@ $(OBJECTS)
+	$(AR) rcs $@ $(OBJS)
 else
-	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS) -lm
+	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJS) -lm
 endif
 
 %.o: %.c
@@ -131,7 +150,8 @@ endif
 	$(CXX) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
 
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJS) $(TARGET)
 
 .PHONY: clean
 
+endif
