@@ -81,13 +81,6 @@ DEFINES += -finline -fsigned-char
 DEFINES += -fomit-frame-pointer
 DEFINES += -ffast-math -fstrict-aliasing
 
-ifeq ($(HAVE_GCC), 1)
-DEFINES += -mstructure-size-boundary=32
-DEFINES += -finline-functions -fexpensive-optimizations
-DEFINES += -falign-functions=32 -falign-loops -falign-labels
-DEFINES += -falign-jumps -frename-registers -fweb
-endif
-
 else
 SOURCES += $(CORE_DIR)/ppu_.c
 SOURCES += $(CORE_DIR)/gfx.c
