@@ -14,8 +14,6 @@ else ifneq ($(findstring win,$(shell uname -a)),)
 endif
 endif
 
-HAVE_GCC = 0
-
 ifeq ($(platform), unix)
    TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
@@ -100,7 +98,6 @@ else ifeq ($(platform), ctr)
    CFLAGS += -D_3DS
    PLATFORM_DEFINES := -D_3DS
    STATIC_LINKING := 1
-   HAVE_GCC = 1
 else
    TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
