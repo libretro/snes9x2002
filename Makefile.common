@@ -78,7 +78,6 @@ endif
 DEFINES += -DARM_ASM
 DEFINES += -DRIGHTSHIFT_IS_SAR
 DEFINES += -finline -fsigned-char
-DEFINES += -fomit-frame-pointer
 DEFINES += -ffast-math -fstrict-aliasing
 
 else
@@ -94,8 +93,6 @@ endif
 #DEFINES += -DVAR_CYCLES
 #DEFINES += -D_C_GW_
 #DEFINES +=  -DFAST_LSB_WORD_ACCESS
-
-DEFINES += -ffast-math -funroll-loops -fomit-frame-pointer
 
 INCLUDES   = -I$(LIBRETRO_DIR) -I$(CORE_DIR) -I.
 DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline

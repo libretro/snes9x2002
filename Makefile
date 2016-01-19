@@ -18,10 +18,7 @@ ifeq ($(platform), unix)
    TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
    SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
-   CFLAGS += -fno-builtin \
-            -fno-exceptions -ffunction-sections \
-             -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
-             -fweb -fpeel-loops
+   CFLAGS += -fno-builtin -fno-exceptions
 else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
