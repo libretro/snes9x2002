@@ -130,10 +130,13 @@ typedef short        int16_32;
 
 EXTERN_C void S9xGenerateSound();
 
+#ifndef _MSC_VER
 void _makepath(char* path, const char* drive, const char* dir,
                const char* fname, const char* ext);
 void _splitpath(const char* path, char* drive, char* dir, char* fname,
                 char* ext);
+#endif
+
 #define strcasecmp strcmp
 #define strncasecmp strncmp
 
