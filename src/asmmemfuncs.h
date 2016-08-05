@@ -1,7 +1,7 @@
 #ifndef _ASMMEMFUNCS_H_
 #define _ASMMEMFUNCS_H_
 
-#if defined(ARM_ASM) && !defined(__MACH__)
+#if defined(ARM_ASM)
 #define memset32(_dst, _c, _count) \
 ({ uint32_t *dst = (_dst); register uint32_t c __asm__ ("r7") = (_c); int count = (_count); register uint32_t dummy0 __asm__ ("r4"), dummy1 __asm__ ("r5"), dummy2 __asm__ ("r6"); \
     __asm__ __volatile__ ( \
