@@ -128,7 +128,6 @@ typedef short        int16_32;
 #define CHECK_SOUND()
 #define VOID void
 #define CPU_SHUTDOWN
-//#define UNZIP_SUPPORT
 #define ZeroMemory(a,b) memset((a),0,(b))
 #define PACKING __attribute__ ((packed))
 #define ALIGN_BY_ONE  __attribute__ ((aligned (1), packed))

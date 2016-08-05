@@ -1,4 +1,4 @@
-/*
+0/*
  * Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
  *
  * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
@@ -109,8 +109,6 @@ bool8_32 AllASCII(uint8* b, int size);
 int  ScoreHiROM(bool8_32 skip_header);
 int  ScoreLoROM(bool8_32 skip_header);
 void ApplyROMFixes();
-void CheckForIPSPatch(const char* rom_filename, bool8_32 header,
-                      int32* rom_size);
 
 const char* TVStandard();
 const char* Speed();
