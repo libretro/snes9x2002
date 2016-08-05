@@ -314,7 +314,6 @@ typedef struct
    bool8  DisableMasterVolume;
    bool8  SoundSync;
    bool8  InterpolatedSound;
-   bool8  ThreadSound;
    bool8  Mute;
    //    bool8  NextAPUEnabled;
    uint8  AltSampleDecode;
