@@ -1,5 +1,5 @@
 DEBUG=0
-TARGET_NAME = pocketsnes
+TARGET_NAME = snes9x2002
 
 ifeq ($(platform),)
 platform = unix
