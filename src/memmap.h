@@ -82,7 +82,6 @@
 
 bool8_32 LoadROM(const char*);
 void  InitROM(bool8_32);
-bool8_32 LoadSRAM(const char*);
 bool8_32 SaveSRAM(const char*);
 bool8_32 MemoryInit();
 void  MemoryDeinit();

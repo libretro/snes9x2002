@@ -932,47 +932,6 @@ void InitROM (bool8_32 Interleaved)
     S9xMessage (S9X_INFO, S9X_ROM_INFO, String);
 }
 
-bool8_32 LoadSRAM (const char *filename)
-{
-    int size = Memory.SRAMSize ?
-	       (1 << (Memory.SRAMSize + 3)) * 128 : 0;
-
-    memset (Memory.SRAM, SNESGameFixes.SRAMInitialValue, 0x20000);
-
-    if (size > 0x20000)
-	size = 0x20000;
-    
-    if (size)
-    {
-	FILE *file;
-	if ((file = fopen(filename, "rb")))
-	{
-	    int len = fread ((char*) SRAM, 1, 0x20000, file);
-	    fclose (file);
-	    if (len - size == 512)
-	    {
-		// S-RAM file has a header - remove it
-		memmove (SRAM, SRAM + 512, size);
-	    }
-	    if (len == size + SRTC_SRAM_PAD)
-	    {
-		S9xSRTCPostLoadState ();
-		S9xResetSRTC ();
-		rtc.index = -1;
-		rtc.mode = MODE_READ;
-	    }
-	    else
-		S9xHardResetSRTC ();
-
-	    return (TRUE);
-	}
-	S9xHardResetSRTC ();
-	return (FALSE);
-    }
-
-    return (TRUE);
-}
-
 bool8_32 SaveSRAM (const char *filename)
 {
    int size = Memory.SRAMSize ?
