@@ -567,7 +567,6 @@ const char* S9xChooseFilename(bool8 a) { return NULL; }
 bool8 S9xInitUpdate() { return TRUE; }
 bool8 S9xContinueUpdate(int width, int height) { return TRUE; }
 void S9xSetPalette() {}
-void S9xAutoSaveSRAM() {}
 void S9xLoadSDD1Data() {}
 bool8 S9xReadMousePosition (int which1_0_to_1, int* x, int* y, uint32* buttons) { return FALSE; }
 bool8 S9xReadSuperScopePosition (int* x, int* y, uint32* buttons) { return FALSE; }

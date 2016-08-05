@@ -82,7 +82,6 @@
 
 bool8_32 LoadROM(const char*);
 void  InitROM(bool8_32);
-bool8_32 SaveSRAM(const char*);
 bool8_32 MemoryInit();
 void  MemoryDeinit();
 void  FreeSDD1Data();
@@ -174,10 +173,7 @@ extern uint8* SRAM;
 extern uint8* ROM;
 extern uint8* RegRAM;
 void S9xDeinterleaveMode2();
-void S9xSaveSRAM(void);
 END_EXTERN_C
-
-void S9xAutoSaveSRAM();
 
 #ifdef NO_INLINE_SET_GET
 uint8 S9xGetByte(uint32 Address, struct SCPUState*);

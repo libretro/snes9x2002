@@ -932,33 +932,6 @@ void InitROM (bool8_32 Interleaved)
     S9xMessage (S9X_INFO, S9X_ROM_INFO, String);
 }
 
-bool8_32 SaveSRAM (const char *filename)
-{
-   int size = Memory.SRAMSize ?
-      (1 << (Memory.SRAMSize + 3)) * 128 : 0;
-   if (Settings.SRTC)
-   {
-      size += SRTC_SRAM_PAD;
-      S9xSRTCPreSaveState ();
-   }
-
-
-   if (size > 0x20000)
-      size = 0x20000;
-
-   if (size && *Memory.ROMFilename)
-   {
-      FILE *file;
-      if ((file = fopen (filename, "wb")))
-      {
-         fwrite ((char *) SRAM, size, 1, file);
-         fclose (file);
-         return (TRUE);
-      }
-   }
-   return (FALSE);
-}
-
 void FixROMSpeed ()
 {
     int c;

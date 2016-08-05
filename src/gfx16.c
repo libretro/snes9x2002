@@ -686,7 +686,6 @@ void S9xEndScreenRefresh()
          {
             if (!--CPU.AutoSaveTimer)
             {
-               S9xAutoSaveSRAM ();
                CPU.SRAMModified = FALSE;
             }
          }
