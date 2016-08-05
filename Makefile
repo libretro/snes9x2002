@@ -85,13 +85,13 @@ else ifeq ($(platform), vita)
    CC = $(VITASDK)/bin/arm-vita-eabi-gcc$(EXE_EXT)
    CXX = $(VITASDK)/bin/arm-vita-eabi-g++$(EXE_EXT)
    AR = $(VITASDK)/bin/arm-vita-eabi-ar$(EXE_EXT)
-   ARM_ASM = 0
+   ARM_ASM = 1
    ASM_CPU = 0
    ASM_SPC700 = 0
-   CFLAGS += -march=armv7 -mfloat-abi=hard
+   CFLAGS += -march=armv7-a -mfloat-abi=hard
    CFLAGS += -Wall -mword-relocations
    CFLAGS += -fomit-frame-pointer -ffast-math
-   CFLAGS += -std=c11
+   CFLAGS += -std=c11 -Wa,-mimplicit-it=thumb
    DEFS +=  -DVITA
    STATIC_LINKING := 1
 # CTR (3DS)
