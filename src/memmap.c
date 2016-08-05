@@ -63,9 +63,6 @@ static uint8 bytes0x2000 [0x2000];
 
 extern bool8  ROMAPUEnabled;
 
-extern char *rom_filename;
-extern bool8 LoadZip(const char* , int32 *, int32 *);
-
 bool8_32 AllASCII (uint8 *b, int size)
 {
    int i;
@@ -286,21 +283,6 @@ void FreeSDD1Data ()
 	free ((char *) Memory.SDD1Data);
 	Memory.SDD1Data = NULL;
     }
-}
-
-/**********************************************************************************************/
-/* checkext()                                                                                 */
-/**********************************************************************************************/
-int checkzip( char * fn  )
-{
-    int cnt = strlen(fn);
-    if( ( (fn[cnt-1] == 'p') || (fn[cnt-1] == 'P') ) &&
-        ( (fn[cnt-2] == 'i') || (fn[cnt-2] == 'I') ) &&
-        ( (fn[cnt-3] == 'z') || (fn[cnt-3] == 'Z') )    ){
-        return true;
-        
-    }
-    return false;
 }
 
 /**********************************************************************************************/
@@ -625,7 +607,6 @@ again:
     FreeSDD1Data ();
     InitROM (Tales);
 	
-    S9xLoadCheatFile (S9xGetFilename(".cht"));
     S9xInitCheatData ();
     S9xApplyCheats ();
 
@@ -994,33 +975,29 @@ bool8_32 LoadSRAM (const char *filename)
 
 bool8_32 SaveSRAM (const char *filename)
 {
-    int size = Memory.SRAMSize ?
-	       (1 << (Memory.SRAMSize + 3)) * 128 : 0;
-    if (Settings.SRTC)
-    {
-	size += SRTC_SRAM_PAD;
-	S9xSRTCPreSaveState ();
-    }
+   int size = Memory.SRAMSize ?
+      (1 << (Memory.SRAMSize + 3)) * 128 : 0;
+   if (Settings.SRTC)
+   {
+      size += SRTC_SRAM_PAD;
+      S9xSRTCPreSaveState ();
+   }
 
 
-    if (size > 0x20000)
-	size = 0x20000;
+   if (size > 0x20000)
+      size = 0x20000;
 
-    if (size && *Memory.ROMFilename)
-    {
-	FILE *file;
-	if ((file = fopen (filename, "wb")))
-	{
-	    fwrite ((char *) SRAM, size, 1, file);
-	    fclose (file);
-		//sync();
-#if defined(__linux)
-	    //chown (filename, getuid (), getgid ());
-#endif
-	    return (TRUE);
-	}
-    }
-    return (FALSE);
+   if (size && *Memory.ROMFilename)
+   {
+      FILE *file;
+      if ((file = fopen (filename, "wb")))
+      {
+         fwrite ((char *) SRAM, size, 1, file);
+         fclose (file);
+         return (TRUE);
+      }
+   }
+   return (FALSE);
 }
 
 void FixROMSpeed ()
