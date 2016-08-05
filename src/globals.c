@@ -288,10 +288,6 @@ uint8 APUROM [64] =
    0xF4, 0xC4, 0xF4, 0xDD, 0x5D, 0xD0, 0xDB, 0x1F, 0x00, 0x00, 0xC0, 0xFF
 };
 
-#ifdef NETPLAY_SUPPORT
-SNetPlay NetPlay;
-#endif
-
 // Raw SPC700 instruction cycle lengths
 int32 S9xAPUCycleLengths [256] =
 {
