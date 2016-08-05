@@ -72,7 +72,6 @@ void S9xCloseSnapshotFile(STREAM file);
 
 const char* S9xBasename(const char* filename);
 
-int S9xFStrcmp(FILE*, const char*);
 const char* S9xGetHomeDirectory();
 const char* S9xGetSnapshotDirectory();
 const char* S9xGetROMDirectory();
