@@ -79,6 +79,21 @@ else ifeq ($(platform), wii)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
    STATIC_LINKING := 1
+# Vita
+else ifeq ($(platform), vita)
+   TARGET := $(TARGET_NAME)_libretro_vita.a
+   CC = $(VITASDK)/bin/arm-vita-eabi-gcc$(EXE_EXT)
+   CXX = $(VITASDK)/bin/arm-vita-eabi-g++$(EXE_EXT)
+   AR = $(VITASDK)/bin/arm-vita-eabi-ar$(EXE_EXT)
+   ARM_ASM = 1
+   ASM_CPU = 0
+   ASM_SPC700 = 0
+   CFLAGS += -march=armv7-a -mfloat-abi=hard
+   CFLAGS += -Wall -mword-relocations
+   CFLAGS += -fomit-frame-pointer -ffast-math
+   CFLAGS += -std=c11 -Wa,-mimplicit-it=thumb
+   DEFS +=  -DVITA
+   STATIC_LINKING := 1
 # CTR (3DS)
 else ifeq ($(platform), ctr)
    TARGET := $(TARGET_NAME)_libretro_ctr.a
