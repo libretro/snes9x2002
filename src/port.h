@@ -53,8 +53,6 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
    with a single define-block for each target platform.
 */
 
-#if 1
-
 //Title
 #define TITLE "Snes9x"
 
@@ -119,7 +117,6 @@ typedef short        int16_32;
 #define FASTCALL
 #define PIXEL_FORMAT RGB565
 #define CHECK_SOUND()
-#define VOID void
 #define CPU_SHUTDOWN
 #define ZeroMemory(a,b) memset((a),0,(b))
 #define PACKING __attribute__ ((packed))
@@ -148,7 +145,5 @@ void _splitpath(const char* path, char* drive, char* dir, char* fname,
 #undef inline
 #define inline __inline
 #endif
-
-#endif //  
 
 #endif //  _PORT_H_
