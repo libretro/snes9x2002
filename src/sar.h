@@ -82,19 +82,6 @@
 
 #include "port.h"
 
-#ifndef snes9x_types_defined
-#define snes9x_types_defined
-
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef unsigned char bool8;
-typedef unsigned int bool32;
-typedef signed char int8;
-typedef short int16;
-typedef int int32;
-#endif
-
 #ifdef RIGHTSHIFT_IS_SAR
 #define SAR8(b, n) ((b)>>(n))
 #define SAR16(b, n) ((b)>>(n))
