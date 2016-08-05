@@ -89,27 +89,7 @@
 #ifndef _FXEMU_H_
 #define _FXEMU_H_ 1
 
-/* Types used by structures and code */
-#ifndef snes9x_types_defined
-#define snes9x_types_defined
-
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef unsigned char bool8;
-typedef unsigned int bool32;
-typedef signed char int8;
-typedef short int16;
-typedef int int32;
-#endif
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
+#include "port.h"
 
 /* The FxInfo_s structure, the link between the FxEmulator and the Snes Emulator */
 typedef struct

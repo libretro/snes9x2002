@@ -62,6 +62,7 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
 #include <limits.h>
 #include <string.h>
 #include <stdbool.h>
+
 //Types Defined
 typedef uint8_t   bool8;
 typedef uint8_t   uint8;
