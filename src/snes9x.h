@@ -335,12 +335,6 @@ typedef struct
    bool8  DisplayFrameRate;
 
    // Others
-   bool8  NetPlay;
-   bool8  NetPlayServer;
-   char   ServerName [128];
-   int    Port;
-   bool8  GlideEnable;
-   bool8  OpenGLEnable;
    int32  AutoSaveDelay; // Time in seconds before S-RAM auto-saved if modified.
    bool8  ApplyCheats;
    bool8  TurboMode;

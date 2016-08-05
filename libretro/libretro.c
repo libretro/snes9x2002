@@ -182,9 +182,9 @@ void S9xGenerateSound()
 
 uint32 S9xReadJoypad(int which1)
 {
-    if (which1 > 4)
-        return 0;
-	return joys[which1];
+   if (which1 > 4)
+      return 0;
+   return joys[which1];
 }
 
 void retro_set_controller_port_device(unsigned in_port, unsigned device)
@@ -239,8 +239,6 @@ static void snes_init (void)
 	Settings.SixteenBit = TRUE;
 	
 	Settings.SupportHiRes = FALSE;
-	Settings.NetPlay = FALSE;
-	Settings.ServerName [0] = 0;
 	Settings.AutoSaveDelay = 30;
 	Settings.ApplyCheats = TRUE;
 	Settings.TurboMode = FALSE;
@@ -255,42 +253,6 @@ static void snes_init (void)
 	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
 
    Settings.InterpolatedSound = TRUE;
-   /*
-   	Settings.SoundPlaybackRate = 5;
-    Settings.Stereo = TRUE;
-    Settings.SoundBufferSize = 0;
-    Settings.DisableSoundEcho = 0;
-    Settings.AltSampleDecode = 0;
-    Settings.SoundEnvelopeHeightReading = FALSE;
-    Settings.FixFrequency = 0;
-    Settings.CyclesPercentage = 100;
-    Settings.InterpolatedSound = TRUE;
-    Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
-    Settings.SoundMixInterval = 0;
-    Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
-    Settings.SkipFrames = 10;
-    Settings.ShutdownMaster = TRUE;
-    Settings.FrameTimePAL = 20000;
-    Settings.FrameTimeNTSC = 16667;
-    Settings.DisableSampleCaching = FALSE;
-    Settings.DisableMasterVolume = FALSE;
-    Settings.Mouse = FALSE;
-    Settings.SuperScope = FALSE;
-    Settings.MultiPlayer5 = FALSE;
-    Settings.TurboMode = FALSE;
-    Settings.TurboSkipFrames = 40;
-    Settings.ControllerOption = SNES_MULTIPLAYER5;
-    Settings.Transparency = TRUE;
-    Settings.SixteenBit = TRUE;
-    Settings.SupportHiRes = TRUE;
-    Settings.NetPlay = FALSE;
-    Settings.ServerName [0] = 0;
-    Settings.ThreadSound = FALSE;
-    Settings.AutoSaveDelay = 30;
-    Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
-    Settings.DisplayFrameRate = FALSE;
-    Settings.ReverseStereo = TRUE;
-	*/
 
    CPU.Flags = 0;
 
