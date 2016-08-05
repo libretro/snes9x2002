@@ -122,10 +122,10 @@ NormalTileRenderer DrawHiResTilePtr = NULL;
 ClippedTileRenderer DrawHiResClippedTilePtr = NULL;
 LargePixelRenderer DrawLargePixelPtr = NULL;
 
-uint32 odd_high[4][16];
-uint32 odd_low[4][16];
-uint32 even_high[4][16];
-uint32 even_low[4][16];
+uint32_t odd_high[4][16];
+uint32_t odd_low[4][16];
+uint32_t even_high[4][16];
+uint32_t even_low[4][16];
 
 #ifdef GFX_MULTI_FORMAT
 

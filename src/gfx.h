@@ -148,10 +148,10 @@ typedef struct
    short CentreY;
 } SLineMatrixData;
 
-extern uint32 odd_high [4][16];
-extern uint32 odd_low [4][16];
-extern uint32 even_high [4][16];
-extern uint32 even_low [4][16];
+extern uint32_t odd_high [4][16];
+extern uint32_t odd_low [4][16];
+extern uint32_t even_high [4][16];
+extern uint32_t even_low [4][16];
 extern SBG BG;
 extern uint32 DirectColourMaps [8][256];
 
