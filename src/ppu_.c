@@ -2141,6 +2141,9 @@ uint8 S9xGetCPU(uint16 Address)
 
 void S9xResetPPU()
 {
+   uint8 B;
+   int Sprite;
+
    PPU.BGMode = 0;
    PPU.BG3Priority = 0;
    PPU.Brightness = 0;
@@ -2150,7 +2153,7 @@ void S9xResetPPU()
    PPU.VMA.FullGraphicCount = 0;
    PPU.VMA.Shift = 0;
 
-   for (uint8 B = 0; B != 4; B++)
+   for (B = 0; B < 4; B++)
    {
       PPU.BG[B].SCBase = 0;
       PPU.BG[B].VOffset = 0;
@@ -2188,7 +2191,8 @@ void S9xResetPPU()
 
    PPU.FirstSprite = 0;
    PPU.LastSprite = 127;
-   for (int Sprite = 0; Sprite < 128; Sprite++)
+
+   for (Sprite = 0; Sprite < 128; Sprite++)
    {
       PPU.OBJ[Sprite].HPos = 0;
       PPU.OBJ[Sprite].VPos = 0;
