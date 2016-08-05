@@ -32,7 +32,7 @@ else ifneq (,$(findstring ios,$(platform)))
    endif
    CC = cc -arch armv7 -isysroot $(IOSSDK)
    CXX = c++ -arch armv7 -isysroot $(IOSSDK)
-   ARM_ASM = 1
+   ARM_ASM = 0
    ASM_CPU = 0
    ASM_SPC700 = 0
    ifeq ($(platform),ios9)
