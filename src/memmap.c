@@ -63,18 +63,18 @@ static uint8 bytes0x2000 [0x2000];
 
 extern bool8  ROMAPUEnabled;
 
-bool8_32 AllASCII (uint8 *b, int size)
+static bool8_32 AllASCII (uint8 *b, int size)
 {
    int i;
-    for (i = 0; i < size; i++)
-    {
-	if (b[i] < 32 || b[i] > 126)
-	    return (FALSE);
-    }
-    return (TRUE);
+   for (i = 0; i < size; i++)
+   {
+      if (b[i] < 32 || b[i] > 126)
+         return (FALSE);
+   }
+   return (TRUE);
 }
 
-int ScoreHiROM (bool8_32 skip_header)
+static int ScoreHiROM (bool8_32 skip_header)
 {
     int score = 0;
     int o = skip_header ? 0xff00 + 0x200 : 0xff00;
@@ -101,7 +101,7 @@ int ScoreHiROM (bool8_32 skip_header)
     return (score);
 }
 
-int ScoreLoROM (bool8_32 skip_header)
+static int ScoreLoROM (bool8_32 skip_header)
 {
     int score = 0;
     int o = skip_header ? 0x7f00 + 0x200 : 0x7f00;
@@ -128,7 +128,7 @@ int ScoreLoROM (bool8_32 skip_header)
     return (score);
 }
 	
-char *Safe (const char *s)
+static char *Safe (const char *s)
 {
     static char *safe = NULL;
     static int safe_len = 0;

@@ -90,7 +90,6 @@ void WriteProtectROM();
 void FixROMSpeed();
 void MapRAM();
 void MapExtraRAM();
-char* Safe(const char*);
 
 void LoROMMap();
 void LoROM24MBSMap();
@@ -103,9 +102,6 @@ void TalesROMMap(bool8_32);
 void AlphaROMMap();
 void SA1ROMMap();
 void BSHiROMMap();
-bool8_32 AllASCII(uint8* b, int size);
-int  ScoreHiROM(bool8_32 skip_header);
-int  ScoreLoROM(bool8_32 skip_header);
 void ApplyROMFixes();
 
 const char* TVStandard();
