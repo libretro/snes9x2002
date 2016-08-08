@@ -61,7 +61,7 @@ extern uint32 TileBlank;
       return; \
    } \
 \
-    register uint32 l; \
+    uint32 l; \
     GFX.ScreenColors = &GFX.ScreenColorsPre[(Tile & GFX.PaletteMask) >> GFX.PaletteShift];
 
 
@@ -70,7 +70,7 @@ extern uint32 TileBlank;
     else GFX.ScreenColors = &IPPU.ScreenColors [(((Tile >> 10) & BG.PaletteMask) << BG.PaletteShift) + BG.StartPalette];
 */
 #define RENDER_TILE(NORMAL, FLIPPED, N) \
-   register int   inc; \
+   int   inc; \
     if (!(Tile & V_FLIP)){ \
       bp  = pCache + StartLine; \
       inc = 8; \
@@ -126,7 +126,7 @@ extern uint32 TileBlank;
 
 
 #define RENDER_CLIPPED_TILE(NORMAL, FLIPPED, N) \
-   register int   inc; \
+   int   inc; \
     if (Tile & V_FLIP){ \
       bp  = pCache + 56 - StartLine; \
       inc = -8; \
@@ -164,7 +164,8 @@ extern uint32 TileBlank;
        pixel = PIXEL; \
        for (l = LineCount; l != 0; l--, sp += GFX_PPL, Depth += GFX_PPL) \
        { \
-      for (int z = Pixels - 1; z >= 0; z--) \
+          int z; \
+      for (z = Pixels - 1; z >= 0; z--) \
           if (GFX.Z1 > Depth [z]) \
           { \
          sp [z] = FUNCTION(sp + z, pixel); \
@@ -182,7 +183,8 @@ extern uint32 TileBlank;
        pixel = PIXEL; \
        for (l = LineCount; l != 0; l--, sp += GFX_PPL, Depth += GFX_PPL) \
        { \
-      for (int z = Pixels - 1; z >= 0; z--) \
+          int z; \
+      for (z = Pixels - 1; z >= 0; z--) \
           if (GFX.Z1 > Depth [z]) \
           { \
          sp [z] = FUNCTION(sp + z, pixel); \
@@ -200,7 +202,8 @@ extern uint32 TileBlank;
        pixel = PIXEL; \
        for (l = LineCount; l != 0; l--, sp += GFX_PPL, Depth += GFX_PPL) \
        { \
-      for (int z = Pixels - 1; z >= 0; z--) \
+          int z; \
+      for (z = Pixels - 1; z >= 0; z--) \
           if (GFX.Z1 > Depth [z]) \
           { \
          sp [z] = FUNCTION(sp + z, pixel); \
@@ -216,7 +219,8 @@ extern uint32 TileBlank;
        pixel = PIXEL; \
        for (l = LineCount; l != 0; l--, sp += GFX_PPL, Depth += GFX_PPL) \
        { \
-      for (int z = Pixels - 1; z >= 0; z--) \
+          int z; \
+      for (z = Pixels - 1; z >= 0; z--) \
           if (GFX.Z1 > Depth [z]) \
           { \
          sp [z] = FUNCTION(sp + z, pixel); \
