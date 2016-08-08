@@ -119,11 +119,13 @@ void S9xFixColourBrightness()
    IPPU.XB = mul_brightness [PPU.Brightness];
    if (Settings.SixteenBit)
    {
-      for (int i = 0; i < 256; i++)
+      unsigned i;
+
+      for (i = 0; i < 256; i++)
       {
-         IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
-         IPPU.Green [i] = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
-         IPPU.Blue [i] = IPPU.XB [(PPU.CGDATA [i] >> 10) & 0x1f];
+         IPPU.Red [i]          = IPPU.XB [PPU.CGDATA [i] & 0x1f];
+         IPPU.Green [i]        = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
+         IPPU.Blue [i]         = IPPU.XB [(PPU.CGDATA [i] >> 10) & 0x1f];
          IPPU.ScreenColors [i] = BUILD_PIXEL(IPPU.Red [i], IPPU.Green [i],
                                              IPPU.Blue [i]);
       }
@@ -2411,7 +2413,7 @@ void ProcessSuperScope()
    }
 }
 
-void S9xNextController()
+void S9xNextController(void)
 {
    switch (IPPU.Controller)
    {
@@ -2448,7 +2450,7 @@ void S9xNextController()
    }
 }
 
-void S9xUpdateJoypads()
+void S9xUpdateJoypads(void)
 {
    int i;
 
@@ -2519,7 +2521,7 @@ void S9xUpdateJoypads()
    }
 }
 
-void S9xSuperFXExec()
+void S9xSuperFXExec(void)
 {
    if (Settings.SuperFX)
    {

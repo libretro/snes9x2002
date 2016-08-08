@@ -56,7 +56,7 @@ else ifeq ($(platform), theos_ios)
    ASM_CPU = 0
    ASM_SPC700 = 0
 else ifeq ($(platform), ps3)
-   TARGET := $(TARGET_NAME)_libretro_ps3.a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
    CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
@@ -73,15 +73,21 @@ else ifeq ($(platform), xenon)
    AR = xenon-ar
    CFLAGS += -D__LIBXENON__ -m32 -D__ppc__
    STATIC_LINKING := 1
-else ifeq ($(platform), wii)
-   TARGET := $(TARGET_NAME)_libretro_wii.a
+else ifeq ($(platform), ngc)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
    STATIC_LINKING := 1
+else ifeq ($(platform), wii)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
+   CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc
+   AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
+   CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__ -DHW_RVL
+   STATIC_LINKING := 1
 # Vita
 else ifeq ($(platform), vita)
-   TARGET := $(TARGET_NAME)_libretro_vita.a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(VITASDK)/bin/arm-vita-eabi-gcc$(EXE_EXT)
    CXX = $(VITASDK)/bin/arm-vita-eabi-g++$(EXE_EXT)
    AR = $(VITASDK)/bin/arm-vita-eabi-ar$(EXE_EXT)
@@ -96,7 +102,7 @@ else ifeq ($(platform), vita)
    STATIC_LINKING := 1
 # CTR (3DS)
 else ifeq ($(platform), ctr)
-   TARGET := $(TARGET_NAME)_libretro_ctr.a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(DEVKITARM)/bin/arm-none-eabi-gcc$(EXE_EXT)
    CXX = $(DEVKITARM)/bin/arm-none-eabi-g++$(EXE_EXT)
    AR = $(DEVKITARM)/bin/arm-none-eabi-ar$(EXE_EXT)

@@ -240,10 +240,10 @@ void DrawHiResClippedTile16(uint32 Tile, int32 Offset,
 void DrawHiResTile16(uint32 Tile, int32 Offset,
                      uint32 StartLine, uint32 LineCount);
 
-bool8_32 S9xGraphicsInit()
+bool8_32 S9xGraphicsInit(void)
 {
-   register uint32 PixelOdd = 1;
-   register uint32 PixelEven = 2;
+   uint32 PixelOdd = 1;
+   uint32 PixelEven = 2;
 
 #ifdef GFX_MULTI_FORMAT
    if (GFX.BuildPixel == NULL)
@@ -253,11 +253,11 @@ bool8_32 S9xGraphicsInit()
    uint8 bitshift;
    for (bitshift = 0; bitshift < 4; bitshift++)
    {
-      register int i;
+      int i;
       for (i = 0; i < 16; i++)
       {
-         register uint32 h = 0;
-         register uint32 l = 0;
+         uint32 h = 0;
+         uint32 l = 0;
 
 #if defined(MSB_FIRST)
          if (i & 8)
@@ -2117,6 +2117,7 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 }
 
 #define RENDER_BACKGROUND_MODE7(FUNC) \
+    uint32 clip, Line; \
     uint8 *VRAM1 = Memory.VRAM + 1; \
     if (GFX.r2130 & 1) \
     { \
@@ -2140,7 +2141,7 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     Screen += GFX.StartY * GFX_PITCH; \
     SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
 \
-    for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, l++) \
+    for (Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, l++) \
     { \
    int yy; \
 \
@@ -2162,7 +2163,7 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
    int BB = l->MatrixB * yy + (CentreX << 8); \
    int DD = l->MatrixD * yy + (CentreY << 8); \
 \
-   for (uint32 clip = 0; clip < ClipCount; clip++) \
+   for (clip = 0; clip < ClipCount; clip++) \
    { \
        if (GFX.pCurrentClip->Count [bg]) \
        { \
@@ -2199,10 +2200,11 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 \
        if (!PPU.Mode7Repeat) \
        { \
-      for (int x = startx; x != endx; x += dir, AA += aa, CC += cc, p++) \
+          int x; \
+      for (x = startx; x != endx; x += dir, AA += aa, CC += cc, p++) \
       { \
-         register int X = ((AA + BB) >> 8) & 0x3ff; \
-         register int Y = ((CC + DD) >> 8) & 0x3ff; \
+         int X = ((AA + BB) >> 8) & 0x3ff; \
+         int Y = ((CC + DD) >> 8) & 0x3ff; \
           uint8 *TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
           uint32 b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
           if (b) \
@@ -2213,7 +2215,8 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
        } \
        else \
        { \
-      for (int x = startx; x != endx; x += dir, AA += aa, CC += cc, p++) \
+          int x; \
+      for (x = startx; x != endx; x += dir, AA += aa, CC += cc, p++) \
       { \
           int X = ((AA + BB) >> 8); \
           int Y = ((CC + DD) >> 8); \
@@ -2252,6 +2255,7 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     }
 
 #define RENDER_BACKGROUND_MODE7ADDSUB(DEPTH, FUNC) \
+   uint32 clip, Line; \
     uint8 *VRAM1 = Memory.VRAM + 1; \
     if (GFX.r2130 & 1) \
     { \
@@ -2276,7 +2280,7 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     uint8 *Depth = GFX.DB + GFX.StartY * GFX_PPL; \
     SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
 \
-    for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) \
+    for (Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) \
     { \
    int yy; \
 \
@@ -2298,7 +2302,7 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
    int BB = l->MatrixB * yy + (CentreX << 8); \
    int DD = l->MatrixD * yy + (CentreY << 8); \
 \
-   for (uint32 clip = 0; clip < ClipCount; clip++) \
+   for (clip = 0; clip < ClipCount; clip++) \
    { \
        if (GFX.pCurrentClip->Count [bg]) \
        { \
@@ -2336,7 +2340,8 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 \
        if (!PPU.Mode7Repeat) \
        { \
-      for (int x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
+          int x; \
+      for (x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
       { \
           int X = ((AA + BB) >> 8) & 0x3ff; \
           int Y = ((CC + DD) >> 8) & 0x3ff; \
@@ -2351,7 +2356,8 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
        } \
        else \
        { \
-      for (int x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
+          int x; \
+      for (x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
       { \
           int X = ((AA + BB) >> 8); \
           int Y = ((CC + DD) >> 8); \
@@ -2392,6 +2398,7 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     }
 
 #define RENDER_BACKGROUND_MODE7PRIO(FUNC) \
+   uint32 clip, Line; \
     uint8 *VRAM1 = Memory.VRAM + 1; \
     if (GFX.r2130 & 1) \
     { \
@@ -2416,7 +2423,7 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     uint8 *Depth = GFX.DB + GFX.StartY * GFX_PPL; \
     SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
 \
-    for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) \
+    for (Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX_PITCH, Depth += GFX_PPL, l++) \
     { \
    int yy; \
 \
@@ -2438,7 +2445,7 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
    int BB = l->MatrixB * yy + (CentreX << 8); \
    int DD = l->MatrixD * yy + (CentreY << 8); \
 \
-   for (uint32 clip = 0; clip < ClipCount; clip++) \
+   for (clip = 0; clip < ClipCount; clip++) \
    { \
        if (GFX.pCurrentClip->Count [bg]) \
        { \
@@ -2476,7 +2483,8 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 \
        if (!PPU.Mode7Repeat) \
        { \
-      for (int x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
+          int x; \
+      for (x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
       { \
           int X = ((AA + BB) >> 8) & 0x3ff; \
           int Y = ((CC + DD) >> 8) & 0x3ff; \
@@ -2492,7 +2500,8 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
        } \
        else \
        { \
-      for (int x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
+          int x; \
+      for (x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
       { \
           int X = ((AA + BB) >> 8); \
           int Y = ((CC + DD) >> 8); \
@@ -2903,13 +2912,15 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
       }
       if (!IPPU.DoubleWidthPixels)
       {
+         uint32 y;
          // The game has switched from lo-res to hi-res mode part way down
          // the screen. Scale any existing lo-res pixels on screen
-         for (register uint32 y = 0; y < GFX.StartY; y++)
+         for (y = 0; y < GFX.StartY; y++)
          {
-            register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + 255;
-            register uint16* q = (uint16*)(GFX.Screen + y * GFX_PITCH) + 510;
-            for (register int x = 255; x >= 0; x--, p--, q -= 2)
+            int x;
+            uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + 255;
+            uint16* q = (uint16*)(GFX.Screen + y * GFX_PITCH) + 510;
+            for (x = 255; x >= 0; x--, p--, q -= 2)
                * q = *(q + 1) = *p;
          }
          IPPU.DoubleWidthPixels = TRUE;
@@ -2984,9 +2995,11 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
             }
 
 #else // NOT RC_OPTIMIZED
-            // loop around all of the lines being updated
-            for (uint32 y = starty; y <= endy; y++)
+            /* loop around all of the lines being updated */
+            uint32 y;
+            for (y = starty; y <= endy; y++)
             {
+               uint32 c;
                // Clear the subZbuffer
                memset32((uint32_t*)(GFX.SubZBuffer + y * GFX_ZPITCH), 0,
                         IPPU.RenderedScreenWidth >> 2);
@@ -2999,7 +3012,7 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                   memset32((uint32_t*)(GFX.SubScreen + y * GFX_PITCH), black, IPPU.RenderedScreenWidth >> 1);
 
                // loop through all window clippings
-               for (uint32 c = 0; c < pClip->Count [5]; c++)
+               for (c = 0; c < pClip->Count [5]; c++)
                {
                   if (pClip->Right [c][5] > pClip->Left [c][5])
                   {
@@ -3012,8 +3025,8 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                         // the main screen that will allow the sub-screen
                         // 'underneath' to show through.
 
-                        register uint16* p = (uint16*)(GFX.SubScreen + y * GFX_PITCH);
-                        register uint16* q = p + pClip->Right [c][5] * x2;
+                        uint16* p = (uint16*)(GFX.SubScreen + y * GFX_PITCH);
+                        uint16* q = p + pClip->Right [c][5] * x2;
                         p += pClip->Left [c][5] * x2;
 
                         while (p < q)
@@ -3073,8 +3086,9 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
             }
 
 #else // NOT RC_OPTIMIZED
-            // loop through all of the lines to be updated
-            for (uint32 y = starty; y <= endy; y++)
+            /* loop through all of the lines to be updated */
+            uint32 y;
+            for (y = starty; y <= endy; y++)
             {
                // Clear the Zbuffer
                memset32((uint32_t*)(GFX.ZBuffer + y * GFX_ZPITCH), 0,
@@ -3106,11 +3120,12 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
 
          if (IPPU.Clip [0].Count [5])
          {
-            for (uint32 y = starty; y <= endy; y++)
+            uint32 y;
+            for (y = starty; y <= endy; y++)
             {
-               register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH);
-               register uint8* d = GFX.SubZBuffer + y * GFX_ZPITCH ;
-               register uint8* e = d + IPPU.RenderedScreenWidth;
+               uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH);
+               uint8* d = GFX.SubZBuffer + y * GFX_ZPITCH ;
+               uint8* e = d + IPPU.RenderedScreenWidth;
 
                while (d < e)
                {
@@ -3128,6 +3143,7 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
          RenderScreen(GFX.Screen, FALSE, FALSE, MAIN_SCREEN_DEPTH);
          if (SUB_OR_ADD(5))
          {
+            uint32 y;
             uint32 back = IPPU.ScreenColors [0];
             uint32 Left = 0;
             uint32 Right = 256;
@@ -3135,8 +3151,9 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
 
             pClip = &IPPU.Clip [0];
 
-            for (uint32 y = starty; y <= endy; y++)
+            for (y = starty; y <= endy; y++)
             {
+               uint32 b;
                if (!(Count = pClip->Count [5]))
                {
                   Left = 0;
@@ -3144,7 +3161,7 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                   Count = 1;
                }
 
-               for (uint32 b = 0; b < Count; b++)
+               for (b = 0; b < Count; b++)
                {
                   if (pClip->Count [5])
                   {
@@ -3159,10 +3176,10 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                      if (GFX.r2131 & 0x40)
                      {
                         // Subtract, halving the result.
-                        register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
-                        register uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
-                        register uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
-                        register uint8* e = d + Right;
+                        uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
+                        uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
+                        uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
+                        uint8* e = d + Right;
                         uint16 back_fixed = COLOR_SUB(back, GFX.FixedColour);
 
                         d += Left;
@@ -3188,10 +3205,10 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                      else
                      {
                         // Subtract
-                        register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
-                        register uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
-                        register uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
-                        register uint8* e = d + Right;
+                        uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
+                        uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
+                        uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
+                        uint8* e = d + Right;
                         uint16 back_fixed = COLOR_SUB(back, GFX.FixedColour);
 
                         d += Left;
@@ -3217,10 +3234,10 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                   }
                   else if (GFX.r2131 & 0x40)
                   {
-                     register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
-                     register uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
-                     register uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
-                     register uint8* e = d + Right;
+                     uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
+                     uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
+                     uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
+                     uint8* e = d + Right;
                      uint16 back_fixed = COLOR_ADD(back, GFX.FixedColour);
                      d += Left;
                      while (d < e)
@@ -3244,10 +3261,10 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                   }
                   else if (back != 0)
                   {
-                     register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
-                     register uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
-                     register uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
-                     register uint8* e = d + Right;
+                     uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
+                     uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
+                     uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
+                     uint8* e = d + Right;
                      uint16 back_fixed = COLOR_ADD(back, GFX.FixedColour);
                      d += Left;
                      while (d < e)
@@ -3277,10 +3294,10 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                         // copy the sub-screen to the main screen
                         // or fill it with the back-drop colour if the
                         // sub-screen is clear.
-                        register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
-                        register uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
-                        register uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
-                        register uint8* e = d + Right;
+                        uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
+                        uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
+                        uint8* s = GFX.SubZBuffer + y * GFX_ZPITCH + Left;
+                        uint8* e = d + Right;
                         d += Left;
                         while (d < e)
                         {
@@ -3308,21 +3325,23 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
          }
          else
          {
+            uint32 y;
             // Subscreen not being added to back
             uint32 back = IPPU.ScreenColors [0] | (IPPU.ScreenColors [0] << 16);
             pClip = &IPPU.Clip [0];
 
             if (pClip->Count [5])
             {
-               for (uint32 y = starty; y <= endy; y++)
+               for (y = starty; y <= endy; y++)
                {
-                  for (uint32 b = 0; b < pClip->Count [5]; b++)
+                  uint32 b;
+                  for (b = 0; b < pClip->Count [5]; b++)
                   {
                      uint32 Left = pClip->Left [b][5] * x2;
                      uint32 Right = pClip->Right [b][5] * x2;
-                     register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
-                     register uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
-                     register uint8* e = d + Right;
+                     uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + Left;
+                     uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
+                     uint8* e = d + Right;
                      d += Left;
 
                      while (d < e)
@@ -3336,11 +3355,11 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
             }
             else
             {
-               for (uint32 y = starty; y <= endy; y++)
+               for (y = starty; y <= endy; y++)
                {
-                  register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH);
-                  register uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
-                  register uint8* e = d + 256 * x2;
+                  uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH);
+                  uint8* d = GFX.ZBuffer + y * GFX_ZPITCH;
+                  uint8* e = d + 256 * x2;
 
                   while (d < e)
                   {
@@ -3404,20 +3423,22 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                }
             }
 #else
-            // loop through all of the lines that are going to be updated as part of this screen update
-            for (uint32 y = starty; y <= endy; y++)
+            /* loop through all of the lines that are going to be updated as part of this screen update */
+            uint32 y;
+            for (y = starty; y <= endy; y++)
             {
                memset32((uint32_t*)(GFX.Screen + y * GFX_PITCH), black,
                         IPPU.RenderedScreenWidth >> 1);
 
                if (black != back)
                {
-                  for (uint32 c = 0; c < IPPU.Clip [0].Count [5]; c++)
+                  uint32 c;
+                  for (c = 0; c < IPPU.Clip [0].Count [5]; c++)
                   {
                      if (IPPU.Clip [0].Right [c][5] > IPPU.Clip [0].Left [c][5])
                      {
-                        register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH);   // get pointer to current line in screen buffer
-                        register uint16* q = p + IPPU.Clip [0].Right [c][5] * x2; // get pointer to end of line
+                        uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH);   // get pointer to current line in screen buffer
+                        uint16* q = p + IPPU.Clip [0].Right [c][5] * x2; // get pointer to end of line
                         p += IPPU.Clip [0].Left [c][5] * x2;
 
                         while (p < q)
@@ -3445,8 +3466,10 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                }
             }
 #else
-            // there is no clipping to worry about so just fill with the back colour
-            for (uint32 y = starty; y <= endy; y++)
+            /* there is no clipping to worry about so just fill with the back colour */
+            uint32 y;
+
+            for (y = starty; y <= endy; y++)
             {
                memset32((uint32_t*)(GFX.Screen + y * GFX_PITCH), back,
                         IPPU.RenderedScreenWidth >> 1);
@@ -3472,8 +3495,9 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
                }
             }
 #else
-            // Clear the Zbuffer for each of the lines which are going to be updated
-            for (uint32 y = starty; y <= endy; y++)
+            /* Clear the Zbuffer for each of the lines which are going to be updated */
+            uint32 y;
+            for (y = starty; y <= endy; y++)
             {
                memset32((uint32_t*)(GFX.ZBuffer + y * GFX_ZPITCH), 0,
                         IPPU.RenderedScreenWidth >> 2);
@@ -3486,8 +3510,9 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
    }
    else // Transparencys are disabled, ahh lovely ... nice and easy.
    {
+      uint32 y;
       // get back colour to be used in clearing the screen
-      register uint32 back;
+      uint32 back;
       if (!(Memory.FillRAM [0x2131] & 0x80) && (Memory.FillRAM[0x2131] & 0x20) &&
             (PPU.FixedColourRed || PPU.FixedColourGreen || PPU.FixedColourBlue))
       {
@@ -3511,7 +3536,7 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
       }
 
       // now clear all graphics lines which are being updated using the back colour
-      for (register uint32 y = starty; y <= endy; y++)
+      for (y = starty; y <= endy; y++)
       {
          memset32((uint32_t*)(GFX.Screen + y * GFX_PITCH), back,
                   IPPU.RenderedScreenWidth >> 1);
@@ -3620,14 +3645,14 @@ else \
    {
       if (IPPU.DoubleWidthPixels)
       {
-         register uint32 y;
+         uint32 y;
          // Mixure of background modes used on screen - scale width
          // of all non-mode 5 and 6 pixels.
          for (y = GFX.StartY; y <= GFX.EndY; y++)
          {
-            register int x;
-            register uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + 255;
-            register uint16* q = (uint16*)(GFX.Screen + y * GFX_PITCH) + 510;
+            int x;
+            uint16* p = (uint16*)(GFX.Screen + y * GFX_PITCH) + 255;
+            uint16* q = (uint16*)(GFX.Screen + y * GFX_PITCH) + 510;
 
             for (x = 255; x >= 0; x--, p--, q -= 2)
                * q = *(q + 1) = *p;
