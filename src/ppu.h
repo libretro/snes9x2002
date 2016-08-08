@@ -275,7 +275,7 @@ END_EXTERN_C
 #include "gfx.h"
 #include "memmap.h"
 
-STATIC INLINE uint8 REGISTER_4212()
+static INLINE uint8 REGISTER_4212()
 {
    GetBank = 0;
    if (CPU.V_Counter >= PPU.ScreenHeight + FIRST_VISIBLE_LINE &&
@@ -290,7 +290,7 @@ STATIC INLINE uint8 REGISTER_4212()
 }
 
 /*
-STATIC INLINE void FLUSH_REDRAW ()
+static INLINE void FLUSH_REDRAW ()
 {
     if (IPPU.PreviousLine != IPPU.CurrentLine)
    S9xUpdateScreen ();
@@ -300,7 +300,7 @@ STATIC INLINE void FLUSH_REDRAW ()
 #define FLUSH_REDRAW()     if (IPPU.PreviousLine != IPPU.CurrentLine) S9xUpdateScreen ()
 
 
-STATIC INLINE void REGISTER_2104(uint8 byte)
+static INLINE void REGISTER_2104(uint8 byte)
 {
    if (PPU.OAMAddr & 0x100)
    {
@@ -388,7 +388,7 @@ STATIC INLINE void REGISTER_2104(uint8 byte)
    Memory.FillRAM [0x2104] = byte;
 }
 
-STATIC INLINE void REGISTER_2118(uint8 Byte)
+static INLINE void REGISTER_2118(uint8 Byte)
 {
    uint32 address;
    if (PPU.VMA.FullGraphicCount)
@@ -419,7 +419,7 @@ STATIC INLINE void REGISTER_2118(uint8 Byte)
    //    Memory.FillRAM [0x2118] = Byte;
 }
 
-STATIC INLINE void REGISTER_2118_tile(uint8 Byte)
+static INLINE void REGISTER_2118_tile(uint8 Byte)
 {
    uint32 address;
    uint32 rem = PPU.VMA.Address & PPU.VMA.Mask1;
@@ -435,7 +435,7 @@ STATIC INLINE void REGISTER_2118_tile(uint8 Byte)
    //    Memory.FillRAM [0x2118] = Byte;
 }
 
-STATIC INLINE void REGISTER_2118_linear(uint8 Byte)
+static INLINE void REGISTER_2118_linear(uint8 Byte)
 {
    uint32 address;
    Memory.VRAM[address = (PPU.VMA.Address << 1) & 0xFFFF] = Byte;
@@ -447,7 +447,7 @@ STATIC INLINE void REGISTER_2118_linear(uint8 Byte)
    //    Memory.FillRAM [0x2118] = Byte;
 }
 
-STATIC INLINE void REGISTER_2119(uint8 Byte)
+static INLINE void REGISTER_2119(uint8 Byte)
 {
    uint32 address;
    if (PPU.VMA.FullGraphicCount)
@@ -478,7 +478,7 @@ STATIC INLINE void REGISTER_2119(uint8 Byte)
    //    Memory.FillRAM [0x2119] = Byte;
 }
 
-STATIC INLINE void REGISTER_2119_tile(uint8 Byte)
+static INLINE void REGISTER_2119_tile(uint8 Byte)
 {
    uint32 rem = PPU.VMA.Address & PPU.VMA.Mask1;
    uint32 address = ((((PPU.VMA.Address & ~PPU.VMA.Mask1) +
@@ -493,7 +493,7 @@ STATIC INLINE void REGISTER_2119_tile(uint8 Byte)
    //    Memory.FillRAM [0x2119] = Byte;
 }
 
-STATIC INLINE void REGISTER_2119_linear(uint8 Byte)
+static INLINE void REGISTER_2119_linear(uint8 Byte)
 {
    uint32 address;
    Memory.VRAM[address = ((PPU.VMA.Address << 1) + 1) & 0xFFFF] = Byte;
@@ -506,7 +506,7 @@ STATIC INLINE void REGISTER_2119_linear(uint8 Byte)
 }
 
 #ifndef __OLD_RASTER_FX__
-STATIC INLINE void REGISTER_2122(uint8 Byte)
+static INLINE void REGISTER_2122(uint8 Byte)
 {
    // CG-RAM (palette) write
    
@@ -546,7 +546,7 @@ STATIC INLINE void REGISTER_2122(uint8 Byte)
 }
 
 #else // __OLD_RASTER_FX__
-STATIC INLINE void REGISTER_2122(uint8 Byte)
+static INLINE void REGISTER_2122(uint8 Byte)
 {
    // CG-RAM (palette) write
    
@@ -600,7 +600,7 @@ STATIC INLINE void REGISTER_2122(uint8 Byte)
 
 #endif
 
-STATIC INLINE void REGISTER_2180(uint8 Byte)
+static INLINE void REGISTER_2180(uint8 Byte)
 {
    Memory.RAM[PPU.WRAM++] = Byte;
    PPU.WRAM &= 0x1FFFF;

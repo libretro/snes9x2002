@@ -97,14 +97,14 @@ extern uint8 S9xE0M0X1 [256];
 extern SICPU ICPU;
 END_EXTERN_C
 
-STATIC inline void CLEAR_IRQ_SOURCE(uint32 M)
+static inline void CLEAR_IRQ_SOURCE(uint32 M)
 {
    CPU.IRQActive &= ~M;
    if (!CPU.IRQActive)
       CPU.Flags &= ~IRQ_PENDING_FLAG;
 }
 
-STATIC inline void S9xUnpackStatus()
+static inline void S9xUnpackStatus()
 {
    ICPU._Zero = (Registers.PL & Zero) == 0;
    ICPU._Negative = (Registers.PL & Negative);
@@ -112,14 +112,14 @@ STATIC inline void S9xUnpackStatus()
    ICPU._Overflow = (Registers.PL & Overflow) >> 6;
 }
 
-STATIC inline void S9xPackStatus()
+static inline void S9xPackStatus()
 {
    Registers.PL &= ~(Zero | Negative | Carry | Overflow);
    Registers.PL |= ICPU._Carry | ((ICPU._Zero == 0) << 1) |
                    (ICPU._Negative & 0x80) | (ICPU._Overflow << 6);
 }
 
-STATIC inline void S9xFixCycles()
+static inline void S9xFixCycles()
 {
    if (CheckEmulation())
    {

@@ -111,7 +111,6 @@ typedef short        int16_32;
 //Misc Items
 #define VAR_CYCLES
 //#define SPC700_SHUTDOWN
-#define STATIC static
 #define FASTCALL
 #define PIXEL_FORMAT RGB565
 #define CPU_SHUTDOWN

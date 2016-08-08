@@ -48,19 +48,19 @@
 
 EXTERN_C long OpAddress;
 
-STATIC inline void Immediate8()
+static inline void Immediate8()
 {
    OpAddress = ICPU.ShiftedPB + CPU.PC - CPU.PCBase;
    CPU.PC++;
 }
 
-STATIC inline void Immediate16()
+static inline void Immediate16()
 {
    OpAddress = ICPU.ShiftedPB + CPU.PC - CPU.PCBase;
    CPU.PC += 2;
 }
 
-STATIC inline void Relative()
+static inline void Relative()
 {
    signed char s9xInt8 = *CPU.PC++;
 #ifdef VAR_CYCLES
@@ -69,7 +69,7 @@ STATIC inline void Relative()
    OpAddress = ((int)(CPU.PC - CPU.PCBase) + s9xInt8) & 0xffff;
 }
 
-STATIC inline void RelativeLong()
+static inline void RelativeLong()
 {
 #ifdef FAST_LSB_WORD_ACCESS
    OpAddress = *(uint16*) CPU.PC;
@@ -84,7 +84,7 @@ STATIC inline void RelativeLong()
    OpAddress &= 0xffff;
 }
 
-STATIC inline void AbsoluteIndexedIndirect()
+static inline void AbsoluteIndexedIndirect()
 {
 #ifdef FAST_LSB_WORD_ACCESS
    OpAddress = (Registers.X.W + * (uint16*) CPU.PC) & 0xffff;
@@ -98,7 +98,7 @@ STATIC inline void AbsoluteIndexedIndirect()
    OpAddress = S9xGetWord(ICPU.ShiftedPB + OpAddress);
 }
 
-STATIC inline void AbsoluteIndirectLong()
+static inline void AbsoluteIndirectLong()
 {
 #ifdef FAST_LSB_WORD_ACCESS
    OpAddress = *(uint16*) CPU.PC;
@@ -113,7 +113,7 @@ STATIC inline void AbsoluteIndirectLong()
    OpAddress = S9xGetWord(OpAddress) | (S9xGetByte(OpAddress + 2) << 16);
 }
 
-STATIC inline void AbsoluteIndirect()
+static inline void AbsoluteIndirect()
 {
 #ifdef FAST_LSB_WORD_ACCESS
    OpAddress = *(uint16*) CPU.PC;
@@ -128,7 +128,7 @@ STATIC inline void AbsoluteIndirect()
    OpAddress = S9xGetWord(OpAddress) + ICPU.ShiftedPB;
 }
 
-STATIC inline void Absolute()
+static inline void Absolute()
 {
 #ifdef FAST_LSB_WORD_ACCESS
    OpAddress = *(uint16*) CPU.PC + ICPU.ShiftedDB;
@@ -141,7 +141,7 @@ STATIC inline void Absolute()
 #endif
 }
 
-STATIC inline void AbsoluteLong()
+static inline void AbsoluteLong()
 {
 #ifdef FAST_LSB_WORD_ACCESS
    OpAddress = (*(uint32*) CPU.PC) & 0xffffff;
@@ -154,7 +154,7 @@ STATIC inline void AbsoluteLong()
 #endif
 }
 
-STATIC inline void Direct(void)
+static inline void Direct(void)
 {
    OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
 #ifdef VAR_CYCLES
@@ -163,7 +163,7 @@ STATIC inline void Direct(void)
    //    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
 }
 
-STATIC inline void DirectIndirectIndexed()
+static inline void DirectIndirectIndexed()
 {
    OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
 #ifdef VAR_CYCLES
@@ -177,7 +177,7 @@ STATIC inline void DirectIndirectIndexed()
    // XXX: else Add one cycle if crosses page boundary
 }
 
-STATIC inline void DirectIndirectIndexedLong()
+static inline void DirectIndirectIndexedLong()
 {
    OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
 #ifdef VAR_CYCLES
@@ -189,7 +189,7 @@ STATIC inline void DirectIndirectIndexedLong()
    //    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
 }
 
-STATIC inline void DirectIndexedIndirect(void)
+static inline void DirectIndexedIndirect(void)
 {
    OpAddress = (*CPU.PC++ + Registers.D.W + Registers.X.W) & 0xffff;
 #ifdef VAR_CYCLES
@@ -206,7 +206,7 @@ STATIC inline void DirectIndexedIndirect(void)
 #endif
 }
 
-STATIC inline void DirectIndexedX()
+static inline void DirectIndexedX()
 {
    OpAddress = (*CPU.PC++ + Registers.D.W + Registers.X.W) & 0xffff;
 #ifdef VAR_CYCLES
@@ -221,7 +221,7 @@ STATIC inline void DirectIndexedX()
 #endif
 }
 
-STATIC inline void DirectIndexedY()
+static inline void DirectIndexedY()
 {
    OpAddress = (*CPU.PC++ + Registers.D.W + Registers.Y.W) & 0xffff;
 #ifdef VAR_CYCLES
@@ -236,7 +236,7 @@ STATIC inline void DirectIndexedY()
 #endif
 }
 
-STATIC inline void AbsoluteIndexedX()
+static inline void AbsoluteIndexedX()
 {
 #ifdef FAST_LSB_WORD_ACCESS
    OpAddress = ICPU.ShiftedDB + *(uint16*) CPU.PC + Registers.X.W;
@@ -252,7 +252,7 @@ STATIC inline void AbsoluteIndexedX()
    // XXX: else is cross page boundary add one cycle
 }
 
-STATIC inline void AbsoluteIndexedY()
+static inline void AbsoluteIndexedY()
 {
 #ifdef FAST_LSB_WORD_ACCESS
    OpAddress = ICPU.ShiftedDB + *(uint16*) CPU.PC + Registers.Y.W;
@@ -268,7 +268,7 @@ STATIC inline void AbsoluteIndexedY()
    // XXX: else is cross page boundary add one cycle
 }
 
-STATIC inline void AbsoluteLongIndexedX()
+static inline void AbsoluteLongIndexedX()
 {
 #ifdef FAST_LSB_WORD_ACCESS
    OpAddress = (*(uint32*) CPU.PC + Registers.X.W) & 0xffffff;
@@ -281,7 +281,7 @@ STATIC inline void AbsoluteLongIndexedX()
 #endif
 }
 
-STATIC inline void DirectIndirect()
+static inline void DirectIndirect()
 {
    OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
 #ifdef VAR_CYCLES
@@ -292,7 +292,7 @@ STATIC inline void DirectIndirect()
    //    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
 }
 
-STATIC inline void DirectIndirectLong()
+static inline void DirectIndirectLong()
 {
    OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
 #ifdef VAR_CYCLES
@@ -303,7 +303,7 @@ STATIC inline void DirectIndirectLong()
    //    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
 }
 
-STATIC inline void StackRelative()
+static inline void StackRelative()
 {
    OpAddress = (*CPU.PC++ + Registers.S.W) & 0xffff;
 #ifdef VAR_CYCLES
@@ -312,7 +312,7 @@ STATIC inline void StackRelative()
 #endif
 }
 
-STATIC inline void StackRelativeIndirectIndexed()
+static inline void StackRelativeIndirectIndexed()
 {
    OpAddress = (*CPU.PC++ + Registers.S.W) & 0xffff;
 #ifdef VAR_CYCLES

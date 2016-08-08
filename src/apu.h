@@ -103,7 +103,7 @@ typedef struct
 EXTERN_C SAPU APU;
 EXTERN_C SIAPU IAPU;
 
-STATIC inline void S9xAPUUnpackStatus()
+static inline void S9xAPUUnpackStatus(void)
 {
 
    IAPU._Zero     = ((IAPU.P & Zero) == 0) | (IAPU.P & Negative);
@@ -116,7 +116,7 @@ STATIC inline void S9xAPUUnpackStatus()
    }
 }
 
-STATIC inline void S9xAPUPackStatus()
+static inline void S9xAPUPackStatus(void)
 {
 #ifdef ASM_SPC700
    if (Settings.asmspc700)

@@ -149,7 +149,7 @@ END_EXTERN_C
 #define TIMER_IRQ_SOURCE    (1 << 6)
 #define DMA_IRQ_SOURCE      (1 << 5)
 
-STATIC inline void S9xSA1UnpackStatus()
+static inline void S9xSA1UnpackStatus()
 {
    SA1._Zero = (SA1Registers.PL & Zero) == 0;
    SA1._Negative = (SA1Registers.PL & Negative);
@@ -157,14 +157,14 @@ STATIC inline void S9xSA1UnpackStatus()
    SA1._Overflow = (SA1Registers.PL & Overflow) >> 6;
 }
 
-STATIC inline void S9xSA1PackStatus()
+static inline void S9xSA1PackStatus()
 {
    SA1Registers.PL &= ~(Zero | Negative | Carry | Overflow);
    SA1Registers.PL |= SA1._Carry | ((SA1._Zero == 0) << 1) |
                       (SA1._Negative & 0x80) | (SA1._Overflow << 6);
 }
 
-STATIC inline void S9xSA1FixCycles()
+static inline void S9xSA1FixCycles()
 {
    if (SA1CheckEmulation())
       SA1.S9xOpcodes = S9xSA1OpcodesM1X1;

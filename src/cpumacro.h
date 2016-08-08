@@ -41,19 +41,19 @@
 #ifndef _CPUMACRO_H_
 #define _CPUMACRO_H_
 
-STATIC inline void SetZN16(uint16 Work)
+static inline void SetZN16(uint16 Work)
 {
    ICPU._Zero = Work != 0;
    ICPU._Negative = (uint8)(Work >> 8);
 }
 
-STATIC inline void SetZN8(uint8 Work)
+static inline void SetZN8(uint8 Work)
 {
    ICPU._Zero = Work;
    ICPU._Negative = Work;
 }
 
-STATIC inline void ADC8()
+static inline void ADC8()
 {
    uint8 Work8 = S9xGetByte(OpAddress);
 
@@ -106,7 +106,7 @@ STATIC inline void ADC8()
    }
 }
 
-STATIC inline void ADC16()
+static inline void ADC16()
 {
    uint16 Work16 = S9xGetWord(OpAddress);
 
@@ -176,19 +176,19 @@ STATIC inline void ADC16()
    }
 }
 
-STATIC inline void AND16()
+static inline void AND16()
 {
    Registers.A.W &= S9xGetWord(OpAddress);
    SetZN16(Registers.A.W);
 }
 
-STATIC inline void AND8()
+static inline void AND8()
 {
    Registers.AL &= S9xGetByte(OpAddress);
    SetZN8(Registers.AL);
 }
 
-STATIC inline void A_ASL16()
+static inline void A_ASL16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -198,7 +198,7 @@ STATIC inline void A_ASL16()
    SetZN16(Registers.A.W);
 }
 
-STATIC inline void A_ASL8()
+static inline void A_ASL8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -208,7 +208,7 @@ STATIC inline void A_ASL8()
    SetZN8(Registers.AL);
 }
 
-STATIC inline void ASL16()
+static inline void ASL16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -220,7 +220,7 @@ STATIC inline void ASL16()
    SetZN16(Work16);
 }
 
-STATIC inline void ASL8()
+static inline void ASL8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -232,7 +232,7 @@ STATIC inline void ASL8()
    SetZN8(Work8);
 }
 
-STATIC inline void BIT16()
+static inline void BIT16()
 {
    uint16 Work16 = S9xGetWord(OpAddress);
    ICPU._Overflow = (Work16 & 0x4000) != 0;
@@ -240,7 +240,7 @@ STATIC inline void BIT16()
    ICPU._Zero = (Work16 & Registers.A.W) != 0;
 }
 
-STATIC inline void BIT8()
+static inline void BIT8()
 {
    uint8 Work8 = S9xGetByte(OpAddress);
    ICPU._Overflow = (Work8 & 0x40) != 0;
@@ -248,7 +248,7 @@ STATIC inline void BIT8()
    ICPU._Zero = Work8 & Registers.AL;
 }
 
-STATIC inline void CMP16()
+static inline void CMP16()
 {
    long s9xInt32 = (long) Registers.A.W -
                    (long) S9xGetWord(OpAddress);
@@ -256,7 +256,7 @@ STATIC inline void CMP16()
    SetZN16((uint16) s9xInt32);
 }
 
-STATIC inline void CMP8()
+static inline void CMP8()
 {
    short s9xInt16 = (short) Registers.AL -
                     (short) S9xGetByte(OpAddress);
@@ -264,7 +264,7 @@ STATIC inline void CMP8()
    SetZN8((uint8) s9xInt16);
 }
 
-STATIC inline void CMX16()
+static inline void CMX16()
 {
    long s9xInt32 = (long) Registers.X.W -
                    (long) S9xGetWord(OpAddress);
@@ -272,7 +272,7 @@ STATIC inline void CMX16()
    SetZN16((uint16) s9xInt32);
 }
 
-STATIC inline void CMX8()
+static inline void CMX8()
 {
    short s9xInt16 = (short) Registers.XL -
                     (short) S9xGetByte(OpAddress);
@@ -280,7 +280,7 @@ STATIC inline void CMX8()
    SetZN8((uint8) s9xInt16);
 }
 
-STATIC inline void CMY16()
+static inline void CMY16()
 {
    long s9xInt32 = (long) Registers.Y.W -
                    (long) S9xGetWord(OpAddress);
@@ -288,7 +288,7 @@ STATIC inline void CMY16()
    SetZN16((uint16) s9xInt32);
 }
 
-STATIC inline void CMY8()
+static inline void CMY8()
 {
    short s9xInt16 = (short) Registers.YL -
                     (short) S9xGetByte(OpAddress);
@@ -296,7 +296,7 @@ STATIC inline void CMY8()
    SetZN8((uint8) s9xInt16);
 }
 
-STATIC inline void A_DEC16()
+static inline void A_DEC16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -309,7 +309,7 @@ STATIC inline void A_DEC16()
    SetZN16(Registers.A.W);
 }
 
-STATIC inline void A_DEC8()
+static inline void A_DEC8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -322,7 +322,7 @@ STATIC inline void A_DEC8()
    SetZN8(Registers.AL);
 }
 
-STATIC inline void DEC16()
+static inline void DEC16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -336,7 +336,7 @@ STATIC inline void DEC16()
    SetZN16(Work16);
 }
 
-STATIC inline void DEC8()
+static inline void DEC8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -350,19 +350,19 @@ STATIC inline void DEC8()
    SetZN8(Work8);
 }
 
-STATIC inline void EOR16()
+static inline void EOR16()
 {
    Registers.A.W ^= S9xGetWord(OpAddress);
    SetZN16(Registers.A.W);
 }
 
-STATIC inline void EOR8()
+static inline void EOR8()
 {
    Registers.AL ^= S9xGetByte(OpAddress);
    SetZN8(Registers.AL);
 }
 
-STATIC inline void A_INC16()
+static inline void A_INC16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -375,7 +375,7 @@ STATIC inline void A_INC16()
    SetZN16(Registers.A.W);
 }
 
-STATIC inline void A_INC8()
+static inline void A_INC8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -388,7 +388,7 @@ STATIC inline void A_INC8()
    SetZN8(Registers.AL);
 }
 
-STATIC inline void INC16()
+static inline void INC16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -402,7 +402,7 @@ STATIC inline void INC16()
    SetZN16(Work16);
 }
 
-STATIC inline void INC8()
+static inline void INC8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -416,43 +416,43 @@ STATIC inline void INC8()
    SetZN8(Work8);
 }
 
-STATIC inline void LDA16()
+static inline void LDA16()
 {
    Registers.A.W = S9xGetWord(OpAddress);
    SetZN16(Registers.A.W);
 }
 
-STATIC inline void LDA8()
+static inline void LDA8()
 {
    Registers.AL = S9xGetByte(OpAddress);
    SetZN8(Registers.AL);
 }
 
-STATIC inline void LDX16()
+static inline void LDX16()
 {
    Registers.X.W = S9xGetWord(OpAddress);
    SetZN16(Registers.X.W);
 }
 
-STATIC inline void LDX8()
+static inline void LDX8()
 {
    Registers.XL = S9xGetByte(OpAddress);
    SetZN8(Registers.XL);
 }
 
-STATIC inline void LDY16()
+static inline void LDY16()
 {
    Registers.Y.W = S9xGetWord(OpAddress);
    SetZN16(Registers.Y.W);
 }
 
-STATIC inline void LDY8()
+static inline void LDY8()
 {
    Registers.YL = S9xGetByte(OpAddress);
    SetZN8(Registers.YL);
 }
 
-STATIC inline void A_LSR16()
+static inline void A_LSR16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -462,7 +462,7 @@ STATIC inline void A_LSR16()
    SetZN16(Registers.A.W);
 }
 
-STATIC inline void A_LSR8()
+static inline void A_LSR8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -472,7 +472,7 @@ STATIC inline void A_LSR8()
    SetZN8(Registers.AL);
 }
 
-STATIC inline void LSR16()
+static inline void LSR16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -484,7 +484,7 @@ STATIC inline void LSR16()
    SetZN16(Work16);
 }
 
-STATIC inline void LSR8()
+static inline void LSR8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -496,19 +496,19 @@ STATIC inline void LSR8()
    SetZN8(Work8);
 }
 
-STATIC inline void ORA16()
+static inline void ORA16()
 {
    Registers.A.W |= S9xGetWord(OpAddress);
    SetZN16(Registers.A.W);
 }
 
-STATIC inline void ORA8()
+static inline void ORA8()
 {
    Registers.AL |= S9xGetByte(OpAddress);
    SetZN8(Registers.AL);
 }
 
-STATIC inline void A_ROL16()
+static inline void A_ROL16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -519,7 +519,7 @@ STATIC inline void A_ROL16()
    SetZN16((uint16) Work32);
 }
 
-STATIC inline void A_ROL8()
+static inline void A_ROL8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -532,7 +532,7 @@ STATIC inline void A_ROL8()
    SetZN8((uint8) Work16);
 }
 
-STATIC inline void ROL16()
+static inline void ROL16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -545,7 +545,7 @@ STATIC inline void ROL16()
    SetZN16((uint16) Work32);
 }
 
-STATIC inline void ROL8()
+static inline void ROL8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -558,7 +558,7 @@ STATIC inline void ROL8()
    SetZN8((uint8) Work16);
 }
 
-STATIC inline void A_ROR16()
+static inline void A_ROR16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -571,7 +571,7 @@ STATIC inline void A_ROR16()
    SetZN16((uint16) Work32);
 }
 
-STATIC inline void A_ROR8()
+static inline void A_ROR8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -583,7 +583,7 @@ STATIC inline void A_ROR8()
    SetZN8((uint8) Work16);
 }
 
-STATIC inline void ROR16()
+static inline void ROR16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -596,7 +596,7 @@ STATIC inline void ROR16()
    SetZN16((uint16) Work32);
 }
 
-STATIC inline void ROR8()
+static inline void ROR8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -609,7 +609,7 @@ STATIC inline void ROR8()
    SetZN8((uint8) Work16);
 }
 
-STATIC inline void SBC16()
+static inline void SBC16()
 {
    uint16 Work16 = S9xGetWord(OpAddress);
 
@@ -677,7 +677,7 @@ STATIC inline void SBC16()
    }
 }
 
-STATIC inline void SBC8()
+static inline void SBC8()
 {
    uint8 Work8 = S9xGetByte(OpAddress);
    if (CheckDecimal())
@@ -726,47 +726,47 @@ STATIC inline void SBC8()
    }
 }
 
-STATIC inline void STA16()
+static inline void STA16()
 {
    S9xSetWord(Registers.A.W, OpAddress);
 }
 
-STATIC inline void STA8()
+static inline void STA8()
 {
    S9xSetByte(Registers.AL, OpAddress);
 }
 
-STATIC inline void STX16()
+static inline void STX16()
 {
    S9xSetWord(Registers.X.W, OpAddress);
 }
 
-STATIC inline void STX8()
+static inline void STX8()
 {
    S9xSetByte(Registers.XL, OpAddress);
 }
 
-STATIC inline void STY16()
+static inline void STY16()
 {
    S9xSetWord(Registers.Y.W, OpAddress);
 }
 
-STATIC inline void STY8()
+static inline void STY8()
 {
    S9xSetByte(Registers.YL, OpAddress);
 }
 
-STATIC inline void STZ16()
+static inline void STZ16()
 {
    S9xSetWord(0, OpAddress);
 }
 
-STATIC inline void STZ8()
+static inline void STZ8()
 {
    S9xSetByte(0, OpAddress);
 }
 
-STATIC inline void TSB16()
+static inline void TSB16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -777,7 +777,7 @@ STATIC inline void TSB16()
    S9xSetWord(Work16, OpAddress);
 }
 
-STATIC inline void TSB8()
+static inline void TSB8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -788,7 +788,7 @@ STATIC inline void TSB8()
    S9xSetByte(Work8, OpAddress);
 }
 
-STATIC inline void TRB16()
+static inline void TRB16()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
@@ -799,7 +799,7 @@ STATIC inline void TRB16()
    S9xSetWord(Work16, OpAddress);
 }
 
-STATIC inline void TRB8()
+static inline void TRB8()
 {
 #ifdef VAR_CYCLES
    CPU.Cycles += ONE_CYCLE;
