@@ -246,8 +246,8 @@ void DrawHiResTile16(uint32 Tile, uint32 Offset,
 
 bool8_32 S9xGraphicsInit()
 {
-   register uint32 PixelOdd = 1;
-   register uint32 PixelEven = 2;
+   uint32 PixelOdd = 1;
+   uint32 PixelEven = 2;
 
 #ifdef GFX_MULTI_FORMAT
    if (GFX.BuildPixel == NULL)
@@ -257,11 +257,11 @@ bool8_32 S9xGraphicsInit()
    uint8 bitshift;
    for (bitshift = 0; bitshift < 4; bitshift++)
    {
-      register int i;
+      int i;
       for (i = 0; i < 16; i++)
       {
-         register uint32 h = 0;
-         register uint32 l = 0;
+         uint32 h = 0;
+         uint32 l = 0;
 
 #if defined(MSB_FIRST)
          if (i & 8)
@@ -1982,7 +1982,7 @@ void DrawBackground_8(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
             if (Count > Width) Count = Width;
             s -= Offset;
             //uint32 Tile = READ_2BYTES(t);
-            register uint32 Tile = *(t++);
+            uint32 Tile = *(t++);
             if (Tile != TileBlank)
             {
                GFX.Z1 = GFX.Z2 = depths [(Tile & 0x2000) >> 13];
@@ -2001,7 +2001,7 @@ void DrawBackground_8(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
          for (C = Count >> 3; C > 0; s += 8, Quot++, C--)
          {
             //uint32 Tile = READ_2BYTES(t);
-            register uint32 Tile = *(t++);
+            uint32 Tile = *(t++);
             if (Tile != TileBlank)
             {
                GFX.Z1 = GFX.Z2 = depths [(Tile & 0x2000) >> 13];
@@ -2017,7 +2017,7 @@ void DrawBackground_8(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
          if (Count & 7)
          {
             //uint32 Tile = READ_2BYTES(t);
-            register uint32 Tile = *t;
+            uint32 Tile = *t;
             if (Tile != TileBlank)
             {
                GFX.Z1 = GFX.Z2 = depths [(Tile & 0x2000) >> 13];
@@ -2157,7 +2157,7 @@ void DrawBackground_16(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 
          uint32 Width = Right - Left;
 
-         register uint32 Tile;
+         uint32 Tile;
          if (Quot & 1)
          {
             Tile = *(t++);
@@ -3042,7 +3042,7 @@ _ROP_##rop##half \
                {
                   //if (IPPU.Clip [0].Right [c][5] > IPPU.Clip [0].Left [c][5])
                   //{
-                  register int width = IPPU.Clip [0].Right [c][5] - IPPU.Clip [0].Left [c][5];
+                  int width = IPPU.Clip [0].Right [c][5] - IPPU.Clip [0].Left [c][5];
                   if (width <= 0) continue;
 
                   __asm__ volatile(
@@ -3116,7 +3116,7 @@ static void S9xUpdateScreenNoTransparency()  // ~30-50ms! (called from FLUSH_RED
    uint32 black = BLACK | (BLACK << 16);
 
    // get back colour to be used in clearing the screen
-   register uint32 back;
+   uint32 back;
    if (!(GFX.r2131 & 0x80) && (GFX.r2131 & 0x20) &&
          (PPU.FixedColourRed || PPU.FixedColourGreen || PPU.FixedColourBlue))
    {
@@ -3138,7 +3138,7 @@ static void S9xUpdateScreenNoTransparency()  // ~30-50ms! (called from FLUSH_RED
    }
 
    // now clear all graphics lines which are being updated using the back colour
-   register uint32 y;
+   uint32 y;
    for (y = starty; y <= endy; y++)
    {
       memset32((uint32_t*)(GFX.Screen + y * GFX_PITCH), back,

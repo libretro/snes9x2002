@@ -2541,12 +2541,12 @@ const uint32 crc32Table[256] = {
 };
 
 //CRC32 for char arrays
-uint32 caCRC32(uint8 *array, uint32 size) {
-   register uint32 crc32 = 0xFFFFFFFF;
-   register uint32 i;
-  for (i = 0; i < size; i++) {
-    crc32 = ((crc32 >> 8) & 0x00FFFFFF) ^ crc32Table[(crc32 ^ array[i]) & 0xFF];
-  }
-  return ~crc32;
+uint32 caCRC32(uint8 *array, uint32 size)
+{
+   uint32 crc32 = 0xFFFFFFFF;
+   uint32 i;
+   for (i = 0; i < size; i++)
+      crc32 = ((crc32 >> 8) & 0x00FFFFFF) ^ crc32Table[(crc32 ^ array[i]) & 0xFF];
+   return ~crc32;
 }
 #include "getset.h"

@@ -68,7 +68,7 @@ void DrawTile16FixedSub1_2(uint32 Tile, uint32 Offset, uint32 StartLine,
                            uint32 LineCount)
 {
    TILE_PREAMBLE
-   register uint8* bp;
+   uint8* bp;
 
    RENDER_TILE(WRITE_4PIXELS16_SUBF1_2, WRITE_4PIXELS16_FLIPPED_SUBF1_2, 4)
 }
@@ -78,7 +78,7 @@ void DrawClippedTile16FixedSub1_2(uint32 Tile, uint32 Offset,
                                   uint32 StartLine, uint32 LineCount)
 {
    TILE_PREAMBLE
-   register uint8* bp;
+   uint8* bp;
 
    TILE_CLIP_PREAMBLE
    RENDER_CLIPPED_TILE(WRITE_4PIXELS16_SUBF1_2,

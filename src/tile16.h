@@ -71,7 +71,7 @@ extern uint32 TileBlank;
     GFX.ScreenColors = &GFX.ScreenColorsPre[(Tile & GFX.PaletteMask) >> GFX.PaletteShift];
 
 #define RENDER_TILE(NORMAL, FLIPPED, N) \
-   register int   inc; \
+   int   inc; \
     if (!(Tile & V_FLIP)){ \
       bp  = pCache + StartLine; \
       inc = 8; \
@@ -123,7 +123,7 @@ extern uint32 TileBlank;
 
 
 #define RENDER_CLIPPED_TILE(NORMAL, FLIPPED, N) \
-   register int   inc; \
+   int   inc; \
     if (Tile & V_FLIP){ \
       bp  = pCache + 56 - StartLine; \
       inc = -8; \

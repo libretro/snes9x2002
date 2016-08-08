@@ -219,7 +219,7 @@ void S9xSetSoundSample(int channel, uint16 sample_number)
 #else
 void S9xSetSoundSample(int channel, uint16 sample_number)
 {
-   register Channel* ch = &SoundData.channels[channel];
+   Channel* ch = &SoundData.channels[channel];
 
    if (ch->state != SOUND_SILENT &&
          sample_number != ch->sample_number)
@@ -977,7 +977,7 @@ void S9xMixSamplesO(signed short* buffer, int sample_count, int sample_offset)
             // ... with filter defined.
             for (J = 0; J < sample_count; J += 2)
             {
-               register int E = Echo [SoundData.echo_ptr];
+               int E = Echo [SoundData.echo_ptr];
 
                Loop [(Z - 0) & 15] = E;
 
@@ -1039,7 +1039,7 @@ void S9xMixSamplesO(signed short* buffer, int sample_count, int sample_offset)
             // ... with filter defined
             for (J = 0; J < sample_count; J++)
             {
-               register int E = Echo [SoundData.echo_ptr];
+               int E = Echo [SoundData.echo_ptr];
 
                Loop [(Z - 0) & 7] = E;
                E =  E                  * FilterTaps [0];
