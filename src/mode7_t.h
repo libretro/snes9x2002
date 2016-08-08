@@ -526,7 +526,6 @@ DEC_FMODE7(ROPNAME)
 #define DMESG(n) printf("Rendering Mode7, ROp: " #n ", R:%d, r2130: %d, bg: %d\n", PPU.Mode7Repeat, GFX.r2130 & 1, bg)
    DMESG(ROPNAME)
 #endif
-   CHECK_SOUND();
 
    if (GFX.r2130 & 1)
    {

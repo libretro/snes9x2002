@@ -34,7 +34,6 @@ void DrawBGMode7Background16PrioR3(uint8* Screen, int bg);
 void DrawBGMode7Background16Prio(uint8* Screen, int bg)
 {
    DMSG("opaque");
-   CHECK_SOUND();
 
    if (GFX.r2130 & 1)
    {

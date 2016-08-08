@@ -535,8 +535,6 @@ DEC_FMODE7(ROPNAME)
    printf("Rendering Mode7 w/prio, ROp: " TOSTRING(ROPNAME) ", R:%d, r2130: %d, bg: %d\n", PPU.Mode7Repeat, GFX.r2130 & 1,
           bg)
 #endif
-   CHECK_SOUND();
-
    if (GFX.r2130 & 1)
    {
       if (IPPU.DirectColourMapsNeedRebuild) S9xBuildDirectColourMaps();

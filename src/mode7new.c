@@ -26,8 +26,6 @@ void DrawBGMode7Background16NewR3(uint8* Screen);
 void DrawBGMode7Background16New(uint8* Screen)
 {
    DMSG("totally opaque");
-   CHECK_SOUND();
-
    if (GFX.r2130 & 1)
    {
       if (IPPU.DirectColourMapsNeedRebuild) S9xBuildDirectColourMaps();

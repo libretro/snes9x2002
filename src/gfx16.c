@@ -859,8 +859,6 @@ void DrawOBJS(bool8_32 OnMain, uint8 D)
    uint32 O;
    uint32 BaseTile, Tile;
 
-   CHECK_SOUND();
-
    BG.BitShift = 4;
    SelectConvertTile();
    BG.TileShift = 5;
@@ -1030,8 +1028,6 @@ void DrawBackgroundMosaic(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 #ifdef __DEBUG__
    printf("DrawBackgroundMosaic(%i, %i, %i, %i)\n", BGMode, bg, Z1, Z2);
 #endif
-   CHECK_SOUND();
-
    uint32 Tile;
    uint16* SC0;
    uint16* SC1;
@@ -1259,9 +1255,6 @@ void DrawBackgroundOffset(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 #ifdef __DEBUG__
    printf("DrawBackgroundOffset(%i, %i, %i, %i)\n", BGMode, bg, Z1, Z2);
 #endif
-
-   CHECK_SOUND();
-
    uint32 Tile;
    uint16* SC0;
    uint16* SC1;
@@ -1546,9 +1539,6 @@ void DrawBackgroundMode5(uint32 BGMODE, uint32 bg, uint8 Z1, uint8 Z2)
 #ifdef __DEBUG__
    printf("DrawBackgroundMode5(?, %i, %i, %i)\n", bg, Z1, Z2);
 #endif
-
-   CHECK_SOUND();
-
    uint8 depths [2] = {Z1, Z2};
 
    uint32 Tile;
@@ -2291,8 +2281,6 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
    case 0:
    case 1:
    case 3:
-      CHECK_SOUND();
-
       if (BGMode == 0) BG.StartPalette = bg << 5;
       else BG.StartPalette = 0;
       SelectPalette();
