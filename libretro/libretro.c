@@ -563,7 +563,6 @@ const char* S9xGetFilenameInc(const char* in) { return in; }
 const char *S9xGetHomeDirectory() { return NULL; }
 const char *S9xGetSnapshotDirectory() { return NULL; }
 const char *S9xGetROMDirectory() { return NULL; }
-const char* S9xChooseFilename(bool8 a) { return NULL; }
 bool8 S9xInitUpdate() { return TRUE; }
 bool8 S9xContinueUpdate(int width, int height) { return TRUE; }
 void S9xSetPalette() {}
@@ -576,17 +575,6 @@ START_EXTERN_C
 
 void S9xToggleSoundChannel (int channel) {}
 
-bool8 S9xMovieActive() { return FALSE; }
-bool8 S9xMoviePlaying() { return FALSE; }
-void S9xMovieFreeze() {}
-void S9xMovieUnfreeze() {}
-int S9xMovieCreate (const char* filename, uint8 controllers_mask, uint8 opts, const wchar_t* metadata, int metadata_length) { return FALSE; }
-void S9xMovieStop (bool8 suppress_message) {}
-const char *S9xChooseMovieFilename(bool8 read_only) { return NULL; }
-void S9xMovieUpdate(bool addFrame) {}
-void S9xMovieUpdateOnReset() {}
-int S9xMovieOpen(const char* filename, bool8 read_only) { return FALSE; }
-uint32 S9xMovieGetFrameCounter() { return 0; }
 const char *S9xStringInput(const char *message) { return NULL; }
 
 END_EXTERN_C
@@ -610,8 +598,6 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size) {
 
 const char *emptyString = "";
 const char *S9xBasename (const char *filename) { return emptyString; }
-bool8 S9xOpenSnapshotFile (const char *base, bool8 read_only, STREAM *file) { *file = OPEN_STREAM(0, 0); return TRUE; }
-void S9xCloseSnapshotFile (STREAM file) { CLOSE_STREAM(file); }
 
 void S9xMessage(int a, int b, const char* msg)
 {
