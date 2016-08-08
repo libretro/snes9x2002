@@ -357,7 +357,6 @@ void S9xDoDMA(uint8 Channel)
                Work = *(base + p);
                REGISTER_2104(Work);
                p += inc;
-               CHECK_SOUND();
             }
             while (--count > 0);
             break;
@@ -370,7 +369,6 @@ void S9xDoDMA(uint8 Channel)
                   Work = *(base + p);
                   REGISTER_2118_linear(Work);
                   p += inc;
-                  CHECK_SOUND();
                }
                while (--count > 0);
             }
@@ -381,7 +379,6 @@ void S9xDoDMA(uint8 Channel)
                   Work = *(base + p);
                   REGISTER_2118_tile(Work);
                   p += inc;
-                  CHECK_SOUND();
                }
                while (--count > 0);
             }
@@ -395,7 +392,6 @@ void S9xDoDMA(uint8 Channel)
                   Work = *(base + p);
                   REGISTER_2119_linear(Work);
                   p += inc;
-                  CHECK_SOUND();
                }
                while (--count > 0);
             }
@@ -406,7 +402,6 @@ void S9xDoDMA(uint8 Channel)
                   Work = *(base + p);
                   REGISTER_2119_tile(Work);
                   p += inc;
-                  CHECK_SOUND();
                }
                while (--count > 0);
             }
@@ -417,7 +412,6 @@ void S9xDoDMA(uint8 Channel)
                Work = *(base + p);
                REGISTER_2122(Work);
                p += inc;
-               CHECK_SOUND();
             }
             while (--count > 0);
             break;
@@ -427,7 +421,6 @@ void S9xDoDMA(uint8 Channel)
                Work = *(base + p);
                REGISTER_2180(Work);
                p += inc;
-               CHECK_SOUND();
             }
             while (--count > 0);
             break;
@@ -437,7 +430,6 @@ void S9xDoDMA(uint8 Channel)
                Work = *(base + p);
                S9xSetPPU(Work, 0x2100 + d->BAddress);
                p += inc;
-               CHECK_SOUND();
             }
             while (--count > 0);
             break;
@@ -460,7 +452,6 @@ void S9xDoDMA(uint8 Channel)
                   Work = *(base + p);
                   REGISTER_2119_linear(Work);
                   p += inc;
-                  CHECK_SOUND();
                   count -= 2;
                }
                if (count == 1)
@@ -481,7 +472,6 @@ void S9xDoDMA(uint8 Channel)
                   Work = *(base + p);
                   REGISTER_2119_tile(Work);
                   p += inc;
-                  CHECK_SOUND();
                   count -= 2;
                }
                if (count == 1)
@@ -504,7 +494,6 @@ void S9xDoDMA(uint8 Channel)
                Work = *(base + p);
                S9xSetPPU(Work, 0x2101 + d->BAddress);
                p += inc;
-               CHECK_SOUND();
                count -= 2;
             }
             if (count == 1)
@@ -540,7 +529,6 @@ void S9xDoDMA(uint8 Channel)
             Work = *(base + p);
             S9xSetPPU(Work, 0x2101 + d->BAddress);
             p += inc;
-            CHECK_SOUND();
             count -= 4;
          }
          while (count > 0);
@@ -570,7 +558,6 @@ void S9xDoDMA(uint8 Channel)
             Work = *(base + p);
             S9xSetPPU(Work, 0x2103 + d->BAddress);
             p += inc;
-            CHECK_SOUND();
             count -= 4;
          }
          while (count > 0);
@@ -670,7 +657,6 @@ void S9xDoDMA(uint8 Channel)
             count = 0;
             break;
          }
-         CHECK_SOUND();
       }
       while (count);
    }

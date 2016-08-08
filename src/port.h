@@ -53,10 +53,7 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
    with a single define-block for each target platform.
 */
 
-//Title
-#define TITLE "Snes9x"
-
-//Required Includes
+/* Required Includes */
 #include "pixform.h"
 #include <stdint.h>
 #include <limits.h>
@@ -117,7 +114,6 @@ typedef short        int16_32;
 #define STATIC static
 #define FASTCALL
 #define PIXEL_FORMAT RGB565
-#define CHECK_SOUND()
 #define CPU_SHUTDOWN
 #define ZeroMemory(a,b) memset((a),0,(b))
 #define PACKING __attribute__ ((packed))

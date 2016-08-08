@@ -809,8 +809,6 @@ void DrawOBJS(bool8_32 OnMain, uint8 D)
    uint32 O;
    uint32 BaseTile, Tile;
 
-   CHECK_SOUND();
-
    BG.BitShift = 4;
    BG.TileShift = 5;
    BG.TileAddress = PPU.OBJNameBase;
@@ -957,8 +955,6 @@ void DrawOBJS(bool8_32 OnMain, uint8 D)
 
 void DrawBackgroundMosaic(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 {
-   CHECK_SOUND();
-
    uint32 Tile;
    uint16* SC0;
    uint16* SC1;
@@ -1183,8 +1179,6 @@ void DrawBackgroundMosaic(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 
 void DrawBackgroundOffset(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 {
-   CHECK_SOUND();
-
    uint32 Tile;
    uint16* SC0;
    uint16* SC1;
@@ -1459,8 +1453,6 @@ void DrawBackgroundOffset(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 
 void DrawBackgroundMode5(uint32 BGMODE, uint32 bg, uint8 Z1, uint8 Z2)
 {
-   CHECK_SOUND();
-
    uint8 depths [2] = {Z1, Z2};
 
    uint32 Tile;
@@ -2111,7 +2103,6 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
       DrawBackgroundMode5(BGMode, bg, Z1, Z2);
       return;
    }
-   CHECK_SOUND();
 
    if (BGMode == 0)
       BG.StartPalette = bg << 5;
@@ -2126,8 +2117,6 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 }
 
 #define RENDER_BACKGROUND_MODE7(FUNC) \
-    CHECK_SOUND(); \
-\
     uint8 *VRAM1 = Memory.VRAM + 1; \
     if (GFX.r2130 & 1) \
     { \
@@ -2263,8 +2252,6 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     }
 
 #define RENDER_BACKGROUND_MODE7ADDSUB(DEPTH, FUNC) \
-    CHECK_SOUND(); \
-\
     uint8 *VRAM1 = Memory.VRAM + 1; \
     if (GFX.r2130 & 1) \
     { \
@@ -2405,8 +2392,6 @@ static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     }
 
 #define RENDER_BACKGROUND_MODE7PRIO(FUNC) \
-    CHECK_SOUND(); \
-\
     uint8 *VRAM1 = Memory.VRAM + 1; \
     if (GFX.r2130 & 1) \
     { \
