@@ -1059,7 +1059,7 @@ void S9xResetPPU()
    PPU.OBJAddition = FALSE;
    PPU.OAMReadFlip = 0;
    PPU.BGnxOFSbyte = 0;
-   ZeroMemory(PPU.OAMData, 512 + 32);
+   memset(PPU.OAMData, 0, 512 + 32);
 
    PPU.VTimerEnabled = FALSE;
    PPU.HTimerEnabled = FALSE;
@@ -1092,9 +1092,9 @@ void S9xResetPPU()
    IPPU.DisplayedRenderedFrameCount = 0;
    IPPU.SkippedFrames = 0;
    IPPU.FrameSkip = 0;
-   ZeroMemory(IPPU.TileCached[TILE_2BIT], MAX_2BIT_TILES);
-   ZeroMemory(IPPU.TileCached[TILE_4BIT], MAX_4BIT_TILES);
-   ZeroMemory(IPPU.TileCached[TILE_8BIT], MAX_8BIT_TILES);
+   memset(IPPU.TileCached[TILE_2BIT], 0, MAX_2BIT_TILES);
+   memset(IPPU.TileCached[TILE_4BIT], 0, MAX_4BIT_TILES);
+   memset(IPPU.TileCached[TILE_8BIT], 0, MAX_8BIT_TILES);
    IPPU.FirstVRAMRead = FALSE;
    IPPU.LatchedInterlace = FALSE;
    IPPU.DoubleWidthPixels = FALSE;
@@ -1129,11 +1129,11 @@ void S9xResetPPU()
    for (c = 0; c < 0x8000; c += 0x100)
       memset(& Memory.FillRAM[c], c >> 8, 0x100);
 
-   ZeroMemory(& Memory.FillRAM[0x2100], 0x100);
-   ZeroMemory(& Memory.FillRAM[0x4200], 0x100);
-   ZeroMemory(& Memory.FillRAM[0x4000], 0x100);
+   memset(& Memory.FillRAM[0x2100], 0, 0x100);
+   memset(& Memory.FillRAM[0x4200], 0, 0x100);
+   memset(& Memory.FillRAM[0x4000], 0, 0x100);
    // For BS Suttehakkun 2...
-   ZeroMemory(& Memory.FillRAM[0x1000], 0x1000);
+   memset(& Memory.FillRAM[0x1000], 0, 0x1000);
    Memory.FillRAM[0x4201] = Memory.FillRAM[0x4213] = 0xFF;
 
    PPU.BG[0].OffsetsChanged = 0;
@@ -1141,7 +1141,7 @@ void S9xResetPPU()
    PPU.BG[2].OffsetsChanged = 0;
    PPU.BG[3].OffsetsChanged = 0;
    ROpCount = 0;
-   ZeroMemory(&rops, MAX_ROPS);
+   memset(&rops, 0, MAX_ROPS);
    GFX.r212c_s = 0;
    GFX.r212d_s = 0;
    GFX.r212e_s = 0;

@@ -114,7 +114,6 @@ typedef short        int16_32;
 #define FASTCALL
 #define PIXEL_FORMAT RGB565
 #define CPU_SHUTDOWN
-#define ZeroMemory(a,b) memset((a),0,(b))
 #define PACKING __attribute__ ((packed))
 #define ALIGN_BY_ONE  __attribute__ ((aligned (1), packed))
 #undef  FAST_LSB_WORD_ACCESS

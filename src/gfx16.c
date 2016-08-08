@@ -405,8 +405,8 @@ bool8_32 S9xGraphicsInit()
          }
       }
    }
-   ZeroMemory(GFX.ZERO, 0x10000 * sizeof(uint16));
-   ZeroMemory(GFX.ZERO_OR_X2, 0x10000 * sizeof(uint16));
+   memset(GFX.ZERO, 0, 0x10000 * sizeof(uint16));
+   memset(GFX.ZERO_OR_X2, 0, 0x10000 * sizeof(uint16));
    // Build a lookup table that if the top bit of the color value is zero
    // then the value is zero, otherwise multiply the value by 2. Used by
    // the color subtraction code.

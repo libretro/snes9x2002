@@ -202,9 +202,9 @@ bool8_32 MemoryInit ()
     SuperFX.nRomBanks = (2 * 1024 * 1024) / (32 * 1024);
     SuperFX.pvRom = (uint8 *) Memory.ROM;
 
-    ZeroMemory (IPPU.TileCached [TILE_2BIT], MAX_2BIT_TILES);
-    ZeroMemory (IPPU.TileCached [TILE_4BIT], MAX_4BIT_TILES);
-    ZeroMemory (IPPU.TileCached [TILE_8BIT], MAX_8BIT_TILES);
+    memset (IPPU.TileCached [TILE_2BIT], 0, MAX_2BIT_TILES);
+    memset (IPPU.TileCached [TILE_4BIT], 0, MAX_4BIT_TILES);
+    memset (IPPU.TileCached [TILE_8BIT], 0, MAX_8BIT_TILES);
     
     Memory.SDD1Data = NULL;
     Memory.SDD1Index = NULL;
@@ -404,7 +404,7 @@ again:
    }
 
    Memory.CalculatedSize = (TotalFileSize / 0x2000) * 0x2000;
-   ZeroMemory (Memory.ROM + Memory.CalculatedSize, MAX_ROM_SIZE - Memory.CalculatedSize);
+   memset (Memory.ROM + Memory.CalculatedSize, 0, MAX_ROM_SIZE - Memory.CalculatedSize);
 
    // Check for cherryroms.com DAIKAIJYUMONOGATARI2
 
@@ -501,7 +501,7 @@ again:
                }
                Memory.LoROM = TRUE;
                Memory.HiROM = FALSE;
-               ZeroMemory (Memory.ROM + Memory.CalculatedSize, MAX_ROM_SIZE - Memory.CalculatedSize);
+               memset (Memory.ROM + Memory.CalculatedSize, 0, MAX_ROM_SIZE - Memory.CalculatedSize);
             }
    }
 
@@ -677,8 +677,8 @@ void InitROM (bool8_32 Interleaved)
     Settings.SDD1 = FALSE;
     Settings.SRTC = FALSE;
 
-    ZeroMemory (Memory.BlockIsRAM, MEMMAP_NUM_BLOCKS);
-    ZeroMemory (Memory.BlockIsROM, MEMMAP_NUM_BLOCKS);
+    memset (Memory.BlockIsRAM, 0, MEMMAP_NUM_BLOCKS);
+    memset (Memory.BlockIsROM, 0, MEMMAP_NUM_BLOCKS);
 
     SRAM = Memory.SRAM;
     memset (Memory.ROMId, 0, 5);

@@ -413,7 +413,7 @@ void S9xResetAPU()
    int i, j;
    //    Settings.APUEnabled = Settings.NextAPUEnabled;
 
-   ZeroMemory(IAPU.RAM, 0x100);
+   memset(IAPU.RAM, 0, 0x100);
    memset(IAPU.RAM + 0x20, 0xFF, 0x20);
    memset(IAPU.RAM + 0x60, 0xFF, 0x20);
    memset(IAPU.RAM + 0xA0, 0xFF, 0x20);
@@ -422,8 +422,8 @@ void S9xResetAPU()
 
    for (i = 1; i < 256; i++)
       memcpy(IAPU.RAM + (i << 8), IAPU.RAM, 0x100);
-   //ZeroMemory (IAPU.CachedSamples, 0x40000);
-   ZeroMemory(APU.OutPorts, 4);
+   //memset (IAPU.CachedSamples, 0, 0x40000);
+   memset(APU.OutPorts, 0, 4);
    IAPU.DirectPage = IAPU.RAM;
    memmove(&IAPU.RAM [0xffc0], APUROM, sizeof(APUROM));
    memmove(APU.ExtraRAM, APUROM, sizeof(APUROM));

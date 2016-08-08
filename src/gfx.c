@@ -400,8 +400,8 @@ bool8_32 S9xGraphicsInit()
          }
       }
    }
-   ZeroMemory(GFX.ZERO, 0x10000 * sizeof(uint16));
-   ZeroMemory(GFX.ZERO_OR_X2, 0x10000 * sizeof(uint16));
+   memset(GFX.ZERO, 0, 0x10000 * sizeof(uint16));
+   memset(GFX.ZERO_OR_X2, 0, 0x10000 * sizeof(uint16));
    // Build a lookup table that if the top bit of the color value is zero
    // then the value is zero, otherwise multiply the value by 2. Used by
    // the color subtraction code.
@@ -2956,9 +2956,9 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
             for (uint32 y = starty; y <= endy; y++)
             {
 
-               ZeroMemory(GFX.SubZBuffer + y * GFX_ZPITCH,
+               memset(GFX.SubZBuffer + y * GFX_ZPITCH, 0,
                           IPPU.RenderedScreenWidth);
-               ZeroMemory(GFX.ZBuffer + y * GFX_ZPITCH,
+               memset(GFX.ZBuffer + y * GFX_ZPITCH, 0,
                           IPPU.RenderedScreenWidth);
 
                if (IPPU.Clip [0].Count [5])
@@ -3042,7 +3042,7 @@ void S9xUpdateScreen()  // ~30-50ms! (called from FLUSH_REDRAW())
             {
                for (uint32 y = starty; y <= endy; y++)
                {
-                  ZeroMemory(GFX.ZBuffer + y * GFX_ZPITCH,
+                  memset(GFX.ZBuffer + y * GFX_ZPITCH, 0,
                              IPPU.RenderedScreenWidth);
                   memset(GFX.SubZBuffer + y * GFX_ZPITCH, 1,
                          IPPU.RenderedScreenWidth);

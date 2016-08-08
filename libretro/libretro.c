@@ -499,7 +499,7 @@ bool retro_load_game(const struct retro_game_info *game)
 
    avail = (int) (samplerate / (Settings.PAL ? 50 : 60)) << 1;
 
-   ZeroMemory(audio_buf, sizeof(audio_buf));
+   memset(audio_buf, 0, sizeof(audio_buf));
 
    return true;
 }
