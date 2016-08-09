@@ -96,7 +96,7 @@ ifeq ($(platform), sncps3)
 WARNINGS_DEFINES =
 CODE_DEFINES =
 else
-WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter -Wno-parentheses -Wno-write-strings -Wno-comment -Werror=implicit-function-declaration
+WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter -Wno-parentheses -Wno-write-strings -Wno-comment
 CODE_DEFINES = -fomit-frame-pointer
 endif
 
