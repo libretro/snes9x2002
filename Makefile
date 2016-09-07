@@ -116,6 +116,12 @@ else ifeq ($(platform), ctr)
    CFLAGS += -D_3DS
    PLATFORM_DEFINES := -D_3DS
    STATIC_LINKING := 1
+
+# Emscripten
+else ifeq ($(platform), emscripten)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).bc
+   STATIC_LINKING := 1
+
 # GCW0
 else ifeq ($(platform), gcw0)
    TARGET := $(TARGET_NAME)_libretro.so
