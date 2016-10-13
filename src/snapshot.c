@@ -46,7 +46,6 @@
 #endif
 
 #include "snapshot.h"
-//#include "snaporig.h"
 #include "memmap.h"
 #include "snes9x.h"
 #include "65c816.h"
@@ -70,8 +69,6 @@ extern int (*statef_write)(void* p, int l);
 extern void (*statef_close)();
 
 extern uint8* SRAM;
-
-//bool8 S9xUnfreezeZSNES (const char *filename);
 
 typedef struct
 {
