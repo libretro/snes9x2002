@@ -15,50 +15,11 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-//#define __ZSNES__
-
-#if (defined __ZSNES__ && __LINUX__)
-#include "../gblhdr.h"
-#else
-#endif
-
-
 #include <math.h>
-
-
-
-//#define DebugDSP1
-
-// uncomment some lines to test
-//#define printinfo
-//#define debug02
-//#define debug0A
-//#define debug06
 
 #define __OPT__
 #define __OPT02__
 #define __OPT06__
-
-#ifdef DebugDSP1
-
-FILE* LogFile = NULL;
-
-void Log_Message(char* Message, ...)
-{
-   char Msg[400];
-   va_list ap;
-
-   va_start(ap, Message);
-   vsprintf(Msg, Message, ap);
-   va_end(ap);
-
-   strcat(Msg, "\r\n\0");
-   fwrite(Msg, strlen(Msg), 1, LogFile);
-   fflush(LogFile);
-}
-
-
-#endif
 
 const unsigned short DSP1ROM[1024] =
 {
@@ -246,9 +207,6 @@ void InitDSP(void)
       SinTable2Fix[i] = (65536 * sinf((float)(2 * PI * i / INCR)));
    }
 #endif
-#ifdef DebugDSP1
-   Start_Log();
-#endif
 }
 
 
@@ -259,10 +217,6 @@ short Op00Result;
 void DSPOp00()
 {
    Op00Result = Op00Multiplicand * Op00Multiplier >> 15;
-
-#ifdef DebugDSP1
-   Log_Message("OP00 MULT %d*%d/32768=%d", Op00Multiplicand, Op00Multiplier, Op00Result);
-#endif
 }
 
 short Op20Multiplicand;
@@ -273,10 +227,6 @@ void DSPOp20()
 {
    Op20Result = Op20Multiplicand * Op20Multiplier >> 15;
    Op20Result++;
-
-#ifdef DebugDSP1
-   Log_Message("OP20 MULT %d*%d/32768=%d", Op20Multiplicand, Op20Multiplier, Op20Result);
-#endif
 }
 
 signed short Op10Coefficient;
@@ -338,9 +288,6 @@ void DSP1_Inverse(short Coefficient, short Exponent, short* iCoefficient, short*
 void DSPOp10()
 {
    DSP1_Inverse(Op10Coefficient, Op10Exponent, &Op10CoefficientR, &Op10ExponentR);
-#ifdef DebugDSP1
-   Log_Message("OP10 INV %d*2^%d = %d*2^%d", Op10Coefficient, Op10Exponent, Op10CoefficientR, Op10ExponentR);
-#endif
 }
 
 short Op04Angle;
@@ -611,11 +558,6 @@ void DSPOp02()
    ViewerY1 = Sin(Angle(Op02AZS)) * Cos(Angle(Op02AAS));
 
 
-#ifdef debug02
-   printf("\nViewerX1 : %f ViewerY1 : %f ViewerZ1 : %f\n", ViewerX1, ViewerY1,
-          ViewerZ1);
-   getch();
-#endif
    ViewerX = Op02FX - ViewerX1 * Op02LFE;
    ViewerY = Op02FY - ViewerY1 * Op02LFE;
    ViewerZ = Op02FZ - ViewerZ1 * Op02LFE;
@@ -624,12 +566,6 @@ void DSPOp02()
    ScreenY = Op02FY + ViewerY1 * (Op02LES - Op02LFE);
    ScreenZ = Op02FZ + ViewerZ1 * (Op02LES - Op02LFE);
 
-#ifdef debug02
-   printf("ViewerX : %f ViewerY : %f ViewerZ : %f\n", ViewerX, ViewerY, ViewerZ);
-   printf("Op02FX : %d Op02FY : %d Op02FZ : %d\n", Op02FX, Op02FY, Op02FZ);
-   printf("ScreenX : %f ScreenY : %f ScreenZ : %f\n", ScreenX, ScreenY, ScreenZ);
-   getch();
-#endif
    if (ViewerZ1 == 0)ViewerZ1++;
    NumberOfSlope = ViewerZ / -ViewerZ1;
 
@@ -699,13 +635,6 @@ void DSPOp02()
    //   if(Op02LFE==0x2200)Op02VVA=0xFECD;
    //   else Op02VVA=0xFFB2;
 
-
-#ifdef DebugDSP1
-   Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d", Op02FX, Op02FY, Op02FZ, Op02LFE, Op02LES);
-   Log_Message("     AAS:%d AZS:%d VOF:%d VVA:%d", Op02AAS, Op02AZS, Op02VOF, Op02VVA);
-   Log_Message("     VX:%d VY:%d VZ:%d", (short)ViewerX, (short)ViewerY, (short)ViewerZ);
-#endif
-
 }
 #else
 
@@ -715,11 +644,6 @@ void DSPOp02()
    ViewerX1 = sinf(Op02AZS * 6.2832 / 65536.0) * sinf(Op02AAS * 6.2832 / 65536.0);
    ViewerY1 = sinf(Op02AZS * 6.2832 / 65536.0) * cosf(-Op02AAS * 6.2832 / 65536.0);
 
-#ifdef debug02
-   printf("\nViewerX1 : %f ViewerY1 : %f ViewerZ1 : %f\n", ViewerX1, ViewerY1,
-          ViewerZ1);
-   getch();
-#endif
    ViewerX = Op02FX - ViewerX1 * Op02LFE;
    ViewerY = Op02FY - ViewerY1 * Op02LFE;
    ViewerZ = Op02FZ - ViewerZ1 * Op02LFE;
@@ -728,12 +652,6 @@ void DSPOp02()
    ScreenY = Op02FY + ViewerY1 * (Op02LES - Op02LFE);
    ScreenZ = Op02FZ + ViewerZ1 * (Op02LES - Op02LFE);
 
-#ifdef debug02
-   printf("ViewerX : %f ViewerY : %f ViewerZ : %f\n", ViewerX, ViewerY, ViewerZ);
-   printf("Op02FX : %d Op02FY : %d Op02FZ : %d\n", Op02FX, Op02FY, Op02FZ);
-   printf("ScreenX : %f ScreenY : %f ScreenZ : %f\n", ScreenX, ScreenY, ScreenZ);
-   getch();
-#endif
    if (ViewerZ1 == 0)ViewerZ1++;
    NumberOfSlope = ViewerZ / -ViewerZ1;
 
@@ -795,13 +713,6 @@ void DSPOp02()
 
    //   if(Op02LFE==0x2200)Op02VVA=0xFECD;
    //   else Op02VVA=0xFFB2;
-
-
-#ifdef DebugDSP1
-   Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d", Op02FX, Op02FY, Op02FZ, Op02LFE, Op02LES);
-   Log_Message("     AAS:%d AZS:%d VOF:%d VVA:%d", Op02AAS, Op02AZS, Op02VOF, Op02VVA);
-   Log_Message("     VX:%d VY:%d VZ:%d", (short)ViewerX, (short)ViewerY, (short)ViewerZ);
-#endif
 
 }
 #endif
@@ -978,10 +889,6 @@ void DSPOp06()
    SADDMULT1616(ObjPY2, ObjPY1, CosFix(tanval2), ObjPZ1, -SinFix(tanval2))
    SADDMULT1616(ObjPZ2, ObjPY1, SinFix(tanval2), ObjPZ1, CosFix(tanval2))
 
-#ifdef debug06
-   Log_Message("ObjPX2: %f ObjPY2: %f ObjPZ2: %f\n", ObjPX2, ObjPY2, ObjPZ2);
-#endif
-
    ObjPZ2 = ObjPZ2 - Op02LFE;
 
    if (ObjPZ2 < 0)
@@ -1010,12 +917,6 @@ void DSPOp06()
       Op06V = 14 * 16;
       Op06S = 0xFFFF;
    }
-
-
-#ifdef DebugDSP1
-   Log_Message("OP06 X:%d Y:%d Z:%d", Op06X, Op06Y, Op06Z);
-   Log_Message("OP06 H:%d V:%d S:%d", Op06H, Op06V, Op06S);
-#endif
 }
 #else
 
@@ -1031,21 +932,11 @@ void DSPOp06()
    ObjPY1 = (ObjPX * sinf(tanval) + ObjPY * cosf(tanval));
    ObjPZ1 = ObjPZ;
 
-#ifdef debug06
-   Log_Message("Angle : %f", tanval);
-   Log_Message("ObjPX1: %f ObjPY1: %f ObjPZ1: %f\n", ObjPX1, ObjPY1, ObjPZ1);
-   Log_Message("cos(tanval) : %f  sin(tanval) : %f", cosf(tanval), sinf(tanval));
-#endif
-
    // rotate around X
    tanval = (-Op02AZS) / 65536.0 * 6.2832;
    ObjPX2 = ObjPX1;
    ObjPY2 = (ObjPY1 * cosf(tanval) + ObjPZ1 * -sinf(tanval));
    ObjPZ2 = (ObjPY1 * sinf(tanval) + ObjPZ1 * cosf(tanval));
-
-#ifdef debug06
-   Log_Message("ObjPX2: %f ObjPY2: %f ObjPZ2: %f\n", ObjPX2, ObjPY2, ObjPZ2);
-#endif
 
    ObjPZ2 = ObjPZ2 - Op02LFE;
 
@@ -1069,11 +960,6 @@ void DSPOp06()
       Op06V = 14 * 16;
       Op06S = 0xFFFF;
    }
-
-#ifdef DebugDSP1
-   Log_Message("OP06 X:%d Y:%d Z:%d", Op06X, Op06Y, Op06Z);
-   Log_Message("OP06 H:%d V:%d S:%d", Op06H, Op06V, Op06S);
-#endif
 }
 #endif
 
@@ -1191,10 +1077,6 @@ void DSPOp0D()
    Op0DF = (Op0DX * matrixA[0][0] >> 15) + (Op0DY * matrixA[0][1] >> 15) + (Op0DZ * matrixA[0][2] >> 15);
    Op0DL = (Op0DX * matrixA[1][0] >> 15) + (Op0DY * matrixA[1][1] >> 15) + (Op0DZ * matrixA[1][2] >> 15);
    Op0DU = (Op0DX * matrixA[2][0] >> 15) + (Op0DY * matrixA[2][1] >> 15) + (Op0DZ * matrixA[2][2] >> 15);
-
-#ifdef DebugDSP1
-   Log_Message("OP0D X: %d Y: %d Z: %d / F: %d L: %d U: %d", Op0DX, Op0DY, Op0DZ, Op0DF, Op0DL, Op0DU);
-#endif
 }
 
 void DSPOp1D()
@@ -1202,10 +1084,6 @@ void DSPOp1D()
    Op1DF = (Op1DX * matrixB[0][0] >> 15) + (Op1DY * matrixB[0][1] >> 15) + (Op1DZ * matrixB[0][2] >> 15);
    Op1DL = (Op1DX * matrixB[1][0] >> 15) + (Op1DY * matrixB[1][1] >> 15) + (Op1DZ * matrixB[1][2] >> 15);
    Op1DU = (Op1DX * matrixB[2][0] >> 15) + (Op1DY * matrixB[2][1] >> 15) + (Op1DZ * matrixB[2][2] >> 15);
-
-#ifdef DebugDSP1
-   Log_Message("OP1D X: %d Y: %d Z: %d / F: %d L: %d U: %d", Op1DX, Op1DY, Op1DZ, Op1DF, Op1DL, Op1DU);
-#endif
 }
 
 void DSPOp2D()
@@ -1213,10 +1091,6 @@ void DSPOp2D()
    Op2DF = (Op2DX * matrixC[0][0] >> 15) + (Op2DY * matrixC[0][1] >> 15) + (Op2DZ * matrixC[0][2] >> 15);
    Op2DL = (Op2DX * matrixC[1][0] >> 15) + (Op2DY * matrixC[1][1] >> 15) + (Op2DZ * matrixC[1][2] >> 15);
    Op2DU = (Op2DX * matrixC[2][0] >> 15) + (Op2DY * matrixC[2][1] >> 15) + (Op2DZ * matrixC[2][2] >> 15);
-
-#ifdef DebugDSP1
-   Log_Message("OP2D X: %d Y: %d Z: %d / F: %d L: %d U: %d", Op2DX, Op2DY, Op2DZ, Op2DF, Op2DL, Op2DU);
-#endif
 }
 
 short Op03F;
@@ -1243,10 +1117,6 @@ void DSPOp03()
    Op03X = (Op03F * matrixA[0][0] >> 15) + (Op03L * matrixA[1][0] >> 15) + (Op03U * matrixA[2][0] >> 15);
    Op03Y = (Op03F * matrixA[0][1] >> 15) + (Op03L * matrixA[1][1] >> 15) + (Op03U * matrixA[2][1] >> 15);
    Op03Z = (Op03F * matrixA[0][2] >> 15) + (Op03L * matrixA[1][2] >> 15) + (Op03U * matrixA[2][2] >> 15);
-
-#ifdef DebugDSP1
-   Log_Message("OP03 F: %d L: %d U: %d / X: %d Y: %d Z: %d", Op03F, Op03L, Op03U, Op03X, Op03Y, Op03Z);
-#endif
 }
 
 void DSPOp13()
@@ -1254,10 +1124,6 @@ void DSPOp13()
    Op13X = (Op13F * matrixB[0][0] >> 15) + (Op13L * matrixB[1][0] >> 15) + (Op13U * matrixB[2][0] >> 15);
    Op13Y = (Op13F * matrixB[0][1] >> 15) + (Op13L * matrixB[1][1] >> 15) + (Op13U * matrixB[2][1] >> 15);
    Op13Z = (Op13F * matrixB[0][2] >> 15) + (Op13L * matrixB[1][2] >> 15) + (Op13U * matrixB[2][2] >> 15);
-
-#ifdef DebugDSP1
-   Log_Message("OP13 F: %d L: %d U: %d / X: %d Y: %d Z: %d", Op13F, Op13L, Op13U, Op13X, Op13Y, Op13Z);
-#endif
 }
 
 void DSPOp23()
@@ -1265,10 +1131,6 @@ void DSPOp23()
    Op23X = (Op23F * matrixC[0][0] >> 15) + (Op23L * matrixC[1][0] >> 15) + (Op23U * matrixC[2][0] >> 15);
    Op23Y = (Op23F * matrixC[0][1] >> 15) + (Op23L * matrixC[1][1] >> 15) + (Op23U * matrixC[2][1] >> 15);
    Op23Z = (Op23F * matrixC[0][2] >> 15) + (Op23L * matrixC[1][2] >> 15) + (Op23U * matrixC[2][2] >> 15);
-
-#ifdef DebugDSP1
-   Log_Message("OP23 F: %d L: %d U: %d / X: %d Y: %d Z: %d", Op23F, Op23L, Op23U, Op23X, Op23Y, Op23Z);
-#endif
 }
 
 short Op14Zr;
@@ -1346,10 +1208,6 @@ void DSPOp0E()
    GetRXYPos();
    Op0EX = (short)(RXRes);
    Op0EY = (short)(RYRes);
-
-#ifdef DebugDSP1
-   Log_Message("OP0E COORDINATE H:%d V:%d   X:%d Y:%d", Op0EH, Op0EV, Op0EX, Op0EY);
-#endif
 }
 
 short Op0BX;
@@ -1368,30 +1226,16 @@ short Op2BS;
 void DSPOp0B()
 {
    Op0BS = (Op0BX * matrixA[0][0] + Op0BY * matrixA[0][1] + Op0BZ * matrixA[0][2]) >> 15;
-
-#ifdef DebugDSP1
-   Log_Message("OP0B");
-#endif
 }
 
 void DSPOp1B()
 {
    Op1BS = (Op1BX * matrixB[0][0] + Op1BY * matrixB[0][1] + Op1BZ * matrixB[0][2]) >> 15;
-
-#ifdef DebugDSP1
-   Log_Message("OP1B X: %d Y: %d Z: %d S: %d", Op1BX, Op1BY, Op1BZ, Op1BS);
-   Log_Message("     MX: %d MY: %d MZ: %d Scale: %d", (short)(matrixB[0][0] * 100), (short)(matrixB[0][1] * 100),
-               (short)(matrixB[0][2] * 100), (short)(sc2 * 100));
-#endif
 }
 
 void DSPOp2B()
 {
    Op2BS = (Op2BX * matrixC[0][0] + Op2BY * matrixC[0][1] + Op2BZ * matrixC[0][2]) >> 15;
-
-#ifdef DebugDSP1
-   Log_Message("OP2B");
-#endif
 }
 
 short Op08X, Op08Y, Op08Z, Op08Ll, Op08Lh;
@@ -1401,11 +1245,6 @@ void DSPOp08()
    int Op08Size = (Op08X * Op08X + Op08Y * Op08Y + Op08Z * Op08Z) << 1;
    Op08Ll = Op08Size & 0xffff;
    Op08Lh = (Op08Size >> 16) & 0xffff;
-
-#ifdef DebugDSP1
-   Log_Message("OP08 %d,%d,%d", Op08X, Op08Y, Op08Z);
-   Log_Message("OP08 ((Op08X^2)+(Op08Y^2)+(Op08X^2))=%x", Op08Size);
-#endif
 }
 
 short Op18X, Op18Y, Op18Z, Op18R, Op18D;
@@ -1413,10 +1252,6 @@ short Op18X, Op18Y, Op18Z, Op18R, Op18D;
 void DSPOp18()
 {
    Op18D = (Op18X * Op18X + Op18Y * Op18Y + Op18Z * Op18Z - Op18R * Op18R) >> 15;
-
-#ifdef DebugDSP1
-   Log_Message("Op18 X: %d Y: %d Z: %d R: %D DIFF %d", Op18X, Op18Y, Op38Z, Op18D);
-#endif
 }
 
 short Op38X, Op38Y, Op38Z, Op38R, Op38D;
@@ -1425,10 +1260,6 @@ void DSPOp38()
 {
    Op38D = (Op38X * Op38X + Op38Y * Op38Y + Op38Z * Op38Z - Op38R * Op38R) >> 15;
    Op38D++;
-
-#ifdef DebugDSP1
-   Log_Message("OP38 X: %d Y: %d Z: %d R: %D DIFF %d", Op38X, Op38Y, Op38Z, Op38D);
-#endif
 }
 
 short Op28X;
@@ -1455,11 +1286,6 @@ void DSPOp28()
       Op28R = ((Node2 - Node1) * (C & 0x1ff) >> 9) + Node1;
       Op28R >>= (E >> 1);
    }
-
-#ifdef DebugDSP1
-   Log_Message("OP28 X:%d Y:%d Z:%d", Op28X, Op28Y, Op28Z);
-   Log_Message("OP28 Vector Length %d", Op28R);
-#endif
 }
 
 short Op1CX, Op1CY, Op1CZ;
@@ -1491,10 +1317,6 @@ void DSPOp1C()
    Op1CZ1 = (Op1CZBR * DSP1_Cos(Op1CX) >> 15) - (Op1CYBR * DSP1_Sin(Op1CX) >> 15);
    Op1CYAR = Op1CY1;
    Op1CZAR = Op1CZ1;
-
-#ifdef DebugDSP1
-   Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ", Op1CXAR, Op1CYAR, Op1CZAR);
-#endif
 }
 
 unsigned short Op0FRamsize;
@@ -1503,10 +1325,6 @@ unsigned short Op0FPass;
 void DSPOp0F()
 {
    Op0FPass = 0x0000;
-
-#ifdef DebugDSP1
-   Log_Message("OP0F RAM Test Pass:%d", Op0FPass);
-#endif
 }
 
 short Op2FUnknown;
