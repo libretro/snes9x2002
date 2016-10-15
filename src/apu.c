@@ -7,6 +7,10 @@
  * Super FX C emulator code
  * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
  *                           Gary Henderson.
+ *
+ * (c) Copyright 2014 - 2016 Daniel De Matteis. (UNDER NO CIRCUMSTANCE 
+ * WILL COMMERCIAL RIGHTS EVER BE APPROPRIATED TO ANY PARTY)
+ *
  * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
  *
  * DSP1 emulator code (c) Copyright 1998 Ivar, _Demo_ and Gary Henderson.

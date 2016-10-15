@@ -13,6 +13,9 @@
  * C4 asm and some C emulation code (c) Copyright 2000 zsKnight and _Demo_.
  * C4 C code (c) Copyright 2001 Gary Henderson (gary.henderson@ntlworld.com).
  *
+ * (c) Copyright 2014 - 2016 Daniel De Matteis. (UNDER NO CIRCUMSTANCE 
+ * WILL COMMERCIAL RIGHTS EVER BE APPROPRIATED TO ANY PARTY)
+ *
  * DOS port code contains the works of other authors. See headers in
  * individual files.
  *

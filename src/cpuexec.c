@@ -16,6 +16,9 @@
  * DOS port code contains the works of other authors. See headers in
  * individual files.
  *
+ * (c) Copyright 2014 - 2016 Daniel De Matteis. (UNDER NO CIRCUMSTANCE 
+ * WILL COMMERCIAL RIGHTS EVER BE APPROPRIATED TO ANY PARTY)
+ *
  * Snes9x homepage: http://www.snes9x.com
  *
  * Permission to use, copy, modify and distribute Snes9x in both binary and

@@ -44,8 +44,8 @@
   Super FX C emulator code
   (c) Copyright 1997 - 1999 Ivar and Gary Henderson.
 
-
-
+  (c) Copyright 2014 - 2016 Daniel De Matteis. (UNDER NO CIRCUMSTANCE 
+  WILL COMMERCIAL RIGHTS EVER BE APPROPRIATED TO ANY PARTY)
 
   Specific ports contains the works of other authors. See headers in
   individual files.
