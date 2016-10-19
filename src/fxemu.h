@@ -112,13 +112,6 @@ extern int FxEmulate(uint32 nInstructions);
 extern void FxCacheWriteAccess(uint16 vAddress);
 extern void FxFlushCache();   /* Callled when the G flag in SFR is set to zero */
 
-/* Breakpoint */
-extern void FxBreakPointSet(uint32 vAddress);
-extern void FxBreakPointClear();
-
-/* Step by step execution */
-extern int FxStepOver(uint32 nInstructions);
-
 /* Errors */
 extern int FxGetErrorCode();
 extern int FxGetIllegalAddress();

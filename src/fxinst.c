@@ -3357,59 +3357,13 @@ static uint32 fx_run(uint32 nInstructions)
    return (nInstructions - GSU.vInstCount);
 }
 
-static uint32 fx_run_to_breakpoint(uint32 nInstructions)
-{
-   uint32 vCounter = 0;
-   while (TF(G) && vCounter < nInstructions)
-   {
-      vCounter++;
-      FX_STEP;
-      if (USEX16(R15) == GSU.vBreakPoint)
-      {
-         GSU.vErrorCode = FX_BREAKPOINT;
-         break;
-      }
-   }
-   /*
-   #ifndef FX_ADDRESS_CHECK
-   GSU.vPipeAdr = USEX16(R15-1) | (USEX8(GSU.vPrgBankReg)<<16);
-   #endif
-   */
-   return vCounter;
-}
-
-static uint32 fx_step_over(uint32 nInstructions)
-{
-   uint32 vCounter = 0;
-   while (TF(G) && vCounter < nInstructions)
-   {
-      vCounter++;
-      FX_STEP;
-      if (USEX16(R15) == GSU.vBreakPoint)
-      {
-         GSU.vErrorCode = FX_BREAKPOINT;
-         break;
-      }
-      if (USEX16(R15) == GSU.vStepPoint)
-         break;
-   }
-   /*
-   #ifndef FX_ADDRESS_CHECK
-   GSU.vPipeAdr = USEX16(R15-1) | (USEX8(GSU.vPrgBankReg)<<16);
-   #endif
-   */
-   return vCounter;
-}
-
 #ifdef FX_FUNCTION_TABLE
 uint32(*FX_FUNCTION_TABLE[])(uint32) =
 #else
 uint32(*fx_apfFunctionTable[])(uint32) =
 #endif
 {
-   &fx_run,
-   &fx_run_to_breakpoint,
-   &fx_step_over,
+   &fx_run
 };
 
 /*** Special table for the different plot configurations ***/

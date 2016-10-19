@@ -629,58 +629,12 @@ int FxEmulate(uint32 nInstructions)
    /* Execute GSU session */
    CF(IRQ);
 
-   if (GSU.bBreakPoint)
-      vCount = fx_ppfFunctionTable[FX_FUNCTION_RUN_TO_BREAKPOINT](nInstructions);
-   else
-      vCount = fx_ppfFunctionTable[FX_FUNCTION_RUN](nInstructions);
+   vCount = fx_ppfFunctionTable[FX_FUNCTION_RUN](nInstructions);
 
    /* Store GSU registers */
    fx_writeRegisterSpace();
 
    /* Check for error code */
-   if (GSU.vErrorCode)
-      return GSU.vErrorCode;
-   else
-      return vCount;
-}
-
-/* Breakpoints */
-void FxBreakPointSet(uint32 vAddress)
-{
-   GSU.bBreakPoint = TRUE;
-   GSU.vBreakPoint = USEX16(vAddress);
-}
-void FxBreakPointClear()
-{
-   GSU.bBreakPoint = FALSE;
-}
-
-/* Step by step execution */
-int FxStepOver(uint32 nInstructions)
-{
-   uint32 vCount;
-   fx_readRegisterSpace();
-
-   /* Check if the start address is valid */
-   if (!fx_checkStartAddress())
-   {
-      CF(G);
-#if 0
-      GSU.vIllegalAddress = (GSU.vPrgBankReg << 24) | R15;
-      return FX_ERROR_ILLEGAL_ADDRESS;
-#else
-      return 0;
-#endif
-   }
-
-   if (PIPE >= 0xf0)
-      GSU.vStepPoint = USEX16(R15 + 3);
-   else if ((PIPE >= 0x05 && PIPE <= 0x0f) || (PIPE >= 0xa0 && PIPE <= 0xaf))
-      GSU.vStepPoint = USEX16(R15 + 2);
-   else
-      GSU.vStepPoint = USEX16(R15 + 1);
-   vCount = fx_ppfFunctionTable[FX_FUNCTION_STEP_OVER](nInstructions);
-   fx_writeRegisterSpace();
    if (GSU.vErrorCode)
       return GSU.vErrorCode;
    else
