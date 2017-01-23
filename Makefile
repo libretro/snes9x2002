@@ -78,6 +78,7 @@ else ifeq ($(platform), ngc)
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   CFLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
    STATIC_LINKING := 1
 
 else ifeq ($(platform), wii)
@@ -85,13 +86,15 @@ else ifeq ($(platform), wii)
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__ -DHW_RVL
+   CFLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
    STATIC_LINKING := 1
 
 else ifeq ($(platform), wiiu)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
-   CFLAGS += -DGEKKO -DWIIU -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__ -DHW_RVL
+   CFLAGS += -DGEKKO -DWIIU -mwup -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__ -DHW_RVL
+   CFLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
    STATIC_LINKING := 1
 
 # Vita
