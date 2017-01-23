@@ -95,13 +95,17 @@ typedef short        int16_32;
 #endif
 
 //Path Defines
-#undef  _MAX_PATH
-#define _MAX_DIR PATH_MAX
-#define _MAX_DRIVE 1
-#define _MAX_FNAME PATH_MAX
-#define _MAX_EXT PATH_MAX
-//#define PATH_MAX 1024
-#define _MAX_PATH PATH_MAX
+#ifndef PATH_MAX
+#define PATH_MAX	1024
+#endif
+
+#ifndef _MAX_DRIVE
+#define _MAX_DRIVE	1
+#endif
+
+#ifndef _MAX_PATH
+#define _MAX_PATH	PATH_MAX
+#endif
 
 //True/False Defines
 #define TRUE 1

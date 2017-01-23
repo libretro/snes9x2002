@@ -299,10 +299,10 @@ bool8_32 LoadROM (const char *filename)
    STREAM ROMFile;
    bool8_32 Interleaved = FALSE;
    bool8_32 Tales = FALSE;
-   char dir [_MAX_DIR + 1];
+   char dir [_MAX_PATH + 1];
    char drive [_MAX_DRIVE + 1];
-   char name [_MAX_FNAME + 1];
-   char ext [_MAX_EXT + 1];
+   char name [_MAX_PATH + 1];
+   char ext [_MAX_PATH + 1];
    char fname [_MAX_PATH + 1];
    int i;
 

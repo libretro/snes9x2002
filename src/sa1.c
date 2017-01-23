@@ -402,39 +402,40 @@ void S9xSetSA1MemMap(uint32 which1, uint8 map)
 
 uint8 S9xGetSA1(uint32 address)
 {
-   if ((address < 0x2300) && (address > 0x230d)) return (Memory.FillRAM [address]);
+   if ((address < 0x2300) && (address > 0x230d))
+      return (Memory.FillRAM [address]);
+
    switch (address)
    {
-   case 0x2300:
-      return ((uint8)((Memory.FillRAM [0x2209] & 0x5f) |
-                      (CPU.IRQActive & (SA1_IRQ_SOURCE | SA1_DMA_IRQ_SOURCE))));
-   case 0x2301:
-      return ((Memory.FillRAM [0x2200] & 0xf) |
-              (Memory.FillRAM [0x2301] & 0xf0));
-   case 0x2306:
-      return ((uint8)  SA1.sum);
-   case 0x2307:
-      return ((uint8)(SA1.sum >>  8));
-   case 0x2308:
-      return ((uint8)(SA1.sum >> 16));
-   case 0x2309:
-      return ((uint8)(SA1.sum >> 24));
-   case 0x230a:
-      return ((uint8)(SA1.sum >> 32));
-   case 0x230b:
-      return (Memory.FillRAM [address]);
-   case 0x230c:
-      return (Memory.FillRAM [0x230c]);
-   case 0x230d:
-   {
-      uint8 byte = Memory.FillRAM [0x230d];
+      case 0x2300:
+         return ((uint8)((Memory.FillRAM [0x2209] & 0x5f) |
+                  (CPU.IRQActive & (SA1_IRQ_SOURCE | SA1_DMA_IRQ_SOURCE))));
+      case 0x2301:
+         return ((Memory.FillRAM [0x2200] & 0xf) |
+               (Memory.FillRAM [0x2301] & 0xf0));
+      case 0x2306:
+         return ((uint8)  SA1.sum);
+      case 0x2307:
+         return ((uint8)(SA1.sum >>  8));
+      case 0x2308:
+         return ((uint8)(SA1.sum >> 16));
+      case 0x2309:
+         return ((uint8)(SA1.sum >> 24));
+      case 0x230a:
+         return ((uint8)(SA1.sum >> 32));
+      case 0x230b:
+         return (Memory.FillRAM [address]);
+      case 0x230c:
+         return (Memory.FillRAM [0x230c]);
+      case 0x230d:
+         {
+            uint8 byte = Memory.FillRAM [0x230d];
 
-      if (Memory.FillRAM [0x2258] & 0x80)
-         S9xSA1ReadVariableLengthData(TRUE, FALSE);
-      return (byte);
+            if (Memory.FillRAM [0x2258] & 0x80)
+               S9xSA1ReadVariableLengthData(TRUE, FALSE);
+            return (byte);
+         }
    }
-   }
-
 }
 
 void S9xSetSA1(uint8 byte, uint32 address)
