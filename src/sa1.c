@@ -436,6 +436,8 @@ uint8 S9xGetSA1(uint32 address)
             return (byte);
          }
    }
+
+   return (Memory.FillRAM [address]);
 }
 
 void S9xSetSA1(uint8 byte, uint32 address)
