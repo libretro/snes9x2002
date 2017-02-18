@@ -95,7 +95,7 @@
 #include <stdio.h>
 
 /* The FxChip Emulator's internal variables */
-FxRegs_s GSU = FxRegs_s_null;
+FxRegs_s GSU; /* This will be initialized when loading a ROM */
 
 uint32(**fx_ppfFunctionTable)(uint32) = 0;
 void (**fx_ppfPlotTable)() = 0;
