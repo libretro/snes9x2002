@@ -1,4 +1,4 @@
-
+LIBRETRO_COMM_DIR = $(LIBRETRO_DIR)/libretro-common
 ifeq ($(DEBUG), 1)
 DEFINES += -O0 -g
 else
@@ -32,7 +32,11 @@ SOURCES += $(CORE_DIR)/soundux.c
 SOURCES += $(CORE_DIR)/spc700.c
 SOURCES += $(CORE_DIR)/srtc.c
 SOURCES += $(LIBRETRO_DIR)/libretro.c
-SOURCES += $(LIBRETRO_DIR)/memstream.c
+
+ifeq ($(STATIC_LINKING), 1)
+else
+SOURCES += $(LIBRETRO_COMM_DIR)/streams/memory_stream.c
+endif
 
 ifeq ($(ARM_ASM), 1)
 SOURCES += $(CORE_DIR)/ppu.c
@@ -88,7 +92,7 @@ SOURCES += $(CORE_DIR)/tile.c
 DEFINES += -D__OLD_RASTER_FX__
 endif
 
-INCLUDES   = -I$(LIBRETRO_DIR) -I$(CORE_DIR) -I.
+INCLUDES   = -I. -I$(LIBRETRO_DIR) -I$(LIBRETRO_COMM_DIR)/include -I$(CORE_DIR)
 DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline
 DEFINES    += -DUSE_SA1
 

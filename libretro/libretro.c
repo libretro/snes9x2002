@@ -55,8 +55,8 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-#include "libretro.h"
-#include "memstream.h"
+#include <libretro.h>
+#include <streams/memory_stream.h>
 
 #include "../src/snes9x.h"
 #include "../src/memmap.h"
@@ -96,29 +96,29 @@ memstream_t *s_stream;
 
 int s_open(const char *fname, const char *mode)
 {
-	s_stream = memstream_open();
-	return TRUE;
+   s_stream = memstream_open(0);
+   return TRUE;
 }
 
 int s_read(void *p, int l)
 {
-	return memstream_read(s_stream, p, l);
+   return memstream_read(s_stream, p, l);
 }
 
 int s_write(void *p, int l)
 {
-	return memstream_write(s_stream, p, l);
+   return memstream_write(s_stream, p, l);
 }
 
-void s_close()
+void s_close(void)
 {
-	memstream_close(s_stream);
+   memstream_close(s_stream);
 }
 
 int  (*statef_open)(const char *fname, const char *mode) = s_open;
 int  (*statef_read)(void *p, int l) = s_read;
 int  (*statef_write)(void *p, int l) = s_write;
-void (*statef_close)() = s_close;
+void (*statef_close)(void) = s_close;
 
 
 
@@ -221,7 +221,7 @@ static int16 audio_buf[0x10000];
 static unsigned avail;
 static float samplerate = 32040.5f;
 
-void S9xGenerateSound()
+void S9xGenerateSound(void)
 {
 }
 
