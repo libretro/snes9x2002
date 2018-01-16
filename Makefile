@@ -163,6 +163,12 @@ endif
 CORE_DIR     := ./src
 LIBRETRO_DIR := ./libretro
 
+ifeq ($(DEBUG), 1)
+DEFINES += -O0 -g
+else
+DEFINES += -O2 -DNDEBUG=1
+endif
+
 include Makefile.common
 
 OBJS := $(SOURCES:.c=.o)
