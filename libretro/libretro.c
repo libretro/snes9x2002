@@ -91,6 +91,7 @@ static uint32 joys[5];
 
 bool8 ROMAPUEnabled = 0;
 char currentWorkingDir[MAX_PATH+1] = {0};
+bool overclock_cycles = false;
 
 memstream_t *s_stream;
 
@@ -351,10 +352,17 @@ static void snes_init (void)
 
 void retro_init (void)
 {
+   static const struct retro_variable vars[] =
+   {
+      { "snes9x2002_overclock_cycles", "CPU Overclock (Hack, Unsafe, Restart); disabled|enabled" },
+      { NULL, NULL },
+   };
+
    if (!environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &use_overscan))
 	   use_overscan = FALSE;
 
    snes_init();
+   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
 }
 
 /* libsnes uses relative values for analogue devices. 
@@ -414,10 +422,31 @@ static void report_buttons (void)
 	}
 }
 
+static void check_variables(void)
+{
+   struct retro_variable var;
+
+   var.key = "snes9x2002_overclock_cycles";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      {
+        if (strcmp(var.value, "enabled") == 0)
+          overclock_cycles = true;
+        else
+          overclock_cycles = false;
+      }
+}
+
 //#define FRAME_SKIP
 
 void retro_run (void)
 {
+   bool updated = false;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+      check_variables();
+
 #ifdef FRAME_SKIP
    IPPU.RenderThisFrame = !IPPU.RenderThisFrame;
 #else
@@ -516,6 +545,8 @@ bool retro_load_game(const struct retro_game_info *game)
 {
    bool8 loaded;
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+
+   check_variables();
 
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
    {

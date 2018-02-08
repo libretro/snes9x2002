@@ -133,6 +133,8 @@ enum
    SNES_MAX_CONTROLLER_OPTIONS
 };
 
+extern bool overclock_cycles;
+
 #define DEBUG_MODE_FLAG     (1 << 0)
 #define TRACE_FLAG         (1 << 1)
 #define SINGLE_STEP_FLAG    (1 << 2)
@@ -147,9 +149,9 @@ enum
 #define IRQ_PENDING_FLAG    (1 << 11)
 
 #ifdef VAR_CYCLES
-#define ONE_CYCLE 6
-#define SLOW_ONE_CYCLE 8
-#define TWO_CYCLES 12
+#define ONE_CYCLE (overclock_cycles ? 4 : 6)
+#define SLOW_ONE_CYCLE (overclock_cycles ? 4 : 8)
+#define TWO_CYCLES (overclock_cycles ? 6 : 12)
 #else
 #define ONE_CYCLE 1
 #define SLOW_ONE_CYCLE 1
