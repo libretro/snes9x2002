@@ -354,7 +354,7 @@ void retro_init (void)
 {
    static const struct retro_variable vars[] =
    {
-      { "snes9x2002_overclock_cycles", "CPU Overclock (Hack, Unsafe, Restart); disabled|enabled" },
+      { "snes9x2002_overclock_cycles", "Reduce Slowdown (Hack, Unsafe, Restart); disabled|enabled" },
       { NULL, NULL },
    };
 
