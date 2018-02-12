@@ -134,6 +134,7 @@ enum
 };
 
 extern bool overclock_cycles;
+extern int one_c, slow_one_c, two_c;
 
 #define DEBUG_MODE_FLAG     (1 << 0)
 #define TRACE_FLAG         (1 << 1)
@@ -149,9 +150,9 @@ extern bool overclock_cycles;
 #define IRQ_PENDING_FLAG    (1 << 11)
 
 #ifdef VAR_CYCLES
-#define ONE_CYCLE (overclock_cycles ? 4 : 6)
-#define SLOW_ONE_CYCLE (overclock_cycles ? 4 : 8)
-#define TWO_CYCLES (overclock_cycles ? 6 : 12)
+#define ONE_CYCLE          (overclock_cycles ? one_c : 6)
+#define SLOW_ONE_CYCLE     (overclock_cycles ? slow_one_c : 8)
+#define TWO_CYCLES         (overclock_cycles ? two_c : 12)
 #else
 #define ONE_CYCLE 1
 #define SLOW_ONE_CYCLE 1
