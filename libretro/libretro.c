@@ -92,6 +92,7 @@ static uint32 joys[5];
 bool8 ROMAPUEnabled = 0;
 char currentWorkingDir[MAX_PATH+1] = {0};
 bool overclock_cycles = false;
+int one_c, slow_one_c, two_c;
 
 memstream_t *s_stream;
 
@@ -354,7 +355,7 @@ void retro_init (void)
 {
    static const struct retro_variable vars[] =
    {
-      { "snes9x2002_overclock_cycles", "Reduce Slowdown (Hack, Unsafe, Restart); disabled|enabled" },
+      { "snes9x2002_overclock_cycles", "Reduce Slowdown (Hack, Unsafe, Restart); disabled|compatible|max" },
       { NULL, NULL },
    };
 
@@ -431,8 +432,20 @@ static void check_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
       {
-        if (strcmp(var.value, "enabled") == 0)
-          overclock_cycles = true;
+        if (strcmp(var.value, "compatible") == 0)
+        {
+           overclock_cycles = true;
+           one_c = 4;
+           slow_one_c = 5;
+           two_c = 6;
+        }
+        else if (strcmp(var.value, "max") == 0)
+        {
+           overclock_cycles = true;
+           one_c = 3;
+           slow_one_c = 3;
+           two_c = 3;
+        }
         else
           overclock_cycles = false;
       }
