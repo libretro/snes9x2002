@@ -1,32 +1,25 @@
 LOCAL_PATH := $(call my-dir)
 
-ARM_ASM  = 0
-SOURCES :=
-DEFINES :=
+ROOT_DIR     := $(LOCAL_PATH)/..
+CORE_DIR     := $(ROOT_DIR)/src
+LIBRETRO_DIR := $(ROOT_DIR)/libretro
+
+ARM_ASM        := 0
+DEFINES        :=
 COMMON_DEFINES :=
 
-include $(CLEAR_VARS)
-
-LOCAL_MODULE    := retro
-
 ifeq ($(TARGET_ARCH),arm)
-ARM_ASM         = 1
-ASM_CPU         = 0
-ASM_SPC700      = 0
-LOCAL_ARM_MODE := arm
+  ARM_ASM := 1
 endif
 
-ifeq ($(NDK_DEBUG),1)
-DEBUG = 1
-endif
+include $(ROOT_DIR)/Makefile.common
 
-CORE_DIR     := ../src
-LIBRETRO_DIR := ../libretro
+COREFLAGS := $(DEFINES) $(COMMON_DEFINES) $(INCLUDES)
 
-include ../Makefile.common
-
+include $(CLEAR_VARS)
+LOCAL_MODULE    := retro
 LOCAL_SRC_FILES := $(SOURCES)
-LOCAL_CFLAGS    += $(DEFINES) $(COMMON_DEFINES) $(INCLUDES) -std=c99
-LOCAL_ASFLAGS   += $(DEFINES) $(COMMON_DEFINES) $(INCLUDES)
-
+LOCAL_CFLAGS    := -std=c99 $(COREFLAGS)
+LOCAL_LDFLAGS   := -Wl,-version-script=$(LIBRETRO_DIR)/link.T
+LOCAL_ARM_MODE  := arm
 include $(BUILD_SHARED_LIBRARY)
