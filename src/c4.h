@@ -107,7 +107,7 @@ extern int16 C4SinTable[];
 
 END_EXTERN_C
 
-static inline uint8* C4GetMemPointer(uint32 Address)
+static INLINE uint8* C4GetMemPointer(uint32 Address)
 {
    return (Memory.ROM + ((Address & 0xff0000) >> 1) + (Address & 0x7fff));
 }

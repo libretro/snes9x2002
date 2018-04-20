@@ -364,7 +364,7 @@ void SelectPalette()
 
 }
 
-static inline void WRITE_4PIXELSHI16(uint32 Offset, uint8* Pixels)
+static INLINE void WRITE_4PIXELSHI16(uint32 Offset, uint8* Pixels)
 {
    uint32 Pixel;
    uint16* Screen = (uint16*) GFX.S + Offset;
@@ -384,7 +384,7 @@ static inline void WRITE_4PIXELSHI16(uint32 Offset, uint8* Pixels)
 #undef FN
 }
 
-static inline void WRITE_4PIXELSHI16_FLIPPED(uint32 Offset, uint8* Pixels)
+static INLINE void WRITE_4PIXELSHI16_FLIPPED(uint32 Offset, uint8* Pixels)
 {
    uint32 Pixel;
    uint16* Screen = (uint16*) GFX.S + Offset;

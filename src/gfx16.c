@@ -2244,7 +2244,7 @@ void DrawBackground_16(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 }
 
 
-static inline void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
+static INLINE void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 {
    //StartAnalyze();
 

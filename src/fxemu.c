@@ -153,7 +153,7 @@ void FxCacheWriteAccess(uint16 vAddress)
    //    GSU.vPipe = 0x1;
 }
 
-static inline void fx_backupCache()
+static INLINE void fx_backupCache()
 {
 #if 0
    uint32 i;
@@ -189,7 +189,7 @@ static inline void fx_backupCache()
 #endif
 }
 
-static inline void fx_restoreCache()
+static INLINE void fx_restoreCache()
 {
 #if 0
    uint32 i;
@@ -241,7 +241,7 @@ void fx_updateRamBank(uint8 Byte)
 }
 
 
-static inline void fx_readRegisterSpace()
+static INLINE void fx_readRegisterSpace()
 {
    int i;
    uint8* p;
@@ -453,7 +453,7 @@ void fx_computeScreenPointers()
    }
 }
 
-static inline void fx_writeRegisterSpace()
+static INLINE void fx_writeRegisterSpace()
 {
    int i;
    uint8* p;

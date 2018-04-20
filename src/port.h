@@ -61,7 +61,9 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
 #include <stdint.h>
 #include <limits.h>
 #include <string.h>
+
 #include <boolean.h>
+#include <retro_inline.h>
 
 //Types Defined
 typedef uint8_t   bool8;
@@ -140,15 +142,5 @@ void _splitpath(const char* path, char* drive, char* dir, char* fname,
 
 #define strcasecmp strcmp
 #define strncasecmp strncmp
-
-#ifdef INLINE
-#undef INLINE
-#define INLINE __inline
-#endif
-
-#ifdef inline
-#undef inline
-#define inline __inline
-#endif
 
 #endif //  _PORT_H_

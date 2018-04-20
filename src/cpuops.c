@@ -2495,7 +2495,7 @@ static void Op0CM0(void)
 
 #ifdef CPU_SHUTDOWN
 #ifndef SA1_OPCODES
-static inline void CPUShutdown()
+static INLINE void CPUShutdown()
 {
    if (Settings.Shutdown && CPU.PC == CPU.WaitAddress)
    {
@@ -2522,7 +2522,7 @@ static inline void CPUShutdown()
    }
 }
 #else
-static inline void CPUShutdown()
+static INLINE void CPUShutdown()
 {
    if (Settings.Shutdown && CPU.PC == CPU.WaitAddress)
    {

@@ -98,12 +98,12 @@ unsigned long DecreaseERateExp[32][10];
 unsigned long KeyOffERate[10];
 
 
-static inline void S9xSetEnvelopeRate(int channel, unsigned long rate, int direction, int target, unsigned int mode)
+static INLINE void S9xSetEnvelopeRate(int channel, unsigned long rate, int direction, int target, unsigned int mode)
 {
    S9xSetEnvRate(&SoundData.channels [channel], rate, direction, target, mode);
 }
 
-static inline void S9xSetSoundADSR(int channel, int attack_ind, int decay_ind,
+static INLINE void S9xSetSoundADSR(int channel, int attack_ind, int decay_ind,
                                    int sustain_ind, int sustain_level, int release_rate)
 {
    int attack_rate = AttackRate [attack_ind];
@@ -141,7 +141,7 @@ static inline void S9xSetSoundADSR(int channel, int attack_ind, int decay_ind,
    }
 }
 
-static inline void S9xSetSoundVolume(int channel, short volume_left, short volume_right)
+static INLINE void S9xSetSoundVolume(int channel, short volume_left, short volume_right)
 {
    Channel* ch = &SoundData.channels[channel];
    if (!so.stereo)
@@ -153,7 +153,7 @@ static inline void S9xSetSoundVolume(int channel, short volume_left, short volum
    ch->right_vol_level = (ch->envx * volume_right) / 128;
 }
 
-static inline void S9xSetMasterVolume(short volume_left, short volume_right)
+static INLINE void S9xSetMasterVolume(short volume_left, short volume_right)
 {
    if (Settings.DisableMasterVolume)
    {
@@ -172,7 +172,7 @@ static inline void S9xSetMasterVolume(short volume_left, short volume_right)
    }
 }
 
-static inline void S9xSetEchoVolume(short volume_left, short volume_right)
+static INLINE void S9xSetEchoVolume(short volume_left, short volume_right)
 {
    if (!so.stereo)
       volume_left = (ABS(volume_right) + ABS(volume_left)) / 2;
@@ -182,18 +182,18 @@ static inline void S9xSetEchoVolume(short volume_left, short volume_right)
    SoundData.echo_volume [1] = volume_right;
 }
 
-static inline void S9xSetEchoWriteEnable(uint8 byte)
+static INLINE void S9xSetEchoWriteEnable(uint8 byte)
 {
    SoundData.echo_write_enabled = byte;
    S9xSetEchoDelay(APU.DSP [APU_EDL] & 15);
 }
 
-static inline void S9xSetFrequencyModulationEnable(uint8 byte)
+static INLINE void S9xSetFrequencyModulationEnable(uint8 byte)
 {
    SoundData.pitch_mod = byte & (0xFE);//~1;
 }
 
-static inline int S9xGetEnvelopeHeight(int channel)
+static INLINE int S9xGetEnvelopeHeight(int channel)
 {
    if ((Settings.SoundEnvelopeHeightReading ||
          SNESGameFixes.SoundEnvelopeHeightReading2) &&
@@ -209,18 +209,18 @@ static inline int S9xGetEnvelopeHeight(int channel)
    return (0);
 }
 
-static inline void S9xSetSoundHertz(int channel, int hertz)
+static INLINE void S9xSetSoundHertz(int channel, int hertz)
 {
    SoundData.channels[channel].hertz = hertz;
    S9xSetSoundFrequency(channel, hertz);
 }
 
-static inline void S9xSetSoundType(int channel, int type_of_sound)
+static INLINE void S9xSetSoundType(int channel, int type_of_sound)
 {
    SoundData.channels[channel].type = type_of_sound;
 }
 
-static inline bool8 S9xSetSoundMode(int channel, int mode)
+static INLINE bool8 S9xSetSoundMode(int channel, int mode)
 {
    Channel* ch = &SoundData.channels[channel];
 
@@ -273,7 +273,7 @@ static inline bool8 S9xSetSoundMode(int channel, int mode)
    return (FALSE);
 }
 
-static inline void S9xPlaySample(int channel)
+static INLINE void S9xPlaySample(int channel)
 {
    Channel* ch = &SoundData.channels[channel];
 

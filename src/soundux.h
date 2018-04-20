@@ -203,14 +203,14 @@ else \
 if ((v) > 127) \
     (v) = 127
 
-static inline void S9xSetSoundMute(bool8 mute)
+static INLINE void S9xSetSoundMute(bool8 mute)
 {
    //bool8 old = so.mute_sound;
    so.mute_sound = mute;
    //return (old);
 }
 
-static inline void S9xSetEnvRate(Channel* ch, unsigned long rate, int direction, int target, unsigned int mode)
+static INLINE void S9xSetEnvRate(Channel* ch, unsigned long rate, int direction, int target, unsigned int mode)
 {
    ch->envx_target = target;
 
@@ -273,7 +273,7 @@ static inline void S9xSetEnvRate(Channel* ch, unsigned long rate, int direction,
 #endif
 }
 
-static inline void S9xSetEchoEnable(uint8 byte)
+static INLINE void S9xSetEchoEnable(uint8 byte)
 {
    int i;
    SoundData.echo_channel_enable = byte;
@@ -295,13 +295,13 @@ static inline void S9xSetEchoEnable(uint8 byte)
    }
 }
 
-static inline void S9xSetEchoFeedback(int feedback)
+static INLINE void S9xSetEchoFeedback(int feedback)
 {
    CLIP8(feedback);
    SoundData.echo_feedback = feedback;
 }
 
-static inline void S9xSetFilterCoefficient(int tap, int value)
+static INLINE void S9xSetFilterCoefficient(int tap, int value)
 {
    FilterTaps [tap & 7] = value;
    SoundData.no_filter = (FilterTaps [0] == 127 || FilterTaps [0] == 0) &&
@@ -314,13 +314,13 @@ static inline void S9xSetFilterCoefficient(int tap, int value)
                          FilterTaps [7] == 0;
 }
 
-static inline uint16* S9xGetSampleAddress(int sample_number)
+static INLINE uint16* S9xGetSampleAddress(int sample_number)
 {
    uint32 addr = (((APU.DSP[APU_DIR] << 8) + (sample_number << 2)) & 0xffff);
    return (uint16*)(IAPU.RAM + addr);
 }
 
-static inline void S9xSetSoundFrequency(int channel, int hertz)  // hertz [0~64K<<1]
+static INLINE void S9xSetSoundFrequency(int channel, int hertz)  // hertz [0~64K<<1]
 {
    if (so.playback_rate)
    {

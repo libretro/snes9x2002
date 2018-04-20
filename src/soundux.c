@@ -119,7 +119,7 @@ void DecodeBlockAsm(int8*, int16*, int32*, int32*);
 #define JUST_PLAYED_LAST_SAMPLE(c) ((c)->sample_pointer >= LAST_SAMPLE)
 
 
-static inline void S9xAPUSetEndOfSample(int i, Channel* ch)
+static INLINE void S9xAPUSetEndOfSample(int i, Channel* ch)
 {
    ch->state = SOUND_SILENT;
    ch->mode = MODE_NONE;
@@ -132,7 +132,7 @@ static inline void S9xAPUSetEndOfSample(int i, Channel* ch)
 END_OF_FUNCTION(S9xAPUSetEndOfSample)
 #endif
 
-static inline void S9xAPUSetEndX(int ch)
+static INLINE void S9xAPUSetEndX(int ch)
 {
    APU.DSP [APU_ENDX] |= 1 << ch;
 }
