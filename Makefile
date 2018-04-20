@@ -171,12 +171,9 @@ endif
 
 include Makefile.common
 
-OBJS := $(SOURCES:.c=.o)
-OBJS := $(OBJS:.S=.o)
-OBJS := $(OBJS:.s=.o)
+OBJS := $(SOURCES:.c=.o) $(SOURCES_ASM:.S=.o)
 
 CFLAGS += $(DEFINES) $(COMMON_DEFINES) $(INCLUDES)
-
 
 ifeq ($(platform), theos_ios)
 COMMON_FLAGS := -DIOS $(COMMON_DEFINES) $(INCFLAGS) -I$(THEOS_INCLUDE_PATH) -Wno-error
