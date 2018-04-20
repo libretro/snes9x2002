@@ -1,7 +1,7 @@
 #ifndef __ROPS_H__
 #define __ROPS_H__
 
-#include "stdbool.h"
+#include <boolean.h>
 
 /*
    Raster Operations macros
