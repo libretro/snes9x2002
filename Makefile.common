@@ -1,5 +1,6 @@
 LIBRETRO_COMM_DIR = $(LIBRETRO_DIR)/libretro-common
 
+SOURCES_ASM :=
 SOURCES := 	$(CORE_DIR)/apu.c \
 				$(CORE_DIR)/apuaux.c \
 				$(CORE_DIR)/c4.c \
@@ -56,17 +57,19 @@ SOURCES += $(CORE_DIR)/tile16sub1_2.c
 SOURCES += $(CORE_DIR)/tile16fsub1_2.c
 
 ifeq ($(ASM_SPC700), 1)
-SOURCES += $(CORE_DIR)/spc700a.s
-SOURCES += $(CORE_DIR)/spc_decode.S
+SOURCES_ASM += $(CORE_DIR)/spc700a.S \
+					$(CORE_DIR)/spc_decode.S
 
 DEFINES += -DASM_SPC700
 endif
 
 ifeq ($(ASM_CPU), 1)
-SOURCES += $(CORE_DIR)/os9x_65c816_global.s
-SOURCES += $(CORE_DIR)/os9x_65c816_spcasm.s
-SOURCES += $(CORE_DIR)/os9x_65c816_spcc.s
-#SOURCES += $(CORE_DIR)/os9x_65c816.s
+SOURCES_ASM += $(CORE_DIR)/os9x_65c816_global.S \
+					$(CORE_DIR)/os9x_65c816_spcasm.S \
+					$(CORE_DIR)/os9x_65c816_spcc.S
+
+#SOURCES_ASM += $(CORE_DIR)/os9x_65c816.S
+
 SOURCES += $(CORE_DIR)/os9x_asm_cpu.c
 
 DEFINES += -DASMCPU

@@ -172,7 +172,6 @@ endif
 include Makefile.common
 
 OBJS := $(SOURCES:.c=.o)
-OBJS := $(OBJS:.cpp=.o)
 OBJS := $(OBJS:.S=.o)
 OBJS := $(OBJS:.s=.o)
 
@@ -197,12 +196,6 @@ endif
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-
-%.o: %.cpp
-	$(CXX) $(CFLAGS) -c -o $@ $<
-
-%.o: %.s
-	$(CXX) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
 
 %.o: %.S
 	$(CXX) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
