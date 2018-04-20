@@ -198,7 +198,7 @@ endif
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 %.o: %.S
-	$(CXX) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
+	$(CC) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
 
 clean:
 	rm -f $(OBJS) $(TARGET)
