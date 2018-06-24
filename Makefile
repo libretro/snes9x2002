@@ -103,6 +103,13 @@ else ifeq ($(platform), wiiu)
    CFLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
    STATIC_LINKING := 1
 
+#Nintendo Classics (Hakchi)
+else ifeq ($(platform), nintendoc)
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
+   CFLAGS += -fno-builtin -fno-exceptions -DARM -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+
 # Vita
 else ifeq ($(platform), vita)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
@@ -191,6 +198,15 @@ else
 	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJS) -lm
 endif
 
+ifeq ($(platform),nintendoc)
+	@echo "** BUILDING HAKCHI HMOD PACKAGE **"
+	mkdir -p libretro/hakchi/etc/libretro/core/ libretro/hakchi/etc/libretro/info/ libretro/hakchi/etc/preinit.d/
+	rm -f libretro/hakchi/etc/libretro/info/*
+	cp $(TARGET_NAME)_libretro.so libretro/hakchi/etc/libretro/core/
+	cd libretro/hakchi/etc/libretro/info/; wget https://buildbot.libretro.com/assets/frontend/info/$(TARGET_NAME)_libretro.info
+	cd libretro/hakchi/; tar -czvf "CORE_$(TARGET_NAME).hmod" *
+endif
+
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -198,7 +214,7 @@ endif
 	$(CC) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET) hakchi/CORE_$(TARGET_NAME).hmod
 
 .PHONY: clean
 
