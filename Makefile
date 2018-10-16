@@ -2,7 +2,9 @@ DEBUG=0
 TARGET_NAME = snes9x2002
 
 ifeq ($(platform),)
-platform = unix
+   ifeq (,$(findstring classic_,$(platform)))
+      platform = unix
+   endif
 ifeq ($(shell uname -a),)
    platform = win
 else ifneq ($(findstring MINGW,$(shell uname -a)),)
@@ -110,6 +112,38 @@ else ifeq ($(platform), nintendoc)
    SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
    CFLAGS += -fno-builtin -fno-exceptions -DARM -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 
+# (armv7 a7, hard point, neon based) ### 
+# NESC, SNESC, C64 mini 
+else ifeq ($(platform), classic_armv7_a7)
+	TARGET := $(TARGET_NAME)_libretro.so
+	fpic := -fPIC
+	SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
+	CFLAGS += -Ofast \
+	-flto=4 -fwhole-program -fuse-linker-plugin \
+	-fdata-sections -ffunction-sections -Wl,--gc-sections \
+	-fno-stack-protector -fno-ident -fomit-frame-pointer \
+	-falign-functions=1 -falign-jumps=1 -falign-loops=1 \
+	-fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops \
+	-fmerge-all-constants -fno-math-errno \
+	-marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+	CXXFLAGS += $(CFLAGS)
+	CPPFLAGS += $(CFLAGS)
+	ASFLAGS += $(CFLAGS)
+	HAVE_NEON = 1
+	ARCH = arm
+	BUILTIN_GPU = neon
+	USE_DYNAREC = 1
+	ifeq ($(shell echo `$(CC) -dumpversion` "< 4.9" | bc -l), 1)
+	  CFLAGS += -march=armv7-a
+	else
+	  CFLAGS += -march=armv7ve
+	  # If gcc is 5.0 or later
+	  ifeq ($(shell echo `$(CC) -dumpversion` ">= 5" | bc -l), 1)
+	    LDFLAGS += -static-libgcc -static-libstdc++
+	  endif
+	endif
+#######################################
+
 # Vita
 else ifeq ($(platform), vita)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
@@ -192,20 +226,13 @@ else
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
+	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJS)
 else
 	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJS) -lm
 endif
-
-ifeq ($(platform),nintendoc)
-	@echo "** BUILDING HAKCHI HMOD PACKAGE **"
-	mkdir -p libretro/hakchi/etc/libretro/core/ libretro/hakchi/etc/libretro/info/ libretro/hakchi/etc/preinit.d/
-	rm -f libretro/hakchi/etc/libretro/info/*
-	cp $(TARGET_NAME)_libretro.so libretro/hakchi/etc/libretro/core/
-	cd libretro/hakchi/etc/libretro/info/; wget https://buildbot.libretro.com/assets/frontend/info/$(TARGET_NAME)_libretro.info
-	cd libretro/hakchi/; tar -czvf "CORE_$(TARGET_NAME).hmod" *
-endif
+	@echo "** BUILD SUCCESSFUL! GG NO RE **"
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -214,7 +241,7 @@ endif
 	$(CC) $(CFLAGS) -Wa,-I./src/ -c -o $@ $<
 
 clean:
-	rm -f $(OBJS) $(TARGET) hakchi/CORE_$(TARGET_NAME).hmod
+	rm -f $(OBJS) $(TARGET)
 
 .PHONY: clean
 
