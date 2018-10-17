@@ -105,13 +105,6 @@ else ifeq ($(platform), wiiu)
    CFLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
    STATIC_LINKING := 1
 
-#Nintendo Classics (Hakchi)
-else ifeq ($(platform), nintendoc)
-   TARGET := $(TARGET_NAME)_libretro.so
-   fpic := -fPIC
-   SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
-   CFLAGS += -fno-builtin -fno-exceptions -DARM -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-
 # (armv7 a7, hard point, neon based) ### 
 # NESC, SNESC, C64 mini 
 else ifeq ($(platform), classic_armv7_a7)
