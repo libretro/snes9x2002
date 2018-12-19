@@ -125,7 +125,6 @@ enum
 {
    SNES_MULTIPLAYER5,
    SNES_JOYPAD,
-   SNES_MOUSE_SWAPPED,
    SNES_MOUSE,
    SNES_SUPERSCOPE,
    SNES_JUSTIFIER,
@@ -253,7 +252,6 @@ typedef struct
    bool8  TraceDSP;
 
    // Joystick options
-   bool8  SwapJoypads;
    bool8  JoystickEnabled;
 
    // ROM timing options (see also H_Max above)
