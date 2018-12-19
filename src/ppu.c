@@ -172,7 +172,7 @@ void S9xSetCPU(uint8 byte, uint16 Address)
          }
          break;
       case 0x4017 :
-         break;
+         return;
       default :
 #ifdef DEBUGGER
          missing.unknowncpu_write = Address;
@@ -648,6 +648,9 @@ uint8 S9xGetCPU(uint16 Address)
          if (Memory.FillRAM[0x4016] & 1)
             return (0);
 
+         if (PPU.Joypad1ButtonReadPos >= 16) // Joypad 1 is enabled
+            return 1;
+
          byte = IPPU.Joypads[0] >> (PPU.Joypad1ButtonReadPos ^ 15);
          PPU.Joypad1ButtonReadPos++;
          return (byte & 1);
@@ -663,8 +666,6 @@ uint8 S9xGetCPU(uint16 Address)
                return (2);
 
             case SNES_MOUSE :
-               if (++PPU.MouseSpeed[0] > 2)
-                  PPU.MouseSpeed[0] = 0;
                break;
             }
             return (0x00);
@@ -675,7 +676,7 @@ uint8 S9xGetCPU(uint16 Address)
             if (Memory.FillRAM[0x4201] & 0x80)
             {
                byte =
-                  ((IPPU.Joypads[0]
+                  ((IPPU.Joypads[1]
                     >> (PPU.Joypad2ButtonReadPos ^ 15))
                    & 1)
                   | (((IPPU.Joypads[2]
@@ -699,10 +700,11 @@ uint8 S9xGetCPU(uint16 Address)
                return (byte);
             }
          }
-         return (
-                   (IPPU.Joypads[1]
-                    >> (PPU.Joypad2ButtonReadPos++ ^ 15))
-                   & 1);
+         
+         if (PPU.Joypad2ButtonReadPos >= 16) // Joypad 2 is enabled
+            return 1;
+
+         return (IPPU.Joypads[1] >> (PPU.Joypad2ButtonReadPos++ ^ 15)) & 1;
       }
       default :
 #ifdef DEBUGGER
@@ -1158,9 +1160,7 @@ void S9xProcessMouse(int which1)
    int x, y;
    uint32 buttons;
 
-   if ((IPPU.Controller == SNES_MOUSE
-         || IPPU.Controller == SNES_MOUSE_SWAPPED)
-         && S9xReadMousePosition(which1, &x, &y, &buttons))
+   if (IPPU.Controller == SNES_MOUSE && S9xReadMousePosition(which1, &x, &y, &buttons))
    {
       int delta_x, delta_y;
 #define MOUSE_SIGNATURE 0x1
@@ -1215,10 +1215,7 @@ void S9xProcessMouse(int which1)
       else
          IPPU.Mouse[which1] |= delta_y << 24;
 
-      if (IPPU.Controller == SNES_MOUSE_SWAPPED)
-         IPPU.Joypads[0] = IPPU.Mouse[which1];
-      else
-         IPPU.Joypads[1] = IPPU.Mouse[which1];
+      IPPU.Joypads[1] = IPPU.Mouse [which1];
    }
 }
 
@@ -1264,12 +1261,6 @@ void S9xNextController()
       IPPU.Controller = SNES_JOYPAD;
       break;
    case SNES_JOYPAD :
-      if (Settings.MouseMaster)
-      {
-         IPPU.Controller = SNES_MOUSE_SWAPPED;
-         break;
-      }
-   case SNES_MOUSE_SWAPPED :
       if (Settings.MouseMaster)
       {
          IPPU.Controller = SNES_MOUSE;
