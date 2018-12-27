@@ -120,11 +120,9 @@ typedef struct
    uint8 output [512];
 } SDSP1;
 
-START_EXTERN_C
-void S9xResetDSP1();
+void S9xResetDSP1(void);
 uint8 S9xGetDSP(uint16 Address);
 void S9xSetDSP(uint8 Byte, uint16 Address);
-END_EXTERN_C
 
 extern SDSP1 DSP1;
 

@@ -44,6 +44,7 @@
 #ifndef _65c816_h_
 #define _65c816_h_
 
+#include <stdint.h>
 #include "port.h"
 
 #define AL A.B.l
@@ -102,19 +103,17 @@
 
 typedef union
 {
+   struct
+   {
 #ifdef MSB_FIRST
-   struct
-   {
       uint8 h, l;
-   } PACKING B;
 #else
-   struct
-   {
       uint8 l, h;
-   } PACKING B;
 #endif
-   uint16 W;
-} ALIGN_BY_ONE pair;
+   } B;
+
+   uint16_t W;
+} pair;
 
 typedef struct
 {
@@ -127,9 +126,8 @@ typedef struct
    pair   S;
    pair   Y;
    uint16 PC;
-} PACKING SRegisters;
+} SRegisters;
 
 #define Registers CPU.Regs
-//EXTERN_C struct SRegisters Registers;
 
 #endif

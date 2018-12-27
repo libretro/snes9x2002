@@ -129,13 +129,17 @@ static INLINE uint8 S9xGetByte(uint32 Address)
 
 static INLINE uint16 S9xGetWord(uint32 Address)
 {
+#if defined(VAR_CYCLES) || defined(CPU_SHUTDOWN)
+   int block;
+#endif
+   uint8 *GetAddress;
+
    if ((Address & 0x1fff) == 0x1fff)
       return (S9xGetByte(Address) | (S9xGetByte(Address + 1) << 8));
 #if defined(VAR_CYCLES) || defined(CPU_SHUTDOWN)
-   int block;
-   uint8* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
+   GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 #else
-   uint8* GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
+   GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 #endif
    if (GetAddress >= (uint8*) MAP_LAST)
    {
@@ -225,14 +229,18 @@ static INLINE uint16 S9xGetWord(uint32 Address)
 
 static INLINE void S9xSetByte(uint8 Byte, uint32 Address)
 {
+#if defined(VAR_CYCLES)
+   int block;
+#endif
+   uint8 *SetAddress;
+
 #if defined(CPU_SHUTDOWN)
    CPU.WaitAddress = NULL;
 #endif
 #if defined(VAR_CYCLES)
-   int block;
-   uint8* SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) & MEMMAP_MASK)];
+   SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) & MEMMAP_MASK)];
 #else
-   uint8* SetAddress = Memory.WriteMap [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
+   SetAddress = Memory.WriteMap [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 #endif
 
    if (SetAddress >= (uint8*) MAP_LAST)
@@ -345,14 +353,18 @@ static INLINE void S9xSetByte(uint8 Byte, uint32 Address)
 
 static INLINE void S9xSetWord(uint16 Word, uint32 Address)
 {
+#if defined (VAR_CYCLES)
+   int block;
+#endif
+   uint8* SetAddress;
+
 #if defined(CPU_SHUTDOWN)
    CPU.WaitAddress = NULL;
 #endif
 #if defined (VAR_CYCLES)
-   int block;
-   uint8* SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) & MEMMAP_MASK)];
+   SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) & MEMMAP_MASK)];
 #else
-   uint8* SetAddress = Memory.WriteMap [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
+   SetAddress = Memory.WriteMap [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 #endif
 
    if (SetAddress >= (uint8*) MAP_LAST)

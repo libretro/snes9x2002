@@ -11,8 +11,6 @@
 //#define __debug_c_hblank__
 //#define __debug_c_io__
 
-START_EXTERN_C
-
 void asm_S9xSetPCBase(uint32 Address)
 {
 #ifdef __debug_c_setpc__
@@ -202,5 +200,3 @@ void asm_S9xOpcode_IRQ(void)
    // S9xPackStatus(); // not needed
 }
 #endif
-
-END_EXTERN_C

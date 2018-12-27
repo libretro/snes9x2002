@@ -3292,13 +3292,14 @@ static void OpBBX0(void)
 /* XCE *************************************************************************************** */
 static void OpFB(void)
 {
+   uint8 A1, A2;
 #ifdef VAR_CYCLES
-   CPU.Cycles += ONE_CYCLE;
+   CPU.Cycles  += ONE_CYCLE;
 #endif
 
-   uint8 A1 = ICPU._Carry;
-   uint8 A2 = Registers.PH;
-   ICPU._Carry = A2 & 1;
+   A1           = ICPU._Carry;
+   A2           = Registers.PH;
+   ICPU._Carry  = A2 & 1;
    Registers.PH = A1;
 
    if (CheckEmulation())
@@ -3881,6 +3882,7 @@ static void Op42(void)
 {
 #ifndef SA1_OPCODES
    uint8 b;
+   int8_t s9xInt8;
 
    CPU.WaitAddress = NULL;
    CPU.Cycles = CPU.NextEvent;
@@ -3889,7 +3891,7 @@ static void Op42(void)
    b = *CPU.PC++;
 
    //relative
-   signed char s9xInt8 = 0xF0 | (b & 0xF);
+   s9xInt8 = 0xF0 | (b & 0xF);
 #ifdef VAR_CYCLES
    CPU.Cycles += CPU.MemSpeed;
 #endif

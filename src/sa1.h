@@ -123,7 +123,6 @@ extern uint8* SA1_WriteMap [MEMMAP_NUM_BLOCKS];
 #define SA1SetFlags(f)   (SA1Registers.P.W |=  (f))
 #define SA1CheckFlag(f)  (SA1Registers.PL & (f))
 
-START_EXTERN_C
 uint8 S9xSA1GetByte(uint32);
 //uint16 S9xSA1GetWord (uint32);
 #define S9xSA1GetWord(address) (S9xSA1GetByte(address) | (S9xSA1GetByte(address+1) << 8))
@@ -139,11 +138,11 @@ extern SOpcodes S9xSA1OpcodesM1X0 [256];
 extern SOpcodes S9xSA1OpcodesM0X1 [256];
 extern SOpcodes S9xSA1OpcodesM0X0 [256];
 
-void S9xSA1MainLoop();
-void S9xSA1Init();
-void S9xFixSA1AfterSnapshotLoad();
-void S9xSA1ExecuteDuringSleep();
-END_EXTERN_C
+void S9xSA1MainLoop(void);
+void S9xSA1Init(void);
+void S9xFixSA1AfterSnapshotLoad(void);
+void S9xSA1ExecuteDuringSleep(void);
+
 
 #define SNES_IRQ_SOURCE     (1 << 7)
 #define TIMER_IRQ_SOURCE    (1 << 6)

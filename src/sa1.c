@@ -749,6 +749,8 @@ static void S9xSA1DMA()
 
 void S9xSA1ReadVariableLengthData(bool8 inc, bool8 no_shift)
 {
+   uint32 data;
+   uint8 s;
    uint32 addr =  Memory.FillRAM [0x2259] |
                   (Memory.FillRAM [0x225a] << 8) |
                   (Memory.FillRAM [0x225b] << 16);
@@ -759,14 +761,14 @@ void S9xSA1ReadVariableLengthData(bool8 inc, bool8 no_shift)
    else if (shift == 0)
       shift = 16;
 
-   uint8 s = shift + SA1.variable_bit_pos;
+   s = shift + SA1.variable_bit_pos;
 
    if (s >= 16)
    {
       addr += (s >> 4) << 1;
       s &= 15;
    }
-   uint32 data = S9xSA1GetWord(addr) |
+   data   = S9xSA1GetWord(addr) |
                  (S9xSA1GetWord(addr + 2) << 16);
 
    data >>= s;

@@ -46,7 +46,7 @@
 #ifndef _CPUADDR_H_
 #define _CPUADDR_H_
 
-EXTERN_C long OpAddress;
+extern long OpAddress;
 
 static INLINE void Immediate8()
 {

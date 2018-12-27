@@ -261,6 +261,8 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
 static void snes_init (void)
 {
+   const int safety = 128;
+
    memset(&Settings, 0, sizeof(Settings));
 	Settings.JoystickEnabled = FALSE;
 	Settings.SoundPlaybackRate = samplerate;
@@ -317,7 +319,6 @@ static void snes_init (void)
 
    GFX.Pitch = use_overscan ? 1024 : 2048;
    
-   const int safety = 128;
    // hack to make sure GFX.Delta is always  (2048 * 512 * 2) >> 1, needed for tile16_t.h
 #ifdef _3DS
    GFX.Screen_buffer = (uint8 *) linearMemAlign(2048 * 512 * 2 * 2 + safety, 0x80);
@@ -519,6 +520,8 @@ void retro_cheat_reset(void)
 
 void retro_cheat_set(unsigned index, bool enable, const char* in_code)
 {
+    uint32 address;
+    uint8 byte;
     // clean input
     char clean_code[strlen(in_code)];
     int j =0;
@@ -546,8 +549,6 @@ void retro_cheat_set(unsigned index, bool enable, const char* in_code)
         }
     }
     clean_code[j]=0;
-    uint32 address;
-    uint8 byte;
     
     if ( S9xProActionReplayToRaw(clean_code, &address, &byte) == NULL)
         S9xAddCheat(true, true, address, byte);
@@ -662,13 +663,9 @@ bool8 S9xReadMousePosition (int which1_0_to_1, int* x, int* y, uint32* buttons) 
 bool8 S9xReadSuperScopePosition (int* x, int* y, uint32* buttons) { return FALSE; }
 bool JustifierOffscreen() { return false; }
 
-START_EXTERN_C
-
 void S9xToggleSoundChannel (int channel) {}
 
 const char *S9xStringInput(const char *message) { return NULL; }
-
-END_EXTERN_C
 
 //void Write16(uint16 v, uint8*& ptr) {}
 //uint16 Read16(const uint8*& ptr) { return 0; }

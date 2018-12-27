@@ -497,10 +497,11 @@ static void Freeze()
    FreezeBlock("FIL", Memory.FillRAM, 0x8000);
    if (Settings.APUEnabled)
    {
+      SAPURegisters spcregs;
+
       // APU
       FreezeStruct("APU", &APU, SnapAPU, COUNT(SnapAPU));
       // copy all SPC700 regs to savestate compatible struct
-      SAPURegisters spcregs;
       spcregs.P  = IAPU.P;
       spcregs.YA.W = IAPU.YA.W;
       spcregs.X  = IAPU.X;
@@ -526,14 +527,16 @@ static void Freeze()
    S9xSetSoundMute(FALSE);
 }
 
-static int Unfreeze()
+static int Unfreeze(void)
 {
+   uint32 old_flags;
+   uint32 sa1_old_flags;
    // notaz: overflowing the damn Symbian stack again
    char buffer [16];
    char rom_filename [512];
    int result;
-
    int version;
+   unsigned int i;
 
    unsigned int len = strlen(SNAPSHOT_MAGIC) + 1 + 4 + 1;
    if (statef_read(buffer, len) != (int)len)
@@ -553,11 +556,9 @@ static int Unfreeze()
                  "Current loaded ROM image doesn't match that required by freeze-game file.");
    }
 
-
-
-   uint32 old_flags = CPU.Flags;
+   old_flags     = CPU.Flags;
 #ifdef USE_SA1
-   uint32 sa1_old_flags = SA1.Flags;
+   sa1_old_flags = SA1.Flags;
 #endif
    S9xReset();
    S9xSetSoundMute(TRUE);
@@ -580,7 +581,6 @@ static int Unfreeze()
    IPPU.OBJChanged = TRUE;
    CPU.InDMA = FALSE;
    // Restore colors from PPU
-   unsigned int i;
    for (i = 0; i < 256; i++)
    {
       IPPU.Red[i] = PPU.CGDATA[i] & 0x1f;
@@ -617,7 +617,9 @@ static int Unfreeze()
 
    if (UnfreezeStruct("APU", &APU, SnapAPU, COUNT(SnapAPU)) == SUCCESS)
    {
+      int u;
       SAPURegisters spcregs;
+
       if ((result = UnfreezeStruct("ARE", &spcregs, SnapAPURegisters,
                                    COUNT(SnapAPURegisters))) != SUCCESS)
          return (result);
@@ -636,7 +638,6 @@ static int Unfreeze()
          return (result);
 
       // notaz: just to be sure
-      int u;
       for (u = 0; u < 8; u++)
       {
          SoundData.channels[u].env_ind_attack &= 0xf;
@@ -708,6 +709,11 @@ void FreezeStruct(char* name, void* base, FreezeData* fields,
    int len = 0;
    int i;
    int j;
+   uint8 *block;
+   uint8 *ptr;
+   uint16 word;
+   uint32 dword;
+   int64  qword;
 
    for (i = 0; i < num_fields; i++)
    {
@@ -717,71 +723,67 @@ void FreezeStruct(char* name, void* base, FreezeData* fields,
                                               fields [i].type);
    }
 
-   //    uint8 *block = new uint8 [len];
-   uint8* block = (uint8*)malloc(len);
-   uint8* ptr = block;
-   uint16 word;
-   uint32 dword;
-   int64  qword;
+   block = (uint8*)malloc(len);
+   ptr   = block;
 
    // Build the block ready to be streamed out
    for (i = 0; i < num_fields; i++)
    {
       switch (fields [i].type)
       {
-      case INT_V:
-         switch (fields [i].size)
-         {
-         case 1:
-            *ptr++ = *((uint8*) base + fields [i].offset);
+         case INT_V:
+            switch (fields [i].size)
+            {
+               case 1:
+                  *ptr++ = *((uint8*) base + fields [i].offset);
+                  break;
+               case 2:
+                  word = *((uint16*)((uint8*) base + fields [i].offset));
+                  *ptr++ = (uint8)(word >> 8);
+                  *ptr++ = (uint8) word;
+                  break;
+               case 4:
+                  dword = *((uint32*)((uint8*) base + fields [i].offset));
+                  *ptr++ = (uint8)(dword >> 24);
+                  *ptr++ = (uint8)(dword >> 16);
+                  *ptr++ = (uint8)(dword >> 8);
+                  *ptr++ = (uint8) dword;
+                  break;
+               case 8:
+                  qword = *((int64*)((uint8*) base + fields [i].offset));
+                  *ptr++ = (uint8)(qword >> 56);
+                  *ptr++ = (uint8)(qword >> 48);
+                  *ptr++ = (uint8)(qword >> 40);
+                  *ptr++ = (uint8)(qword >> 32);
+                  *ptr++ = (uint8)(qword >> 24);
+                  *ptr++ = (uint8)(qword >> 16);
+                  *ptr++ = (uint8)(qword >> 8);
+                  *ptr++ = (uint8) qword;
+                  break;
+            }
             break;
-         case 2:
-            word = *((uint16*)((uint8*) base + fields [i].offset));
-            *ptr++ = (uint8)(word >> 8);
-            *ptr++ = (uint8) word;
+         case uint8_ARRAY_V:
+            memmove(ptr, (uint8*) base + fields [i].offset, fields [i].size);
+            ptr += fields [i].size;
             break;
-         case 4:
-            dword = *((uint32*)((uint8*) base + fields [i].offset));
-            *ptr++ = (uint8)(dword >> 24);
-            *ptr++ = (uint8)(dword >> 16);
-            *ptr++ = (uint8)(dword >> 8);
-            *ptr++ = (uint8) dword;
+         case uint16_ARRAY_V:
+            for (j = 0; j < fields [i].size; j++)
+            {
+               word = *((uint16*)((uint8*) base + fields [i].offset + j * 2));
+               *ptr++ = (uint8)(word >> 8);
+               *ptr++ = (uint8) word;
+            }
             break;
-         case 8:
-            qword = *((int64*)((uint8*) base + fields [i].offset));
-            *ptr++ = (uint8)(qword >> 56);
-            *ptr++ = (uint8)(qword >> 48);
-            *ptr++ = (uint8)(qword >> 40);
-            *ptr++ = (uint8)(qword >> 32);
-            *ptr++ = (uint8)(qword >> 24);
-            *ptr++ = (uint8)(qword >> 16);
-            *ptr++ = (uint8)(qword >> 8);
-            *ptr++ = (uint8) qword;
+         case uint32_ARRAY_V:
+            for (j = 0; j < fields [i].size; j++)
+            {
+               dword = *((uint32*)((uint8*) base + fields [i].offset + j * 4));
+               *ptr++ = (uint8)(dword >> 24);
+               *ptr++ = (uint8)(dword >> 16);
+               *ptr++ = (uint8)(dword >> 8);
+               *ptr++ = (uint8) dword;
+            }
             break;
-         }
-         break;
-      case uint8_ARRAY_V:
-         memmove(ptr, (uint8*) base + fields [i].offset, fields [i].size);
-         ptr += fields [i].size;
-         break;
-      case uint16_ARRAY_V:
-         for (j = 0; j < fields [i].size; j++)
-         {
-            word = *((uint16*)((uint8*) base + fields [i].offset + j * 2));
-            *ptr++ = (uint8)(word >> 8);
-            *ptr++ = (uint8) word;
-         }
-         break;
-      case uint32_ARRAY_V:
-         for (j = 0; j < fields [i].size; j++)
-         {
-            dword = *((uint32*)((uint8*) base + fields [i].offset + j * 4));
-            *ptr++ = (uint8)(dword >> 24);
-            *ptr++ = (uint8)(dword >> 16);
-            *ptr++ = (uint8)(dword >> 8);
-            *ptr++ = (uint8) dword;
-         }
-         break;
       }
    }
 
@@ -806,6 +808,12 @@ int UnfreezeStruct(char* name, void* base, FreezeData* fields,
    int len = 0;
    int i;
    int j;
+   uint16 word;
+   uint32 dword;
+   int64  qword;
+   int result;
+   uint8 *block;
+   uint8 *ptr;
 
    for (i = 0; i < num_fields; i++)
    {
@@ -815,12 +823,8 @@ int UnfreezeStruct(char* name, void* base, FreezeData* fields,
                                               fields [i].type);
    }
 
-   uint8* block = (uint8*)malloc(len);
-   uint8* ptr = block;
-   uint16 word;
-   uint32 dword;
-   int64  qword;
-   int result;
+   block = (uint8*)malloc(len);
+   ptr = block;
 
    if ((result = UnfreezeBlock(name, block, len)) != SUCCESS)
    {

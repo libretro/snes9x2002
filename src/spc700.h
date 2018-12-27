@@ -110,8 +110,6 @@ typedef struct
    uint16  PC;
 } SAPURegisters;
 
-//EXTERN_C struct SAPURegisters APURegisters;
-
 // Needed by ILLUSION OF GAIA
 //#define ONE_APU_CYCLE 14
 #define ONE_APU_CYCLE 21
@@ -123,7 +121,7 @@ typedef struct
 // 1.953us := 1.024065.54MHz
 
 #ifdef SPCTOOL
-EXTERN_C int32 ESPC(int32);
+extern int32 ESPC(int32);
 
 #define APU_EXECUTE() \
 { \
@@ -139,7 +137,7 @@ EXTERN_C int32 ESPC(int32);
 
 
 // return cycles left (always negative)
-EXTERN_C int spc700_execute(int cycles);
+int spc700_execute(int cycles);
 
 #endif // SPCTOOL
 

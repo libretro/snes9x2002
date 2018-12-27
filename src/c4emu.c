@@ -120,19 +120,17 @@ static uint8 C4TestPattern [12 * 4] =
 
 static void C4ConvOAM(void)
 {
-   uint8* ptr;
-   uint8* OAMptr = Memory.C4RAM + (Memory.C4RAM[0x626] << 2);
-   for (ptr = Memory.C4RAM + 0x1fd; ptr > OAMptr; ptr -= 4)
-   {
-      // Clear OAM-to-be
-      *ptr = 0xe0;
-   }
-
    uint16 globalX, globalY;
    uint8* OAMptr2;
    int16 SprX, SprY;
    uint8 SprName, SprAttr;
    uint8 SprCount;
+   uint8* ptr;
+   uint8* OAMptr = Memory.C4RAM + (Memory.C4RAM[0x626] << 2);
+
+   /* Clear OAM-to-be */
+   for (ptr = Memory.C4RAM + 0x1fd; ptr > OAMptr; ptr -= 4)
+      *ptr = 0xe0;
 
    globalX = READ_WORD(Memory.C4RAM + 0x0621);
    globalY = READ_WORD(Memory.C4RAM + 0x0623);
@@ -141,21 +139,29 @@ static void C4ConvOAM(void)
    if (Memory.C4RAM[0x0620] != 0)
    {
       int i;
+      uint8 *srcptr;
+      uint8 offset;
+
       SprCount = 128 - Memory.C4RAM[0x626];
-      uint8 offset = (Memory.C4RAM[0x626] & 3) * 2;
-      uint8* srcptr = Memory.C4RAM + 0x220;
+      offset   = (Memory.C4RAM[0x626] & 3) * 2;
+      srcptr   = Memory.C4RAM + 0x220;
+
       for (i = Memory.C4RAM[0x0620]; i > 0 && SprCount > 0; i--, srcptr += 16)
       {
-         SprX = READ_WORD(srcptr) - globalX;
-         SprY = READ_WORD(srcptr + 2) - globalY;
+         uint8 *sprptr;
+
+         SprX    = READ_WORD(srcptr) - globalX;
+         SprY    = READ_WORD(srcptr + 2) - globalY;
          SprName = srcptr[5];
          SprAttr = srcptr[4] | srcptr[0x06]; // XXX: mask bits?
 
-         uint8* sprptr = C4GetMemPointer(READ_3WORD(srcptr + 7));
+         sprptr  = C4GetMemPointer(READ_3WORD(srcptr + 7));
+
          if (*sprptr != 0)
          {
             int16 X, Y;
             int SprCnt;
+
             for (SprCnt = *sprptr++; SprCnt > 0 && SprCount > 0; SprCnt--, sprptr += 4)
             {
                X = (int8)sprptr[1];
@@ -206,13 +212,24 @@ static void C4ConvOAM(void)
 
 static void C4DoScaleRotate(int row_padding)
 {
+   uint8 w, h;
    int16 A, B, C, D;
+   int32 XScale, YScale;
+   int32 Cx, Cy;
+   int32 LineX, LineY;
+   uint32 X, Y;
+   uint8 byte;
+   int outidx = 0;
+   uint8 bit = 0x80;
+   int y;
 
    // Calculate matrix
-   int32 XScale = READ_WORD(Memory.C4RAM + 0x1f8f);
-   if (XScale & 0x8000) XScale = 0x7fff;
-   int32 YScale = READ_WORD(Memory.C4RAM + 0x1f92);
-   if (YScale & 0x8000) YScale = 0x7fff;
+   XScale = READ_WORD(Memory.C4RAM + 0x1f8f);
+   if (XScale & 0x8000)
+      XScale = 0x7fff;
+   YScale = READ_WORD(Memory.C4RAM + 0x1f92);
+   if (YScale & 0x8000)
+      YScale = 0x7fff;
 
    if (READ_WORD(Memory.C4RAM + 0x1f80) == 0)
    {
@@ -257,8 +274,8 @@ static void C4DoScaleRotate(int row_padding)
    }
 
    // Calculate Pixel Resolution
-   uint8 w = Memory.C4RAM[0x1f89] & ~7;
-   uint8 h = Memory.C4RAM[0x1f8c] & ~7;
+   w = Memory.C4RAM[0x1f89] & ~7;
+   h = Memory.C4RAM[0x1f8c] & ~7;
 
    //    printf("%dx%d XScale=%04x YScale=%04x angle=%03x\n", w, h, XScale, YScale, READ_WORD(Memory.C4RAM+0x1f80)&0x1ff);
    //    printf("Matrix: [%10g %10g]  [%04x %04x]\n", A/4096.0, B/4096.0, A&0xffff, B&0xffff);
@@ -267,27 +284,25 @@ static void C4DoScaleRotate(int row_padding)
    // Clear the output RAM
    memset(Memory.C4RAM, 0, (w + row_padding / 4)*h / 2);
 
-   int32 Cx = (int16)READ_WORD(Memory.C4RAM + 0x1f83);
-   int32 Cy = (int16)READ_WORD(Memory.C4RAM + 0x1f86);
+
+   Cx = (int16)READ_WORD(Memory.C4RAM + 0x1f83);
+   Cy = (int16)READ_WORD(Memory.C4RAM + 0x1f86);
 
    // Calculate start position (i.e. (Ox, Oy) = (0, 0))
    // The low 12 bits are fractional, so (Cx<<12) gives us the Cx we want in
    // the function. We do Cx*A etc normally because the matrix parameters
    // already have the fractional parts.
-   int32 LineX = (Cx << 12) - Cx * A - Cx * B;
-   int32 LineY = (Cy << 12) - Cy * C - Cy * D;
+   LineX = (Cx << 12) - Cx * A - Cx * B;
+   LineY = (Cy << 12) - Cy * C - Cy * D;
 
    // Start loop
-   uint32 X, Y;
-   uint8 byte;
-   int outidx = 0;
-   uint8 bit = 0x80;
-   int y;
    for (y = 0; y < h; y++)
    {
+      int x;
+
       X = LineX;
       Y = LineY;
-      int x;
+
       for (x = 0; x < w; x++)
       {
          if ((X >> 12) >= w || (Y >> 12) >= h)
@@ -328,6 +343,8 @@ static void C4DoScaleRotate(int row_padding)
 static void C4DrawLine(int32 X1, int32 Y1, int16 Z1,
                        int32 X2, int32 Y2, int16 Z2, uint8 Color)
 {
+   int i;
+
    // Transform coordinates
    C4WFXVal = (short)X1;
    C4WFYVal = (short)Y1;
@@ -357,15 +374,15 @@ static void C4DrawLine(int32 X1, int32 Y1, int16 Z1,
    Y2 = (int16)C4WFYVal;
 
    // render line
-   int i;
    for (i = C4WFDist ? C4WFDist : 1; i > 0; i--)
    {
       //.loop
       if (X1 > 0xff && Y1 > 0xff && X1 < 0x6000 && Y1 < 0x6000)
       {
+         uint8 bit;
          uint16 addr = ((X1 & ~0x7ff) + (Y1 & ~0x7ff) * 12 + (Y1 & 0x700)) >> 7;
          addr = (((Y1 >> 8) >> 3) << 8) - (((Y1 >> 8) >> 3) << 6) + (((X1 >> 8) >> 3) << 4) + ((Y1 >> 8) & 7) * 2;
-         uint8 bit = 0x80 >> ((X1 >> 8) & 7);
+         bit  = 0x80 >> ((X1 >> 8) & 7);
          Memory.C4RAM[addr + 0x300] &= ~bit;
          Memory.C4RAM[addr + 0x301] &= ~bit;
          if (Color & 1) Memory.C4RAM[addr + 0x300] |= bit;
@@ -410,13 +427,17 @@ static void C4DrawWireFrame(void)
 
 static void C4TransformLines(void)
 {
+   uint8 *ptr;
+   uint8* ptr2;
+
    C4WFX2Val = Memory.C4RAM[0x1f83];
    C4WFY2Val = Memory.C4RAM[0x1f86];
    C4WFDist = Memory.C4RAM[0x1f89];
    C4WFScale = Memory.C4RAM[0x1f8c];
 
    // transform vertices
-   uint8* ptr = Memory.C4RAM;
+   ptr = Memory.C4RAM;
+
    {
       int i;
       for (i = READ_WORD(Memory.C4RAM + 0x1f80); i > 0; i--, ptr += 0x10)
@@ -438,8 +459,8 @@ static void C4TransformLines(void)
    WRITE_WORD(Memory.C4RAM + 0x602 + 8, 0x60);
    WRITE_WORD(Memory.C4RAM + 0x605 + 8, 0x40);
 
-   ptr = Memory.C4RAM + 0xb02;
-   uint8* ptr2 = Memory.C4RAM;
+   ptr  = Memory.C4RAM + 0xb02;
+   ptr2 = Memory.C4RAM;
    {
       int i;
       for (i = READ_WORD(Memory.C4RAM + 0xb00); i > 0; i--, ptr += 2, ptr2 += 8)
@@ -524,8 +545,9 @@ static void C4BitPlaneWave()
    }
 }
 
-static void C4SprDisintegrate()
+static void C4SprDisintegrate(void)
 {
+   uint32 y, i;
    uint8 width, height;
    uint32 StartX, StartY;
    uint8* src;
@@ -545,7 +567,6 @@ static void C4SprDisintegrate()
 
    memset(Memory.C4RAM, 0, width * height / 2);
 
-   uint32 y, i;
    for (y = StartY, i = 0; i < height; i++, y += scaleY)
    {
       uint32 x, j;

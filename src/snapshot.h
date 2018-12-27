@@ -52,11 +52,9 @@
 #define WRONG_VERSION (-2)
 #define FILE_NOT_FOUND (-3)
 
-START_EXTERN_C
 bool8 S9xFreezeGame(const char* filename);
 bool8 S9xUnfreezeGame(const char* filename);
 bool8 Snapshot(const char* filename);
 bool8 S9xLoadSnapshot(const char* filename);
-END_EXTERN_C
 
 #endif

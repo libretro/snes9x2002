@@ -76,20 +76,21 @@ const char* S9xGoldFingerToRaw(const char* code, uint32* address, bool8* sram,
                                uint8* num_bytes, uint8 bytes[3])
 {
    char tmp [15];
+   int i;
    if (strlen(code) != 14)
       return ("Invalid Gold Finger code should be 14 hex digits in length.");
 
    strncpy(tmp, code, 5);
    tmp [5] = 0;
+
    if (sscanf(tmp, "%x", address) != 1)
       return ("Invalid Gold Finger code.");
 
-   int i;
    for (i = 0; i < 3; i++)
    {
+      int byte;
       strncpy(tmp, code + 5 + i * 2, 2);
       tmp [2] = 0;
-      int byte;
       if (sscanf(tmp, "%x", &byte) != 1)
          break;
       bytes [i] = (uint8) byte;
@@ -101,7 +102,11 @@ const char* S9xGoldFingerToRaw(const char* code, uint32* address, bool8* sram,
 
 const char* S9xGameGenieToRaw(const char* code, uint32* address, uint8* byte)
 {
+   uint32 data = 0;
    char new_code [12];
+   static char* real_hex  = "0123456789ABCDEF";
+   static char* genie_hex = "DF4709156BC8A23E";
+   int i;
 
    if (strlen(code) != 9 || *(code + 4) != '-' || !S9xAllHex(code, 4) ||
          !S9xAllHex(code + 5, 4))
@@ -111,15 +116,11 @@ const char* S9xGameGenieToRaw(const char* code, uint32* address, uint8* byte)
    strncpy(new_code + 2, code, 4);
    strcpy(new_code + 6, code + 5);
 
-   static char* real_hex  = "0123456789ABCDEF";
-   static char* genie_hex = "DF4709156BC8A23E";
-
-   int i;
    for (i = 2; i < 10; i++)
    {
+      int j;
       if (islower(new_code [i]))
          new_code [i] = toupper(new_code [i]);
-      int j;
       for (j = 0; j < 16; j++)
       {
          if (new_code [i] == genie_hex [j])
@@ -131,7 +132,6 @@ const char* S9xGameGenieToRaw(const char* code, uint32* address, uint8* byte)
       if (j == 16)
          return ("Invalid hex-character in Game Genie(tm) code");
    }
-   uint32 data = 0;
    sscanf(new_code, "%x", &data);
    *byte = (uint8)(data >> 24);
    *address = data & 0xffffff;

@@ -70,7 +70,6 @@ typedef struct
    uint32 FrameAdvanceCount;
 } SICPU;
 
-START_EXTERN_C
 void S9xMainLoop(void);
 void S9xReset(void);
 void S9xDoHBlankProcessing();
@@ -91,7 +90,6 @@ extern uint8 S9xE0M0X1 [256];
 #endif
 
 extern SICPU ICPU;
-END_EXTERN_C
 
 static INLINE void CLEAR_IRQ_SOURCE(uint32 M)
 {

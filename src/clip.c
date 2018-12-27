@@ -641,8 +641,9 @@ void ComputeClipWindow(bool8_32 invert, int w, int wok, ClipData* pClip)
             // the same as the colour window.
             if (pClip->Count [w] == 0)
             {
-               pClip->Count [w] = pClip->Count [5];
                int i;
+
+               pClip->Count [w] = pClip->Count [5];
                for (i = pClip->Count[w] - 1; i >= 0 ; i--)
                {
                   pClip->Left [i][w] = pClip->Left [i][5];

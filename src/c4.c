@@ -81,8 +81,6 @@
 #include "c4.h"
 //#include "memmap.h"
 
-START_EXTERN_C
-
 short C4WFXVal;
 short C4WFYVal;
 short C4WFZVal;
@@ -169,24 +167,26 @@ const short C4_SinTable[256] =
 
 short C4_Sin(short Angle)
 {
+   int S;
    if (Angle < 0)
    {
       if (Angle == -32768) return 0;
       return -C4_Sin(-Angle);
    }
-   int S = C4_SinTable[Angle >> 8] + (C4_MulTable[Angle & 0xff] * C4_SinTable[0x40 + (Angle >> 8)] >> 15);
+   S = C4_SinTable[Angle >> 8] + (C4_MulTable[Angle & 0xff] * C4_SinTable[0x40 + (Angle >> 8)] >> 15);
    if (S > 32767) S = 32767;
    return (short) S;
 }
 
 short C4_Cos(short Angle)
 {
+   int S;
    if (Angle < 0)
    {
       if (Angle == -32768) return -32768;
       Angle = -Angle;
    }
-   int S = C4_SinTable[0x40 + (Angle >> 8)] - (C4_MulTable[Angle & 0xff] * C4_SinTable[Angle >> 8] >> 15);
+   S = C4_SinTable[0x40 + (Angle >> 8)] - (C4_MulTable[Angle & 0xff] * C4_SinTable[Angle >> 8] >> 15);
    if (S < -32768) S = -32767;
    return (short) S;
 }
@@ -426,6 +426,3 @@ void C4Op0D()
        C41FXVal = (short) (C41FXVal * tanval * 0.98);
    */
 }
-
-END_EXTERN_C
-

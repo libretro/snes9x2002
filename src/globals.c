@@ -41,7 +41,6 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
-// START_EXTERN_C
 #include "snes9x.h"
 #include "memmap.h"
 #include "ppu.h"
@@ -55,9 +54,7 @@
 #include "soundux.h"
 #include "cheats.h"
 #include "sa1.h"
-// END_EXTERN_C
 
-START_EXTERN_C
 char String[513];
 
 int (*APUMainLoop)(int);
@@ -99,8 +96,6 @@ long OpAddress = 0;
 CMemory Memory;
 
 SSNESGameFixes SNESGameFixes;
-
-END_EXTERN_C
 
 FxInit_s SuperFX;
 
@@ -281,7 +276,6 @@ uint32 TailMask [5] =
 #endif
 };
 
-START_EXTERN_C
 uint8 APUROM [64] =
 {
    0xCD, 0xEF, 0xBD, 0xE8, 0x00, 0xC6, 0x1D, 0xD0, 0xFC, 0x8F, 0xAA, 0xF4, 0x8F,
@@ -437,5 +431,3 @@ uint8 S9xE0M0X0 [256] =
    2, 7, 6, 8, 5, 5, 8, 7, 2, 6, 5, 2, 6, 6, 9, 6
 };
 #endif
-
-END_EXTERN_C

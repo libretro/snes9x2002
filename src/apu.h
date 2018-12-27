@@ -41,7 +41,10 @@
 #ifndef _apu_h_
 #define _apu_h_
 
+#include "port.h"
 #include "spc700.h"
+
+#include <retro_inline.h>
 
 /*
 typedef union
@@ -100,8 +103,8 @@ typedef struct
 } SIAPU;
 
 
-EXTERN_C SAPU APU;
-EXTERN_C SIAPU IAPU;
+SAPU APU;
+SIAPU IAPU;
 
 static INLINE void S9xAPUUnpackStatus(void)
 {
@@ -137,7 +140,6 @@ static INLINE void S9xAPUPackStatus(void)
    }
 }
 
-START_EXTERN_C
 void S9xResetAPU(void);
 bool8 S9xInitAPU();
 void S9xDeinitAPU();
@@ -154,8 +156,6 @@ extern int32 S9xAPUCycles [256]; // Scaled cycle lengths
 extern int32 S9xAPUCycleLengths [256]; // Raw data.
 extern void (*S9xApuOpcodes [256])(void);
 extern void (*S9xApuOpcodesReal [256])(void);
-END_EXTERN_C
-
 
 #define APU_VOL_LEFT 0x00
 #define APU_VOL_RIGHT 0x01

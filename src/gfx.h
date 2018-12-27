@@ -252,7 +252,6 @@ typedef struct
    LargePixelRenderer Large;
 } TileRendererSet;
 
-START_EXTERN_C
 void S9xStartScreenRefresh();
 void S9xDrawScanLine(uint8 Line);
 void S9xEndScreenRefresh();
@@ -277,7 +276,5 @@ void S9xSyncSpeed();
 #ifdef GFX_MULTI_FORMAT
 bool8_32 S9xSetRenderPixelFormat(int format);
 #endif
-
-END_EXTERN_C
 
 #endif

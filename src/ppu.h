@@ -248,7 +248,6 @@ typedef struct
    uint8  FirstLine;
 } SDMA;
 
-START_EXTERN_C
 //void S9xUpdateScreen ();
 void S9xResetPPU();
 void S9xFixColourBrightness();
@@ -270,7 +269,6 @@ uint8 S9xGetC4RAM(uint16 Address);
 extern SPPU PPU;
 extern SDMA DMA [8];
 extern InternalPPU IPPU;
-END_EXTERN_C
 
 #include "gfx.h"
 #include "memmap.h"
@@ -307,6 +305,7 @@ static INLINE void REGISTER_2104(uint8 byte)
       int addr = ((PPU.OAMAddr & 0x10f) << 1) + (PPU.OAMFlip & 1);
       if (byte != PPU.OAMData [addr])
       {
+         SOBJ *pObj;
 #ifdef   __DEBUG__
          printf("SetPPU_2104, PPU.OAMData. Byte : %x\n", byte);
 #endif
@@ -316,16 +315,16 @@ static INLINE void REGISTER_2104(uint8 byte)
          IPPU.OBJChanged = TRUE;
 
          // X position high bit, and sprite size (x4)
-         SOBJ* pObj = &PPU.OBJ [(addr & 0x1f) * 4];
+         pObj         = &PPU.OBJ [(addr & 0x1f) * 4];
 
-         pObj->HPos = (pObj->HPos & 0xFF) | SignExtend[(byte >> 0) & 1];
+         pObj->HPos   = (pObj->HPos & 0xFF) | SignExtend[(byte >> 0) & 1];
          pObj++->Size = byte & 2;
-         pObj->HPos = (pObj->HPos & 0xFF) | SignExtend[(byte >> 2) & 1];
+         pObj->HPos   = (pObj->HPos & 0xFF) | SignExtend[(byte >> 2) & 1];
          pObj++->Size = byte & 8;
-         pObj->HPos = (pObj->HPos & 0xFF) | SignExtend[(byte >> 4) & 1];
+         pObj->HPos   = (pObj->HPos & 0xFF) | SignExtend[(byte >> 4) & 1];
          pObj++->Size = byte & 32;
-         pObj->HPos = (pObj->HPos & 0xFF) | SignExtend[(byte >> 6) & 1];
-         pObj->Size = byte & 128;
+         pObj->HPos   = (pObj->HPos & 0xFF) | SignExtend[(byte >> 6) & 1];
+         pObj->Size   = byte & 128;
       }
       PPU.OAMFlip ^= 1;
       if (!(PPU.OAMFlip & 1))
@@ -342,12 +341,15 @@ static INLINE void REGISTER_2104(uint8 byte)
    }
    else
    {
+      int addr;
+      uint8 lowbyte, highbyte;
+
       PPU.OAMWriteRegister &= 0x00ff;
-      uint8 lowbyte = (uint8)(PPU.OAMWriteRegister);
-      uint8 highbyte = byte;
+      lowbyte               = (uint8)(PPU.OAMWriteRegister);
+      highbyte              = byte;
       PPU.OAMWriteRegister |= byte << 8;
 
-      int addr = (PPU.OAMAddr << 1);
+      addr = (PPU.OAMAddr << 1);
 
       if (lowbyte != PPU.OAMData [addr] ||
             highbyte != PPU.OAMData [addr + 1])

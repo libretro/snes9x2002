@@ -230,16 +230,14 @@ struct DSP1_Inverse
    int16 B;
 };
 
-START_EXTERN_C
-void S9xResetDSP1();
+void S9xResetDSP1(void);
 uint8 S9xGetDSP(uint16 Address);
 void S9xSetDSP(uint8 Byte, uint16 Address);
-END_EXTERN_C
 
 #ifndef __GP32__
 extern struct SDSP1 DSP1;
 #else
-extern "C" struct SDSP1 DSP1;
+extern struct SDSP1 DSP1;
 #endif
 
 #endif

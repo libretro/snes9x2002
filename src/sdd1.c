@@ -53,10 +53,10 @@
 
 void S9xSetSDD1MemoryMap(uint32 bank, uint32 value)
 {
+   int c;
+
    bank = 0xc00 + bank * 0x100;
    value = value * 1024 * 1024;
-
-   int c;
 
    for (c = 0; c < 0x100; c += 16)
    {
@@ -68,10 +68,12 @@ void S9xSetSDD1MemoryMap(uint32 bank, uint32 value)
    }
 }
 
-void S9xResetSDD1()
+void S9xResetSDD1(void)
 {
-   memset(&Memory.FillRAM [0x4800], 0, 4);
    int i;
+
+   memset(&Memory.FillRAM [0x4800], 0, 4);
+
    for (i = 0; i < 4; i++)
    {
       Memory.FillRAM [0x4804 + i] = i;
@@ -79,7 +81,7 @@ void S9xResetSDD1()
    }
 }
 
-void S9xSDD1PostLoadState()
+void S9xSDD1PostLoadState(void)
 {
    int i;
    for (i = 0; i < 4; i++)
@@ -100,10 +102,12 @@ void S9xSDD1SaveLoggedData()
 {
    if (Memory.SDD1LoggedDataCount != Memory.SDD1LoggedDataCountPrev)
    {
+      FILE *fs;
+
       qsort(Memory.SDD1LoggedData, Memory.SDD1LoggedDataCount, 8,
             S9xCompareSDD1LoggedDataEntries);
 
-      FILE* fs = fopen(S9xGetFilename(".dat"), "wb");
+      fs = fopen(S9xGetFilename(".dat"), "wb");
 
       if (fs)
       {

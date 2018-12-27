@@ -110,5 +110,5 @@ typedef struct
    uint16 unknowndsp_write;
 } Missing;
 
-EXTERN_C Missing missing;
+extern Missing missing;
 #endif

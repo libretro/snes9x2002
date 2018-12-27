@@ -90,15 +90,32 @@ DEFINES += -D__OLD_RASTER_FX__
 endif
 
 INCLUDES   = -I. -I$(LIBRETRO_DIR) -I$(LIBRETRO_COMM_DIR)/include -I$(CORE_DIR)
-DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__ -DINLINE=inline
+
+ifneq (,$(findstring msvc200,$(platform)))
+INCLUDES += -I$(LIBRETRO_COMM_DIR)/include/compat/msvc
+endif
+DEFINES    += -DHAVE_STRINGS_H -DHAVE_STDINT_H -DHAVE_INTTYPES_H -D__LIBRETRO__
 DEFINES    += -DUSE_SA1
 
 ifeq ($(platform), sncps3)
 WARNINGS_DEFINES =
 CODE_DEFINES =
 else
-WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter -Wno-parentheses -Wno-write-strings -Wno-comment
+ifeq ($(OLD_GCC), 1)
+WARNINGS_DEFINES = -Wall 
+CODE_DEFINES     =
+else ifeq ($(NO_GCC), 1)
+WARNINGS_DEFINES =
+CODE_DEFINES     =
+else
+WARNINGS_DEFINES = -Wall \
+						 -W \
+						 -Wno-unused-parameter \
+						 -Wno-parentheses \
+						 -Wno-write-strings \
+						 -Wno-comment
 CODE_DEFINES = -fomit-frame-pointer
+endif
 endif
 
 COMMON_DEFINES += $(CODE_DEFINES) $(WARNINGS_DEFINES) $(fpic)

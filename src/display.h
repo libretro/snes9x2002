@@ -41,7 +41,6 @@
 #ifndef _DISPLAY_H_
 #define _DISPLAY_H_
 
-START_EXTERN_C
 // Routines the port specific code has to implement
 void S9xSetPalette();
 void S9xTextMode();
@@ -67,6 +66,5 @@ const char* S9xGetSnapshotDirectory();
 const char* S9xGetROMDirectory();
 const char* S9xGetSRAMFilename();
 const char* S9xGetFilename(const char* extension);
-END_EXTERN_C
 
 #endif

@@ -74,22 +74,24 @@ static int S9xCompareSDD1IndexEntries(const void* p1, const void* p2)
 /**********************************************************************************************/
 void S9xDoDMA(uint8 Channel)
 {
+   int count, inc;
    uint8 Work;
+   bool8 in_sa1_dma = FALSE;
+   uint8* in_sdd1_dma = NULL;
+   SDMA *d;
 
    if (Channel > 7 || CPU.InDMA)
       return;
 
    CPU.InDMA = TRUE;
-   bool8 in_sa1_dma = FALSE;
-   uint8* in_sdd1_dma = NULL;
-   SDMA* d = &DMA[Channel];
+   d         = &DMA[Channel];
 
-   int count = d->TransferBytes;
+   count     = d->TransferBytes;
 
    if (count == 0)
       count = 0x10000;
 
-   int inc = d->AAddressFixed ? 0 : (!d->AAddressDecrement ? 1 : -1);
+   inc = d->AAddressFixed ? 0 : (!d->AAddressDecrement ? 1 : -1);
 
    if ((d->ABank == 0x7E || d->ABank == 0x7F) && d->BAddress == 0x80)
    {
@@ -113,9 +115,11 @@ void S9xDoDMA(uint8 Channel)
    {
       if (d->AAddressFixed && Memory.FillRAM [0x4801] > 0)
       {
+         uint32 address;
+
          // Hacky support for pre-decompressed S-DD1 data
-         inc = !d->AAddressDecrement ? 1 : -1;
-         uint32 address = (((d->ABank << 16) | d->AAddress) & 0xfffff) << 4;
+         inc      = !d->AAddressDecrement ? 1 : -1;
+         address  = (((d->ABank << 16) | d->AAddress) & 0xfffff) << 4;
 
          address |= Memory.FillRAM [0x4804 + ((d->ABank - 0xc0) >> 4)];
          if (Settings.SDD1Pack)
@@ -192,6 +196,7 @@ void S9xDoDMA(uint8 Channel)
    if (d->BAddress == 0x18 && (d->ABank & 0xf0) == 0x40)
 #endif
    {
+      int i;
       // Perform packed bitmap to PPU character format conversion on the
       // data before transmitting it to V-RAM via-DMA.
       int num_chars = 1 << ((Memory.FillRAM [0x2231] >> 2) & 7);
@@ -213,7 +218,6 @@ void S9xDoDMA(uint8 Channel)
       //printf ("%08x,", base); fflush (stdout);
       //printf ("depth = %d, count = %d, bytes_per_char = %d, bytes_per_line = %d, num_chars = %d, char_line_bytes = %d\n",
       //depth, count, bytes_per_char, bytes_per_line, num_chars, char_line_bytes);
-      int i;
 
       switch (depth)
       {
@@ -320,6 +324,9 @@ void S9xDoDMA(uint8 Channel)
 
    if (!d->TransferDirection)
    {
+      uint8 *base;
+      uint16 p;
+
 #ifdef VAR_CYCLES
       //reflects extra cycle used by DMA
       CPU.Cycles += 8 * (count + 1);
@@ -327,8 +334,8 @@ void S9xDoDMA(uint8 Channel)
       //needs fixing for the extra DMA cycle
       CPU.Cycles += (1 + count) + ((1 + count) >> 2);
 #endif
-      uint8* base = GetBasePointer((d->ABank << 16) + d->AAddress);
-      uint16 p = d->AAddress;
+      base = GetBasePointer((d->ABank << 16) + d->AAddress);
+      p    = d->AAddress;
 
       if (!base)
          base = Memory.ROM;
@@ -690,8 +697,9 @@ update_address:
    CPU.InDMA = FALSE;
 }
 
-void S9xStartHDMA()
+void S9xStartHDMA(void)
 {
+   uint8 i;
    //if (Settings.DisableHDMA)
    //IPPU.HDMA = 0;
    //else
@@ -699,7 +707,6 @@ void S9xStartHDMA()
 
    IPPU.HDMAStarted = TRUE;
 
-   uint8 i;
    for (i = 0; i < 8; i++)
    {
       if (IPPU.HDMA & (1 << i))

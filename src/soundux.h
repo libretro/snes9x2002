@@ -76,7 +76,7 @@ typedef struct
    uint32 freqbase; // notaz
 } SoundStatus;
 
-EXTERN_C SoundStatus so;
+extern SoundStatus so;
 
 typedef struct
 {
@@ -152,7 +152,7 @@ typedef struct
    int noise_hertz;
 } SSoundData;
 
-EXTERN_C SSoundData SoundData;
+extern SSoundData SoundData;
 
 void S9xSetEnvelopeHeight(int channel, int height);
 void S9xSetSoundKeyOff(int channel);
@@ -162,13 +162,13 @@ void S9xSoundStartEnvelope(Channel*);
 void S9xSetSoundSample(int channel, uint16 sample_number);
 void S9xSetEchoDelay(int byte);
 void S9xResetSound(bool8 full);
-void S9xFixSoundAfterSnapshotLoad();
+void S9xFixSoundAfterSnapshotLoad(void);
 void S9xPlaybackSoundSetting(int channel);
 void S9xFixEnvelope(int channel, uint8 gain, uint8 adsr1, uint8 adsr2);
 void S9xStartSample(int channel);
 
-EXTERN_C void S9xMixSamples(signed short* buffer, int sample_count);
-EXTERN_C void S9xMixSamplesO(signed short* buffer, int sample_count, int sample_offset);
+void S9xMixSamples(signed short* buffer, int sample_count);
+void S9xMixSamplesO(signed short* buffer, int sample_count, int sample_offset);
 void S9xSetPlaybackRate(uint32 rate);
 bool8 S9xInitSound(void);
 #endif

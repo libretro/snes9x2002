@@ -167,8 +167,10 @@ void S9xSetSoundKeyOff(int channel)
    }
 }
 
-void S9xFixSoundAfterSnapshotLoad()
+void S9xFixSoundAfterSnapshotLoad(void)
 {
+   int i;
+
    SoundData.echo_write_enabled = !(APU.DSP [APU_FLG] & 0x20);
    SoundData.echo_channel_enable = APU.DSP [APU_EON];
    S9xSetEchoDelay(APU.DSP [APU_EDL] & 0xf);
@@ -183,7 +185,6 @@ void S9xFixSoundAfterSnapshotLoad()
    S9xSetFilterCoefficient(6, (signed char) APU.DSP [APU_C6]);
    S9xSetFilterCoefficient(7, (signed char) APU.DSP [APU_C7]);
 
-   int i;
    for (i = 0; i < 8; i++)
    {
       SoundData.channels[i].needs_decode = TRUE;
@@ -243,6 +244,17 @@ void S9xSetSoundSample(int channel, uint16 sample_number)
 
 static void DecodeBlock(Channel* ch)
 {
+   int16* raw;
+   int8_t * compressed;
+   uint8_t filter;
+#ifndef ASM_SPC700
+   int32 out;
+   uint8_t shift;
+   int8_t sample1, sample2;
+   unsigned int i;
+   int32 prev0, prev1;
+#endif
+
    if (ch->block_pointer >= 0x10000 - 9)
    {
       ch->last_block = TRUE;
@@ -251,100 +263,96 @@ static void DecodeBlock(Channel* ch)
       memset32((uint32_t*) ch->decoded, 0, 8);
       return;
    }
-   signed char* compressed = (signed char*) &IAPU.RAM [ch->block_pointer];
+   compressed = (int8_t*) &IAPU.RAM [ch->block_pointer];
+   filter     = *compressed;
 
-   unsigned char filter = *compressed;
    if ((ch->last_block = filter & 1))
       ch->loop = (filter & 2) != 0;
 
-   int16* raw = ch->block = ch->decoded;
+   raw = ch->block = ch->decoded;
 
 #ifdef ASM_SPC700
    DecodeBlockAsm(compressed, raw, &ch->previous [0], &ch->previous [1]);
 #else
-   int32 out;
-   unsigned char shift;
-   signed char sample1, sample2;
-   unsigned int i;
-
    compressed++;
 
-   int32 prev0 = ch->previous [0];
-   int32 prev1 = ch->previous [1];
+
+   prev0 = ch->previous [0];
+   prev1 = ch->previous [1];
    shift = filter >> 4;
 
    switch ((filter >> 2) & 3)
    {
-   case 0:
-      for (i = 8; i != 0; i--)
-      {
-         sample1 = *compressed++;
-         sample2 = sample1 << 4;
-         sample2 >>= 4;
-         sample1 >>= 4;
-         *raw++ = ((int32) sample1 << shift);
-         *raw++ = ((int32) sample2 << shift);
-      }
-      prev1 = *(raw - 2);
-      prev0 = *(raw - 1);
-      break;
-   case 1:
-      for (i = 8; i != 0; i--)
-      {
-         sample1 = *compressed++;
-         sample2 = sample1 << 4;
-         sample2 >>= 4;
-         sample1 >>= 4;
-         prev0 = (int16) prev0;
-         *raw++ = prev1 = ((int32) sample1 << shift) + prev0 - (prev0 >> 4);
-         prev1 = (int16) prev1;
-         *raw++ = prev0 = ((int32) sample2 << shift) + prev1 - (prev1 >> 4);
-      }
-      break;
-   case 2:
-      for (i = 8; i != 0; i--)
-      {
-         sample1 = *compressed++;
-         sample2 = sample1 << 4;
-         sample2 >>= 4;
-         sample1 >>= 4;
+      case 0:
+         for (i = 8; i != 0; i--)
+         {
+            sample1 = *compressed++;
+            sample2 = sample1 << 4;
+            sample2 >>= 4;
+            sample1 >>= 4;
+            *raw++ = ((int32) sample1 << shift);
+            *raw++ = ((int32) sample2 << shift);
+         }
+         prev1 = *(raw - 2);
+         prev0 = *(raw - 1);
+         break;
+      case 1:
+         for (i = 8; i != 0; i--)
+         {
+            sample1 = *compressed++;
+            sample2 = sample1 << 4;
+            sample2 >>= 4;
+            sample1 >>= 4;
+            prev0 = (int16) prev0;
+            *raw++ = prev1 = ((int32) sample1 << shift) + prev0 - (prev0 >> 4);
+            prev1 = (int16) prev1;
+            *raw++ = prev0 = ((int32) sample2 << shift) + prev1 - (prev1 >> 4);
+         }
+         break;
+      case 2:
+         for (i = 8; i != 0; i--)
+         {
+            sample1 = *compressed++;
+            sample2 = sample1 << 4;
+            sample2 >>= 4;
+            sample1 >>= 4;
 
-         out = (sample1 << shift) - prev1 + (prev1 >> 4);
-         prev1 = (int16) prev0;
-         prev0 &= ~3;
-         *raw++ = prev0 = out + (prev0 << 1) - (prev0 >> 5) -
-                          (prev0 >> 4);
+            out = (sample1 << shift) - prev1 + (prev1 >> 4);
+            prev1 = (int16) prev0;
+            prev0 &= ~3;
+            *raw++ = prev0 = out + (prev0 << 1) - (prev0 >> 5) -
+               (prev0 >> 4);
 
-         out = (sample2 << shift) - prev1 + (prev1 >> 4);
-         prev1 = (int16) prev0;
-         prev0 &= ~3;
-         *raw++ = prev0 = out + (prev0 << 1) - (prev0 >> 5) -
-                          (prev0 >> 4);
-      }
-      break;
-   case 3:
-      for (i = 8; i != 0; i--)
-      {
-         sample1 = *compressed++;
-         sample2 = sample1 << 4;
-         sample2 >>= 4;
-         sample1 >>= 4;
-         out = (sample1 << shift);
+            out = (sample2 << shift) - prev1 + (prev1 >> 4);
+            prev1 = (int16) prev0;
+            prev0 &= ~3;
+            *raw++ = prev0 = out + (prev0 << 1) - (prev0 >> 5) -
+               (prev0 >> 4);
+         }
+         break;
+      case 3:
+         for (i = 8; i != 0; i--)
+         {
+            sample1 = *compressed++;
+            sample2 = sample1 << 4;
+            sample2 >>= 4;
+            sample1 >>= 4;
+            out = (sample1 << shift);
 
-         out = out - prev1 + (prev1 >> 3) + (prev1 >> 4);
-         prev1 = (int16) prev0;
-         prev0 &= ~3;
-         *raw++ = prev0 = out + (prev0 << 1) - (prev0 >> 3) -
-                          (prev0 >> 4) - (prev1 >> 6);
+            out = out - prev1 + (prev1 >> 3) + (prev1 >> 4);
+            prev1 = (int16) prev0;
+            prev0 &= ~3;
+            *raw++ = prev0 = out + (prev0 << 1) - (prev0 >> 3) -
+               (prev0 >> 4) - (prev1 >> 6);
 
-         out = (sample2 << shift);
-         out = out - prev1 + (prev1 >> 3) + (prev1 >> 4);
-         prev1 = (int16) prev0;
-         prev0 &= ~3;
-         *raw++ = prev0 = out + (prev0 << 1) - (prev0 >> 3) -
-                          (prev0 >> 4) - (prev1 >> 6);
-      }
-      break;
+            out = (sample2 << shift);
+            out = out - prev1 + (prev1 >> 3) + (prev1 >> 4);
+            prev1 = (int16) prev0;
+            prev0 &= ~3;
+            *raw++ = prev0 = out + (prev0 << 1) - (prev0 >> 3) -
+               (prev0 >> 4) - (prev1 >> 6);
+         }
+         break;
    }
    ch->previous [0] = prev0;
    ch->previous [1] = prev1;
@@ -361,6 +369,8 @@ static void MixStereo(int sample_count)
    uint32 J;
    for (J = 0; J < NUM_CHANNELS; J++)
    {
+      uint32 I;
+      bool8 mod;
       int32 VL, VR;
       Channel* ch = &SoundData.channels[J];
       unsigned long freq0 = ch->frequency;
@@ -370,7 +380,7 @@ static void MixStereo(int sample_count)
 
       //    freq0 = (unsigned long) ((double) freq0 * 0.985);//uncommented by jonathan gevaryahu, as it is necessary for most cards in linux
 
-      bool8 mod = pitch_mod & (1 << J);
+      mod = pitch_mod & (1 << J);
 
       if (ch->needs_decode)
       {
@@ -393,7 +403,6 @@ static void MixStereo(int sample_count)
       VL = (ch->sample * ch-> left_vol_level) / 128;
       VR = (ch->sample * ch->right_vol_level) / 128;
 
-      uint32 I;
       for (I = 0; I < (uint32) sample_count; I += 2)
       {
          unsigned long freq = freq0;
@@ -581,9 +590,11 @@ static void MixStereo(int sample_count)
                      }
                      else
                      {
+                        uint16 *dir;
+
                         S9xAPUSetEndX(J);
-                        ch->last_block = FALSE;
-                        uint16* dir = S9xGetSampleAddress(ch->sample_number);
+                        ch->last_block    = FALSE;
+                        dir               = S9xGetSampleAddress(ch->sample_number);
                         ch->block_pointer = *(dir + 1);
                      }
                   }
@@ -663,6 +674,9 @@ static void MixMono(int sample_count)
    uint32 J;
    for (J = 0; J < NUM_CHANNELS; J++)
    {
+      int32 V;
+      bool8 mod;
+      uint32 I;
       Channel* ch = &SoundData.channels[J];
       unsigned long freq0 = ch->frequency;
 
@@ -671,7 +685,7 @@ static void MixMono(int sample_count)
 
       // freq0 = (unsigned long) ((double) freq0 * 0.985);
 
-      bool8 mod = pitch_mod & (1 << J);
+      mod = pitch_mod & (1 << J);
 
       if (ch->needs_decode)
       {
@@ -686,9 +700,8 @@ static void MixMono(int sample_count)
          ch->next_sample = ch->block[ch->sample_pointer];
 
       }
-      int32 V = (ch->sample * ch->left_vol_level) / 128;
+      V = (ch->sample * ch->left_vol_level) / 128;
 
-      uint32 I;
       for (I = 0; I < (uint32) sample_count; I++)
       {
          unsigned long freq = freq0;
@@ -703,144 +716,144 @@ static void MixMono(int sample_count)
 
             switch (ch->state)
             {
-            case SOUND_ATTACK:
-               ch->env_error &= FIXED_POINT_REMAINDER;
-               ch->envx += step << 1;
-               ch->envxx = ch->envx << ENVX_SHIFT;
+               case SOUND_ATTACK:
+                  ch->env_error &= FIXED_POINT_REMAINDER;
+                  ch->envx += step << 1;
+                  ch->envxx = ch->envx << ENVX_SHIFT;
 
-               if (ch->envx >= 126)
-               {
-                  ch->envx = 127;
-                  ch->envxx = 127 << ENVX_SHIFT;
-                  ch->state = SOUND_DECAY;
-                  if (ch->sustain_level != 8)
+                  if (ch->envx >= 126)
                   {
-                     S9xSetEnvRate(ch, ch->decay_rate, -1,
-                                   (MAX_ENVELOPE_HEIGHT * ch->sustain_level) >> 3, 1 << 28);
-                     break;
+                     ch->envx = 127;
+                     ch->envxx = 127 << ENVX_SHIFT;
+                     ch->state = SOUND_DECAY;
+                     if (ch->sustain_level != 8)
+                     {
+                        S9xSetEnvRate(ch, ch->decay_rate, -1,
+                              (MAX_ENVELOPE_HEIGHT * ch->sustain_level) >> 3, 1 << 28);
+                        break;
+                     }
+                     ch->state = SOUND_SUSTAIN;
+                     S9xSetEnvRate(ch, ch->sustain_rate, -1, 0, 2 << 28);
                   }
-                  ch->state = SOUND_SUSTAIN;
-                  S9xSetEnvRate(ch, ch->sustain_rate, -1, 0, 2 << 28);
-               }
-               break;
+                  break;
 
-            case SOUND_DECAY:
-               while (ch->env_error >= FIXED_POINT)
-               {
-                  ch->envxx = (ch->envxx >> 8) * 255;
-                  ch->env_error -= FIXED_POINT;
-               }
-               ch->envx = ch->envxx >> ENVX_SHIFT;
-               if (ch->envx <= ch->envx_target)
-               {
+               case SOUND_DECAY:
+                  while (ch->env_error >= FIXED_POINT)
+                  {
+                     ch->envxx = (ch->envxx >> 8) * 255;
+                     ch->env_error -= FIXED_POINT;
+                  }
+                  ch->envx = ch->envxx >> ENVX_SHIFT;
+                  if (ch->envx <= ch->envx_target)
+                  {
+                     if (ch->envx <= 0)
+                     {
+                        S9xAPUSetEndOfSample(J, ch);
+                        goto mono_exit;
+                     }
+                     ch->state = SOUND_SUSTAIN;
+                     S9xSetEnvRate(ch, ch->sustain_rate, -1, 0, 2 << 28);
+                  }
+                  break;
+
+               case SOUND_SUSTAIN:
+                  while (ch->env_error >= FIXED_POINT)
+                  {
+                     ch->envxx = (ch->envxx >> 8) * 255;
+                     ch->env_error -= FIXED_POINT;
+                  }
+                  ch->envx = ch->envxx >> ENVX_SHIFT;
                   if (ch->envx <= 0)
                   {
                      S9xAPUSetEndOfSample(J, ch);
                      goto mono_exit;
                   }
-                  ch->state = SOUND_SUSTAIN;
-                  S9xSetEnvRate(ch, ch->sustain_rate, -1, 0, 2 << 28);
-               }
-               break;
+                  break;
 
-            case SOUND_SUSTAIN:
-               while (ch->env_error >= FIXED_POINT)
-               {
-                  ch->envxx = (ch->envxx >> 8) * 255;
-                  ch->env_error -= FIXED_POINT;
-               }
-               ch->envx = ch->envxx >> ENVX_SHIFT;
-               if (ch->envx <= 0)
-               {
-                  S9xAPUSetEndOfSample(J, ch);
-                  goto mono_exit;
-               }
-               break;
-
-            case SOUND_RELEASE:
-               while (ch->env_error >= FIXED_POINT)
-               {
-                  ch->envxx -= (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
-                  ch->env_error -= FIXED_POINT;
-               }
-               ch->envx = ch->envxx >> ENVX_SHIFT;
-               if (ch->envx <= 0)
-               {
-                  S9xAPUSetEndOfSample(J, ch);
-                  goto mono_exit;
-               }
-               break;
-
-            case SOUND_INCREASE_LINEAR:
-               ch->env_error &= FIXED_POINT_REMAINDER;
-               ch->envx += step << 1;
-               ch->envxx = ch->envx << ENVX_SHIFT;
-
-               if (ch->envx >= 126)
-               {
-                  ch->envx = 127;
-                  ch->envxx = 127 << ENVX_SHIFT;
-                  ch->state = SOUND_GAIN;
-                  ch->mode = MODE_GAIN;
-                  S9xSetEnvRate(ch, 0, -1, 0, 0);
-               }
-               break;
-
-            case SOUND_INCREASE_BENT_LINE:
-               if (ch->envx >= (MAX_ENVELOPE_HEIGHT * 3) / 4)
-               {
+               case SOUND_RELEASE:
                   while (ch->env_error >= FIXED_POINT)
                   {
-                     ch->envxx += (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
+                     ch->envxx -= (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
                      ch->env_error -= FIXED_POINT;
                   }
                   ch->envx = ch->envxx >> ENVX_SHIFT;
-               }
-               else
-               {
+                  if (ch->envx <= 0)
+                  {
+                     S9xAPUSetEndOfSample(J, ch);
+                     goto mono_exit;
+                  }
+                  break;
+
+               case SOUND_INCREASE_LINEAR:
                   ch->env_error &= FIXED_POINT_REMAINDER;
                   ch->envx += step << 1;
                   ch->envxx = ch->envx << ENVX_SHIFT;
-               }
 
-               if (ch->envx >= 126)
-               {
-                  ch->envx = 127;
-                  ch->envxx = 127 << ENVX_SHIFT;
-                  ch->state = SOUND_GAIN;
-                  ch->mode = MODE_GAIN;
+                  if (ch->envx >= 126)
+                  {
+                     ch->envx = 127;
+                     ch->envxx = 127 << ENVX_SHIFT;
+                     ch->state = SOUND_GAIN;
+                     ch->mode = MODE_GAIN;
+                     S9xSetEnvRate(ch, 0, -1, 0, 0);
+                  }
+                  break;
+
+               case SOUND_INCREASE_BENT_LINE:
+                  if (ch->envx >= (MAX_ENVELOPE_HEIGHT * 3) / 4)
+                  {
+                     while (ch->env_error >= FIXED_POINT)
+                     {
+                        ch->envxx += (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
+                        ch->env_error -= FIXED_POINT;
+                     }
+                     ch->envx = ch->envxx >> ENVX_SHIFT;
+                  }
+                  else
+                  {
+                     ch->env_error &= FIXED_POINT_REMAINDER;
+                     ch->envx += step << 1;
+                     ch->envxx = ch->envx << ENVX_SHIFT;
+                  }
+
+                  if (ch->envx >= 126)
+                  {
+                     ch->envx = 127;
+                     ch->envxx = 127 << ENVX_SHIFT;
+                     ch->state = SOUND_GAIN;
+                     ch->mode = MODE_GAIN;
+                     S9xSetEnvRate(ch, 0, -1, 0, 0);
+                  }
+                  break;
+
+               case SOUND_DECREASE_LINEAR:
+                  ch->env_error &= FIXED_POINT_REMAINDER;
+                  ch->envx -= step << 1;
+                  ch->envxx = ch->envx << ENVX_SHIFT;
+                  if (ch->envx <= 0)
+                  {
+                     S9xAPUSetEndOfSample(J, ch);
+                     goto mono_exit;
+                  }
+                  break;
+
+               case SOUND_DECREASE_EXPONENTIAL:
+                  while (ch->env_error >= FIXED_POINT)
+                  {
+                     ch->envxx = (ch->envxx >> 8) * 255;
+                     ch->env_error -= FIXED_POINT;
+                  }
+                  ch->envx = ch->envxx >> ENVX_SHIFT;
+                  if (ch->envx <= 0)
+                  {
+                     S9xAPUSetEndOfSample(J, ch);
+                     goto mono_exit;
+                  }
+                  break;
+
+               case SOUND_GAIN:
                   S9xSetEnvRate(ch, 0, -1, 0, 0);
-               }
-               break;
-
-            case SOUND_DECREASE_LINEAR:
-               ch->env_error &= FIXED_POINT_REMAINDER;
-               ch->envx -= step << 1;
-               ch->envxx = ch->envx << ENVX_SHIFT;
-               if (ch->envx <= 0)
-               {
-                  S9xAPUSetEndOfSample(J, ch);
-                  goto mono_exit;
-               }
-               break;
-
-            case SOUND_DECREASE_EXPONENTIAL:
-               while (ch->env_error >= FIXED_POINT)
-               {
-                  ch->envxx = (ch->envxx >> 8) * 255;
-                  ch->env_error -= FIXED_POINT;
-               }
-               ch->envx = ch->envxx >> ENVX_SHIFT;
-               if (ch->envx <= 0)
-               {
-                  S9xAPUSetEndOfSample(J, ch);
-                  goto mono_exit;
-               }
-               break;
-
-            case SOUND_GAIN:
-               S9xSetEnvRate(ch, 0, -1, 0, 0);
-               break;
+                  break;
             }
             ch->left_vol_level = (ch->envx * ch->volume_left) / 128;
             V = (ch->sample * ch->left_vol_level) / 128;
@@ -874,8 +887,10 @@ static void MixMono(int sample_count)
                      }
                      else
                      {
-                        ch->last_block = FALSE;
-                        uint16* dir = S9xGetSampleAddress(ch->sample_number);
+                        uint16 *dir;
+
+                        ch->last_block    = FALSE;
+                        dir               = S9xGetSampleAddress(ch->sample_number);
                         ch->block_pointer = *(dir + 1);
                         S9xAPUSetEndX(J);
                      }
@@ -1188,19 +1203,23 @@ extern unsigned long DecreaseRateExp [32];
 
 void S9xSetPlaybackRate(uint32 playback_rate)
 {
+   int i;
+
    so.playback_rate = playback_rate;
 
    if (playback_rate)
    {
-      // notaz: calclulate a value (let's call it freqbase) to simplify channel freq calculations later.
-      so.freqbase = (FIXED_POINT << 11) / (playback_rate * 33 / 32);
-      // now precalculate env rates for S9xSetEnvRate
       static int steps [] =
       {
          //0, 64, 1238, 1238, 256, 1, 64, 109, 64, 1238
          0, 64, 619, 619, 128, 1, 64, 55, 64, 619
       };
-      int i, u;
+      int u;
+
+      // notaz: calculate a value (let's call it freqbase) to simplify 
+      // channel freq calculations later.
+      so.freqbase = (FIXED_POINT << 11) / (playback_rate * 33 / 32);
+      // now precalculate env rates for S9xSetEnvRate
       for (i = 0; i < 16; i++)
          for (u = 0; u < 10; u++)
             AttackERate[i][u] = (unsigned long)(((int64) FIXED_POINT * 1000 * steps[u]) /
@@ -1231,7 +1250,6 @@ void S9xSetPlaybackRate(uint32 playback_rate)
    }
 
    S9xSetEchoDelay(APU.DSP [APU_EDL] & 0xf);
-   int i;
    for (i = 0; i < 8; i++)
       S9xSetSoundFrequency(i, SoundData.channels [i].hertz);
 }

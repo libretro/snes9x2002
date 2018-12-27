@@ -214,7 +214,7 @@ short Op00Multiplicand;
 short Op00Multiplier;
 short Op00Result;
 
-void DSPOp00()
+void DSPOp00(void)
 {
    Op00Result = Op00Multiplicand * Op00Multiplier >> 15;
 }
@@ -223,7 +223,7 @@ short Op20Multiplicand;
 short Op20Multiplier;
 short Op20Result;
 
-void DSPOp20()
+void DSPOp20(void)
 {
    Op20Result = Op20Multiplicand * Op20Multiplier >> 15;
    Op20Result++;
@@ -285,7 +285,7 @@ void DSP1_Inverse(short Coefficient, short Exponent, short* iCoefficient, short*
    }
 }
 
-void DSPOp10()
+void DSPOp10(void)
 {
    DSP1_Inverse(Op10Coefficient, Op10Exponent, &Op10CoefficientR, &Op10ExponentR);
 }
@@ -369,24 +369,26 @@ const short DSP1_SinTable[256] =
 
 short DSP1_Sin(short Angle)
 {
+   int S;
    if (Angle < 0)
    {
       if (Angle == -32768) return 0;
       return -DSP1_Sin(-Angle);
    }
-   int S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
+   S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
    if (S > 32767) S = 32767;
    return (short) S;
 }
 
 short DSP1_Cos(short Angle)
 {
+   int S;
    if (Angle < 0)
    {
       if (Angle == -32768) return -32768;
       Angle = -Angle;
    }
-   int S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[Angle >> 8] >> 15);
+   S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[Angle >> 8] >> 15);
    if (S < -32768) S = -32767;
    return (short) S;
 }
@@ -472,7 +474,7 @@ void DSP1_Normalizefloat(int Product, short* Coefficient, short* Exponent)
    *Exponent = e;
 }
 
-void DSPOp04()
+void DSPOp04(void)
 {
    Op04Sin = DSP1_Sin(Op04Angle) * Op04Radius >> 15;
    Op04Cos = DSP1_Cos(Op04Angle) * Op04Radius >> 15;
@@ -484,7 +486,7 @@ short Op0CY1;
 short Op0CX2;
 short Op0CY2;
 
-void DSPOp0C()
+void DSPOp0C(void)
 {
    Op0CX2 = (Op0CY1 * DSP1_Sin(Op0CA) >> 15) + (Op0CX1 * DSP1_Cos(Op0CA) >> 15);
    Op0CY2 = (Op0CY1 * DSP1_Cos(Op0CA) >> 15) - (Op0CX1 * DSP1_Sin(Op0CA) >> 15);
@@ -551,7 +553,7 @@ short ScrDispl;
 
 
 #ifdef __OPT02__
-void DSPOp02()
+void DSPOp02(void)
 {
    ViewerZ1 = -Cos(Angle(Op02AZS));
    ViewerX1 = Sin(Angle(Op02AZS)) * Sin(Angle(Op02AAS));
@@ -638,7 +640,7 @@ void DSPOp02()
 }
 #else
 
-void DSPOp02()
+void DSPOp02(void)
 {
    ViewerZ1 = -cosf(Op02AZS * 6.2832 / 65536.0);
    ViewerX1 = sinf(Op02AZS * 6.2832 / 65536.0) * sinf(Op02AAS * 6.2832 / 65536.0);
@@ -742,7 +744,7 @@ float NAzs, NAas;
 float RVPos, RHPos, RXRes, RYRes;
 
 
-void GetRXYPos()
+void GetRXYPos(void)
 {
    float scalar;
 
@@ -762,7 +764,7 @@ void GetRXYPos()
    RYRes += scalar * cosf(NAas + PI / 2) * RHPos;
 }
 
-void DSPOp0A()
+void DSPOp0A(void)
 {
    float x2, y2, x3, y3, x4, y4, m, ypos;
 
@@ -858,7 +860,7 @@ int tanval2;
 #define SADDMULT1616(res,a,b,c,d) res=((int64)a*(int64)b+(int64)c*(int64)d)>>16;
 
 #ifdef __OPT06__
-void DSPOp06()
+void DSPOp06(void)
 {
 
    ObjPX = Op06X - Op02FX;
@@ -920,7 +922,7 @@ void DSPOp06()
 }
 #else
 
-void DSPOp06()
+void DSPOp06(void)
 {
    ObjPX = Op06X - Op02FX;
    ObjPY = Op06Y - Op02FY;
@@ -981,7 +983,7 @@ short Op21Zr;
 short Op21Xr;
 short Op21Yr;
 
-void DSPOp01()
+void DSPOp01(void)
 {
    short SinAz = DSP1_Sin(Op01Zr);
    short CosAz = DSP1_Cos(Op01Zr);
@@ -1005,7 +1007,7 @@ void DSPOp01()
    matrixA[2][2] = (Op01m * CosAx >> 15) * CosAy >> 15;
 }
 
-void DSPOp11()
+void DSPOp11(void)
 {
    short SinAz = DSP1_Sin(Op11Zr);
    short CosAz = DSP1_Cos(Op11Zr);
@@ -1029,7 +1031,7 @@ void DSPOp11()
    matrixB[2][2] = (Op11m * CosAx >> 15) * CosAy >> 15;
 }
 
-void DSPOp21()
+void DSPOp21(void)
 {
    short SinAz = DSP1_Sin(Op21Zr);
    short CosAz = DSP1_Cos(Op21Zr);
@@ -1072,21 +1074,21 @@ short Op2DF;
 short Op2DL;
 short Op2DU;
 
-void DSPOp0D()
+void DSPOp0D(void)
 {
    Op0DF = (Op0DX * matrixA[0][0] >> 15) + (Op0DY * matrixA[0][1] >> 15) + (Op0DZ * matrixA[0][2] >> 15);
    Op0DL = (Op0DX * matrixA[1][0] >> 15) + (Op0DY * matrixA[1][1] >> 15) + (Op0DZ * matrixA[1][2] >> 15);
    Op0DU = (Op0DX * matrixA[2][0] >> 15) + (Op0DY * matrixA[2][1] >> 15) + (Op0DZ * matrixA[2][2] >> 15);
 }
 
-void DSPOp1D()
+void DSPOp1D(void)
 {
    Op1DF = (Op1DX * matrixB[0][0] >> 15) + (Op1DY * matrixB[0][1] >> 15) + (Op1DZ * matrixB[0][2] >> 15);
    Op1DL = (Op1DX * matrixB[1][0] >> 15) + (Op1DY * matrixB[1][1] >> 15) + (Op1DZ * matrixB[1][2] >> 15);
    Op1DU = (Op1DX * matrixB[2][0] >> 15) + (Op1DY * matrixB[2][1] >> 15) + (Op1DZ * matrixB[2][2] >> 15);
 }
 
-void DSPOp2D()
+void DSPOp2D(void)
 {
    Op2DF = (Op2DX * matrixC[0][0] >> 15) + (Op2DY * matrixC[0][1] >> 15) + (Op2DZ * matrixC[0][2] >> 15);
    Op2DL = (Op2DX * matrixC[1][0] >> 15) + (Op2DY * matrixC[1][1] >> 15) + (Op2DZ * matrixC[1][2] >> 15);
@@ -1112,21 +1114,21 @@ short Op23X;
 short Op23Y;
 short Op23Z;
 
-void DSPOp03()
+void DSPOp03(void)
 {
    Op03X = (Op03F * matrixA[0][0] >> 15) + (Op03L * matrixA[1][0] >> 15) + (Op03U * matrixA[2][0] >> 15);
    Op03Y = (Op03F * matrixA[0][1] >> 15) + (Op03L * matrixA[1][1] >> 15) + (Op03U * matrixA[2][1] >> 15);
    Op03Z = (Op03F * matrixA[0][2] >> 15) + (Op03L * matrixA[1][2] >> 15) + (Op03U * matrixA[2][2] >> 15);
 }
 
-void DSPOp13()
+void DSPOp13(void)
 {
    Op13X = (Op13F * matrixB[0][0] >> 15) + (Op13L * matrixB[1][0] >> 15) + (Op13U * matrixB[2][0] >> 15);
    Op13Y = (Op13F * matrixB[0][1] >> 15) + (Op13L * matrixB[1][1] >> 15) + (Op13U * matrixB[2][1] >> 15);
    Op13Z = (Op13F * matrixB[0][2] >> 15) + (Op13L * matrixB[1][2] >> 15) + (Op13U * matrixB[2][2] >> 15);
 }
 
-void DSPOp23()
+void DSPOp23(void)
 {
    Op23X = (Op23F * matrixC[0][0] >> 15) + (Op23L * matrixC[1][0] >> 15) + (Op23U * matrixC[2][0] >> 15);
    Op23Y = (Op23F * matrixC[0][1] >> 15) + (Op23L * matrixC[1][1] >> 15) + (Op23U * matrixC[2][1] >> 15);
@@ -1143,7 +1145,7 @@ short Op14Zrr;
 short Op14Xrr;
 short Op14Yrr;
 
-void DSPOp14()
+void DSPOp14(void)
 {
    short CSec, ESec, CTan, CSin, C, E;
 
@@ -1200,7 +1202,7 @@ short Op0EV;
 short Op0EX;
 short Op0EY;
 
-void DSPOp0E()
+void DSPOp0E(void)
 {
    // screen Directions UP
    RVPos = Op0EV;
@@ -1223,24 +1225,24 @@ short Op2BY;
 short Op2BZ;
 short Op2BS;
 
-void DSPOp0B()
+void DSPOp0B(void)
 {
    Op0BS = (Op0BX * matrixA[0][0] + Op0BY * matrixA[0][1] + Op0BZ * matrixA[0][2]) >> 15;
 }
 
-void DSPOp1B()
+void DSPOp1B(void)
 {
    Op1BS = (Op1BX * matrixB[0][0] + Op1BY * matrixB[0][1] + Op1BZ * matrixB[0][2]) >> 15;
 }
 
-void DSPOp2B()
+void DSPOp2B(void)
 {
    Op2BS = (Op2BX * matrixC[0][0] + Op2BY * matrixC[0][1] + Op2BZ * matrixC[0][2]) >> 15;
 }
 
 short Op08X, Op08Y, Op08Z, Op08Ll, Op08Lh;
 
-void DSPOp08()
+void DSPOp08(void)
 {
    int Op08Size = (Op08X * Op08X + Op08Y * Op08Y + Op08Z * Op08Z) << 1;
    Op08Ll = Op08Size & 0xffff;
@@ -1249,14 +1251,14 @@ void DSPOp08()
 
 short Op18X, Op18Y, Op18Z, Op18R, Op18D;
 
-void DSPOp18()
+void DSPOp18(void)
 {
    Op18D = (Op18X * Op18X + Op18Y * Op18Y + Op18Z * Op18Z - Op18R * Op18R) >> 15;
 }
 
 short Op38X, Op38Y, Op38Z, Op38R, Op38D;
 
-void DSPOp38()
+void DSPOp38(void)
 {
    Op38D = (Op38X * Op38X + Op38Y * Op38Y + Op38Z * Op38Z - Op38R * Op38R) >> 15;
    Op38D++;
@@ -1267,7 +1269,7 @@ short Op28Y;
 short Op28Z;
 short Op28R;
 
-void DSPOp28()
+void DSPOp28(void)
 {
    int Radius = Op28X * Op28X + Op28Y * Op28Y + Op28Z * Op28Z;
 
@@ -1275,15 +1277,16 @@ void DSPOp28()
    else
    {
       short C, E;
+      short Pos, Node1, Node2;
+
       DSP1_Normalizefloat(Radius, &C, &E);
       if (E & 1) C = C * 0x4000 >> 15;
 
-      short Pos = C * 0x0040 >> 15;
+      Pos     = C * 0x0040 >> 15;
+      Node1   = DSP1ROM[(0x00d5 + Pos) & 1023];
+      Node2   = DSP1ROM[(0x00d6 + Pos) & 1023];
 
-      short Node1 = DSP1ROM[(0x00d5 + Pos) & 1023];
-      short Node2 = DSP1ROM[(0x00d6 + Pos) & 1023];
-
-      Op28R = ((Node2 - Node1) * (C & 0x1ff) >> 9) + Node1;
+      Op28R   = ((Node2 - Node1) * (C & 0x1ff) >> 9) + Node1;
       Op28R >>= (E >> 1);
    }
 }
@@ -1297,7 +1300,7 @@ short Op1CX2;
 short Op1CY2;
 short Op1CZ2;
 
-void DSPOp1C()
+void DSPOp1C(void)
 {
 
    // Rotate Around Op1CZ1
@@ -1322,7 +1325,7 @@ void DSPOp1C()
 unsigned short Op0FRamsize;
 unsigned short Op0FPass;
 
-void DSPOp0F()
+void DSPOp0F(void)
 {
    Op0FPass = 0x0000;
 }
@@ -1330,7 +1333,7 @@ void DSPOp0F()
 short Op2FUnknown;
 short Op2FSize;
 
-void DSPOp2F()
+void DSPOp2F(void)
 {
    Op2FSize = 0x100;
 }

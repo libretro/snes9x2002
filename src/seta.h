@@ -98,7 +98,6 @@
 #define ST_018 0x03
 
 
-START_EXTERN_C
 uint8 S9xGetSetaDSP(uint32 Address);
 void S9xSetSetaDSP(uint8 byte, uint32 Address);
 uint8 S9xGetST018(uint32 Address);
@@ -108,7 +107,6 @@ uint8 S9xGetST010(uint32 Address);
 void S9xSetST010(uint32 Address, uint8 Byte);
 uint8 S9xGetST011(uint32 Address);
 void S9xSetST011(uint32 Address, uint8 Byte);
-END_EXTERN_C
 
 extern void (*SetSETA)(uint32, uint8);
 extern uint8(*GetSETA)(uint32);

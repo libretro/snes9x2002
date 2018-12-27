@@ -952,12 +952,13 @@ void DSP2SetByte(uint8 byte, uint16 address)
 #ifdef FAST_LSB_WORD_ACCESS
             *(uint32*)DSP1.output = DSP2Op09Word1 * DSP2Op09Word2;
 #else
-            uint32 temp;
-            temp = DSP2Op09Word1 * DSP2Op09Word2;
-            DSP1.output[0] = temp & 0xFF;
-            DSP1.output[1] = (temp >> 8) & 0xFF;
-            DSP1.output[2] = (temp >> 16) & 0xFF;
-            DSP1.output[3] = (temp >> 24) & 0xFF;
+            {
+               uint32 temp    = DSP2Op09Word1 * DSP2Op09Word2;
+               DSP1.output[0] = temp & 0xFF;
+               DSP1.output[1] = (temp >> 8) & 0xFF;
+               DSP1.output[2] = (temp >> 16) & 0xFF;
+               DSP1.output[3] = (temp >> 24) & 0xFF;
+            }
 #endif
             break;
          case 0x05:

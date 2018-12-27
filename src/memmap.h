@@ -163,13 +163,11 @@ typedef struct
    char ROMFilename [_MAX_PATH];
 } CMemory;
 
-START_EXTERN_C
 extern CMemory Memory;
 extern uint8* SRAM;
 extern uint8* ROM;
 extern uint8* RegRAM;
 void S9xDeinterleaveMode2();
-END_EXTERN_C
 
 #ifdef NO_INLINE_SET_GET
 uint8 S9xGetByte(uint32 Address, struct SCPUState*);

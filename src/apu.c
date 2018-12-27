@@ -410,9 +410,9 @@ void S9xDeinitAPU()
    }
 }
 
-EXTERN_C uint8 APUROM [64];
+uint8 APUROM [64];
 
-void S9xResetAPU()
+void S9xResetAPU(void)
 {
    int i, j;
    //    Settings.APUEnabled = Settings.NextAPUEnabled;
