@@ -144,6 +144,20 @@ else ifeq ($(platform), classic_armv7_a7)
 	endif
 #######################################
 
+else ifeq ($(platform), psp1)
+	TARGET := $(TARGET_NAME)_libretro_$(platform).a
+	CC = psp-gcc$(EXE_EXT)
+	CXX = psp-g++$(EXE_EXT)
+	AR = psp-ar$(EXE_EXT)
+	STATIC_LINKING = 1
+	LOAD_FROM_MEMORY_TEST = 0
+	FLAGS += -G0
+	CFLAGS += \
+		-march=allegrex -mno-abicalls -fno-pic \
+		-fno-builtin -fno-exceptions -ffunction-sections
+	DEFS +=  -DPSP -D_PSP_FW_VERSION=371
+	STATIC_LINKING := 1
+
 # Vita
 else ifeq ($(platform), vita)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
