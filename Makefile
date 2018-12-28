@@ -284,8 +284,8 @@ else
    TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
    fpic := 
-   LD_FLAGS := 
-   SHARED := -shared -static-libgcc -static-libstdc++ -Wl,--version-script=libretro/link.T
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=libretro/link.T
+   LD_FLAGS += -static-libgcc -static-libstdc++ -lwinmm
    CFLAGS += -D__WIN32__ -D__WIN32_LIBRETRO__
 endif
 
@@ -305,6 +305,10 @@ include Makefile.common
 OBJECTS := $(SOURCES:.c=.o) $(SOURCES_ASM:.S=.o)
 
 CFLAGS += $(DEFINES) $(COMMON_DEFINES) $(INCLUDES)
+
+LDFLAGS += $(fpic)
+
+FLAGS += $(fpic)
 
 ifneq (,$(findstring msvc,$(platform)))
 	LIBM =
@@ -331,7 +335,7 @@ $(TARGET): $(OBJECTS)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
-	$(LD) $(LINKOUT)$@ $(SHARED) $(fpic) $(LDFLAGS) $(LIBS)
+	$(LD) $(LINKOUT)$@ $(SHARED) $(OBJECTS) $(LDFLAGS) $(LIBS)
 endif
 
 %.o: %.c

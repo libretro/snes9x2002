@@ -46,6 +46,7 @@ void SelectPalette();
 extern uint32 TileBlank;
 
 #define TILE_PREAMBLE \
+    uint32 l; \
     uint8 *pCache; \
 \
     uint32 TileAddr = (BG.TileAddress + ((Tile & 0x3ff) << BG.TileShift)) & 0xffff; \
@@ -61,7 +62,6 @@ extern uint32 TileBlank;
       return; \
    } \
 \
-    uint32 l; \
     GFX.ScreenColors = &GFX.ScreenColorsPre[(Tile & GFX.PaletteMask) >> GFX.PaletteShift];
 
 
@@ -70,6 +70,7 @@ extern uint32 TileBlank;
     else GFX.ScreenColors = &IPPU.ScreenColors [(((Tile >> 10) & BG.PaletteMask) << BG.PaletteShift) + BG.StartPalette];
 */
 #define RENDER_TILE(NORMAL, FLIPPED, N) \
+{ \
    int   inc; \
     if (!(Tile & V_FLIP)){ \
       bp  = pCache + StartLine; \
@@ -96,13 +97,10 @@ extern uint32 TileBlank;
          FLIPPED (Offset + N, bp); \
          bp += inc, Offset += GFX_PPL; \
       } \
-   }
+   } \
+}
 
 #define TILE_CLIP_PREAMBLE \
-    uint32 dd; \
-    uint32 d1; \
-    uint32 d2; \
-\
     if (StartPixel < 4) \
     { \
    d1 = HeadMask [StartPixel]; \
@@ -126,6 +124,7 @@ extern uint32 TileBlank;
 
 
 #define RENDER_CLIPPED_TILE(NORMAL, FLIPPED, N) \
+{ \
    int   inc; \
     if (Tile & V_FLIP){ \
       bp  = pCache + 56 - StartLine; \
@@ -154,7 +153,8 @@ extern uint32 TileBlank;
          FLIPPED (Offset + N, (uint8 *) &dd); \
          bp += inc, Offset += GFX_PPL; \
       } \
-   }
+   } \
+}
 
 #define RENDER_TILE_LARGE(PIXEL, FUNCTION) \
     if (!(Tile & (V_FLIP | H_FLIP))) \

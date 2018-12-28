@@ -60,7 +60,7 @@
 extern FxInit_s SuperFX;
 extern FxRegs_s GSU;
 
-void S9xUpdateHTimer()
+void S9xUpdateHTimer(void)
 {
    if (PPU.HTimerEnabled)
    {
@@ -117,7 +117,7 @@ void S9xUpdateHTimer()
    }
 }
 
-void S9xFixColourBrightness()
+void S9xFixColourBrightness(void)
 {
    IPPU.XB = mul_brightness [PPU.Brightness];
    if (Settings.SixteenBit)
@@ -375,14 +375,16 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
          {
             static uint16 IncCount [4] = { 0, 32, 64, 128 };
             static uint16 Shift [4] = { 0, 5, 6, 7 };
+            uint8 i;
+
 #ifdef DEBUGGER
             missing.vram_full_graphic_inc = (Byte & 0x0c) >> 2;
 #endif
-            PPU.VMA.Increment = 1;
-            uint8 i = (Byte & 0x0c) >> 2;
+            PPU.VMA.Increment        = 1;
+            i                        = (Byte & 0x0c) >> 2;
             PPU.VMA.FullGraphicCount = IncCount [i];
-            PPU.VMA.Mask1 = IncCount [i] * 8 - 1;
-            PPU.VMA.Shift = Shift [i];
+            PPU.VMA.Mask1            = IncCount [i] * 8 - 1;
+            PPU.VMA.Shift            = Shift [i];
          }
          else
             PPU.VMA.FullGraphicCount = 0;
@@ -2131,10 +2133,11 @@ uint8 S9xGetCPU(uint16 Address)
    return (Memory.FillRAM[Address]);
 }
 
-void S9xResetPPU()
+void S9xResetPPU(void)
 {
    uint8 B;
    int Sprite;
+   int c;
 
    PPU.BGMode = 0;
    PPU.BG3Priority = 0;
@@ -2171,7 +2174,6 @@ void S9xResetPPU()
    PPU.ClipWindow2Inside[4] = PPU.ClipWindow2Inside[5] = TRUE;
 
    PPU.CGFLIP = 0;
-   int c;
    for (c = 0; c < 256; c++)
    {
       IPPU.Red [c] = (c & 7) << 2;
@@ -2368,7 +2370,7 @@ void S9xProcessMouse(int which1)
    }
 }
 
-void ProcessSuperScope()
+void ProcessSuperScope(void)
 {
    int x, y;
    uint32 buttons;
@@ -2507,11 +2509,13 @@ void S9xSuperFXExec(void)
       if ((Memory.FillRAM [0x3000 + GSU_SFR] & FLG_G) &&
             (Memory.FillRAM [0x3000 + GSU_SCMR] & 0x18) == 0x18)
       {
+         int GSUStatus;
+
          if (!Settings.WinterGold)
             FxEmulate(~0);
          else
             FxEmulate((Memory.FillRAM [0x3000 + GSU_CLSR] & 1) ? 700 : 350);
-         int GSUStatus = Memory.FillRAM [0x3000 + GSU_SFR] |
+         GSUStatus = Memory.FillRAM [0x3000 + GSU_SFR] |
                          (Memory.FillRAM [0x3000 + GSU_SFR + 1] << 8);
          if ((GSUStatus & (FLG_G | FLG_IRQ)) == FLG_IRQ)
          {
