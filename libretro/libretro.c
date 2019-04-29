@@ -469,6 +469,9 @@ void retro_run (void)
    IPPU.RenderThisFrame = TRUE;
 #endif
 
+   poll_cb();
+   report_buttons();
+
    S9xMainLoop();
 //   asm_S9xMainLoop();
    S9xMixSamples(audio_buf, avail);
@@ -478,10 +481,6 @@ void retro_run (void)
    if(!IPPU.RenderThisFrame)
       video_cb(NULL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX_PITCH);
 #endif
-
-   poll_cb();
-
-   report_buttons();
 }
 
 size_t retro_serialize_size (void)
