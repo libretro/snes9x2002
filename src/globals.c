@@ -162,6 +162,10 @@ uint32 current_graphic_format = RGB565;
 uint8 GetBank = 0;
 SCheatData Cheat;
 
+#ifdef LAGFIX
+bool8 finishedFrame = false;
+#endif
+
 SoundStatus so;
 SSoundData SoundData;
 int Echo [24000];

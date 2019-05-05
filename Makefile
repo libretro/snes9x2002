@@ -1,4 +1,5 @@
 DEBUG=0
+LAGFIX=1
 TARGET_NAME = snes9x2002
 
 ifeq ($(platform),)
