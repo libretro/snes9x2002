@@ -384,6 +384,7 @@ S9xMainLoop(void)
       if (!finishedFrame)
       {
 #endif
+#ifndef LAGFIX
          Registers.PC = CPU.PC - CPU.PCBase;
 
 #ifndef ASMCPU
@@ -391,7 +392,7 @@ S9xMainLoop(void)
 #endif
 
          S9xAPUPackStatus();
-
+#endif
 
          //if (CPU.Flags & SCAN_KEYS_FLAG)
          // {
@@ -409,6 +410,15 @@ S9xMainLoop(void)
       else
       {
          finishedFrame = false;
+
+         Registers.PC = CPU.PC - CPU.PCBase;
+
+#ifndef ASMCPU
+         S9xPackStatus();
+#endif
+
+         S9xAPUPackStatus();
+
          break;
       }
    } while (!finishedFrame);
