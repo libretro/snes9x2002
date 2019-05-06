@@ -378,6 +378,10 @@ extern SCPUState CPU;
 extern SSNESGameFixes SNESGameFixes;
 extern char String [513];
 
+#ifdef LAGFIX
+extern bool8 finishedFrame;
+#endif
+
 void S9xExit(void);
 void S9xMessage(int type, int number, const char* message);
 void S9xLoadSDD1Data(void);

@@ -118,4 +118,10 @@ CODE_DEFINES = -fomit-frame-pointer
 endif
 endif
 
+ifeq ($(LAGFIX), 1)
+ifneq ($(ASM_CPU), 1)
+DEFINES += -DLAGFIX
+endif
+endif
+
 COMMON_DEFINES += $(CODE_DEFINES) $(WARNINGS_DEFINES) $(fpic)

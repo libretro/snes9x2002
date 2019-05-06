@@ -655,6 +655,11 @@ void S9xEndScreenRefresh()
       S9xDeinitUpdate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight,
                       1);
    }
+
+#ifdef LAGFIX
+   finishedFrame = true;
+#endif
+
 #ifndef RC_OPTIMIZED
    S9xApplyCheats();
 #endif

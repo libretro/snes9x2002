@@ -131,6 +131,10 @@ void S9xMainLoop_SA1_APU(void)
          S9xSA1MainLoop();
       DO_HBLANK_CHECK();
 
+#ifdef LAGFIX
+      if (finishedFrame)
+         break;
+#endif
    }
 }
 
@@ -196,6 +200,10 @@ void S9xMainLoop_SA1_NoAPU(void)
          S9xSA1MainLoop();
       DO_HBLANK_CHECK();
 
+#ifdef LAGFIX
+      if (finishedFrame)
+         break;
+#endif
    }
 }
 // USE_SA1
@@ -260,6 +268,11 @@ void S9xMainLoop_NoSA1_APU(void)
       //S9xUpdateAPUTimer ();
 
       DO_HBLANK_CHECK();
+
+#ifdef LAGFIX
+      if (finishedFrame)
+         break;
+#endif
    }
 }
 
@@ -323,6 +336,10 @@ void S9xMainLoop_NoSA1_NoAPU(void)
 
       DO_HBLANK_CHECK();
 
+#ifdef LAGFIX
+      if (finishedFrame)
+         break;
+#endif
    }
 }
 #endif
@@ -331,53 +348,81 @@ void S9xMainLoop_NoSA1_NoAPU(void)
 void
 S9xMainLoop(void)
 {
+#ifdef LAGFIX
+   do
+   {
+#endif
 #ifndef ASMCPU
-   if (Settings.APUEnabled == 1)
-   {
+      if (Settings.APUEnabled == 1)
+      {
 #ifdef USE_SA1
-      if (Settings.SA1)
-         S9xMainLoop_SA1_APU();
-      else
+         if (Settings.SA1)
+            S9xMainLoop_SA1_APU();
+         else
 #endif
-         S9xMainLoop_NoSA1_APU();
-   }
-   else
-   {
+            S9xMainLoop_NoSA1_APU();
+      }
+      else
+      {
 #ifdef USE_SA1
-      if (Settings.SA1)
-         S9xMainLoop_SA1_NoAPU();
-      else
+         if (Settings.SA1)
+            S9xMainLoop_SA1_NoAPU();
+         else
 #endif
-         S9xMainLoop_NoSA1_NoAPU();
-   }
+            S9xMainLoop_NoSA1_NoAPU();
+      }
 #else
 #ifdef ASM_SPC700
-   if (Settings.asmspc700)
-      asmMainLoop_spcAsm(&CPU);
-   else
+      if (Settings.asmspc700)
+         asmMainLoop_spcAsm(&CPU);
+      else
 #endif
-      asmMainLoop_spcC(&CPU);
+         asmMainLoop_spcC(&CPU);
 #endif
-   Registers.PC = CPU.PC - CPU.PCBase;
+
+#ifdef LAGFIX
+      if (!finishedFrame)
+      {
+#endif
+#ifndef LAGFIX
+         Registers.PC = CPU.PC - CPU.PCBase;
 
 #ifndef ASMCPU
-   S9xPackStatus();
+         S9xPackStatus();
 #endif
 
-   S9xAPUPackStatus();
+         S9xAPUPackStatus();
+#endif
 
+         //if (CPU.Flags & SCAN_KEYS_FLAG)
+         // {
+         CPU.Flags &= ~SCAN_KEYS_FLAG;
+         //}
 
-   //if (CPU.Flags & SCAN_KEYS_FLAG)
-   // {
-   CPU.Flags &= ~SCAN_KEYS_FLAG;
-   //}
+         if (CPU.BRKTriggered && Settings.SuperFX && !CPU.TriedInterleavedMode2)
+         {
+            CPU.TriedInterleavedMode2 = TRUE;
+            CPU.BRKTriggered = FALSE;
+            S9xDeinterleaveMode2();
+         }
+#ifdef LAGFIX
+      }
+      else
+      {
+         finishedFrame = false;
 
-   if (CPU.BRKTriggered && Settings.SuperFX && !CPU.TriedInterleavedMode2)
-   {
-      CPU.TriedInterleavedMode2 = TRUE;
-      CPU.BRKTriggered = FALSE;
-      S9xDeinterleaveMode2();
-   }
+         Registers.PC = CPU.PC - CPU.PCBase;
+
+#ifndef ASMCPU
+         S9xPackStatus();
+#endif
+
+         S9xAPUPackStatus();
+
+         break;
+      }
+   } while (!finishedFrame);
+#endif
 }
 
 void S9xSetIRQ(uint32 source)
