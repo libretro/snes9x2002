@@ -297,7 +297,7 @@ CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
 NO_GCC = 1
 else
    TARGET := $(TARGET_NAME)_libretro.dll
-   CC = gcc
+   CC ?= gcc
    fpic := 
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=libretro/link.T
    LD_FLAGS += -static-libgcc -static-libstdc++ -lwinmm
