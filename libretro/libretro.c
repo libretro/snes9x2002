@@ -100,7 +100,13 @@ memstream_t *s_stream;
 
 int s_open(const char *fname, const char *mode)
 {
-   s_stream = memstream_open(0);
+   unsigned writing = 0;
+
+   if (mode)
+      if (strcmp(mode, "wb") == 0)
+         writing = 1;
+
+   s_stream = memstream_open(writing);
    return TRUE;
 }
 
