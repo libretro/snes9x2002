@@ -60,6 +60,16 @@ else ifneq (,$(findstring ios,$(platform)))
       CXX += -miphoneos-version-min=5.0
       PLATFORM_DEFINES := -miphoneos-version-min=5.0
    endif
+else ifeq ($(platform), tvos-arm64)
+   TARGET := $(TARGET_NAME)_libretro_tvos.dylib
+   fpic := -fPIC
+   SHARED := -dynamiclib
+   ifeq ($(IOSSDK),)
+      IOSSDK := $(shell xcodebuild -version -sdk appletvos Path)
+   endif
+   ARM_ASM = 0
+   ASM_CPU = 0
+   ASM_SPC700 = 0
 else ifeq ($(platform), theos_ios)
    DEPLOYMENT_IOSVERSION = 5.0
    TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
