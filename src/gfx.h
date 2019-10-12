@@ -224,7 +224,7 @@ static INLINE uint16_t COLOR_ADD(uint16_t C1, uint16_t C2)
 {
 	const int RED_MASK   = 0x1F << RED_SHIFT_BITS;
 	const int GREEN_MASK = 0x1F << GREEN_SHIFT_BITS;
-	const int BLUE_MASK  = 0x1F;
+	const int BLUE_MASK  = 0x1F << BLUE_SHIFT_BITS;
 
 	int rb          = (C1 & (RED_MASK | BLUE_MASK)) + (C2 & (RED_MASK | BLUE_MASK));
 	int rbcarry     = rb & ((0x20 << RED_SHIFT_BITS) | (0x20 << 0));

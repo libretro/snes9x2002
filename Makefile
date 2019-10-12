@@ -170,6 +170,16 @@ else ifeq ($(platform), classic_armv7_a7)
 	endif
 #######################################
 
+else ifeq ($(platform), ps2)
+	TARGET := $(TARGET_NAME)_libretro_$(platform).a
+	CC = mips64r5900el-ps2-elf-gcc$(EXE_EXT)
+	CXX = mips64r5900el-ps2-elf-g++$(EXE_EXT)
+	AR = mips64r5900el-ps2-elf-ar$(EXE_EXT)
+	STATIC_LINKING = 1
+	LOAD_FROM_MEMORY_TEST = 0
+   CFLAGS += -DPS2 -G0 -DFRAME_SKIP -fomit-frame-pointer -ffast-math
+	STATIC_LINKING := 1
+
 else ifeq ($(platform), psp1)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).a
 	CC = psp-gcc$(EXE_EXT)
@@ -335,7 +345,7 @@ LIBRETRO_DIR := ./libretro
 ifeq ($(DEBUG), 1)
 DEFINES += -O0 -g
 else
-DEFINES += -O2 -DNDEBUG=1
+DEFINES += -O3 -DNDEBUG=1
 endif
 
 LDFLAGS += $(LIBM)
