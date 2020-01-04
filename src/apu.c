@@ -46,6 +46,7 @@
 #include "snes9x.h"
 #include "spc700.h"
 #include "apu.h"
+#include "apumem.h"
 #include "soundux.h"
 #include "cpuexec.h"
 
@@ -409,8 +410,6 @@ void S9xDeinitAPU()
       IAPU.CachedSamples = NULL;
    }
 }
-
-uint8 APUROM [64];
 
 void S9xResetAPU(void)
 {

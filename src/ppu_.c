@@ -900,7 +900,7 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
                   if (Byte & FLG_G)
                      S9xSuperFXExec();
                   else
-                     FxFlushCache(&GSU);
+                     FxFlushCache();
                }
                else
                   Memory.FillRAM [Address] = Byte;
