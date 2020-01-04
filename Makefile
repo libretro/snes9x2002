@@ -214,6 +214,7 @@ else ifeq ($(platform), gcw0)
    AR = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ar
    fpic := -fPIC
    SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
+   DEFINES += -DFRAME_SKIP
    CFLAGS += -std=c99 -ffast-math -march=mips32 -mtune=mips32r2 -mhard-float
    CFLAGS += -fno-builtin -fno-exceptions
    CFLAGS += -DPATH_MAX=256
