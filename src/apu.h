@@ -103,8 +103,8 @@ typedef struct
 } SIAPU;
 
 
-SAPU APU;
-SIAPU IAPU;
+extern SAPU APU;
+extern SIAPU IAPU;
 
 static INLINE void S9xAPUUnpackStatus(void)
 {
