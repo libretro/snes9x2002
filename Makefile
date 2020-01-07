@@ -357,7 +357,6 @@ else
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
