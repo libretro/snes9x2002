@@ -527,10 +527,13 @@ void retro_cheat_set(unsigned index, bool enable, const char* in_code)
 {
     uint32 address;
     uint8 byte;
-    // clean input
     char clean_code[strlen(in_code)];
     int j =0;
     unsigned i;
+
+    /* TODO/FIXME - MSVC error C2057: expected constant expression -
+     * see clean_code[strlen(in_code)];
+     */
 
     for (i = 0; i < strlen(in_code); i++)          
     {
