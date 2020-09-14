@@ -89,6 +89,8 @@ static retro_input_state_t input_cb = NULL;
 static retro_audio_sample_batch_t audio_batch_cb = NULL;
 static retro_environment_t environ_cb = NULL;
 
+static bool libretro_supports_bitmasks = false;
+
 static uint32 joys[5];
 
 bool8 ROMAPUEnabled = 0;
@@ -373,6 +375,9 @@ void retro_init (void)
 
    snes_init();
    environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_INPUT_BITMASKS, NULL))
+      libretro_supports_bitmasks = true;
 }
 
 /* libsnes uses relative values for analogue devices. 
@@ -404,7 +409,7 @@ void retro_deinit(void)
 
    GFX.SubZBuffer_buffer = NULL;
 
-
+   libretro_supports_bitmasks = false;
 }
 
 void retro_reset (void)
@@ -420,11 +425,24 @@ void S9xSetButton(int i, uint16 b, bool pressed);
 static void report_buttons (void)
 {
 	int i, j;
-	for ( i = 0; i < 5; i++)
+	int16_t joy_bits[5] = {0};
+
+	for (j = 0; j < 5; j++)
+	{
+		if (libretro_supports_bitmasks)
+			joy_bits[j] = input_cb(j, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_MASK);
+		else
+		{
+			for (i = 0; i < (RETRO_DEVICE_ID_JOYPAD_R3+1); i++)
+				joy_bits[j] |= input_cb(j, RETRO_DEVICE_JOYPAD, 0, i) ? (1 << i) : 0;
+		}
+	}
+
+	for (i = 0; i < 5; i++)
 	{
 		for (j = 0; j <= RETRO_DEVICE_ID_JOYPAD_R; j++)
 		{
-			if (input_cb(i, RETRO_DEVICE_JOYPAD, 0, j))
+			if (joy_bits[i] & (1 << j))
 				joys[i] |= (1 << (15 - j));
 			else
 				joys[i] &= ~(1 << (15 - j));
