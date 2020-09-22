@@ -86,12 +86,14 @@ else ifeq ($(platform), ps3)
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
    CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   CFLAGS += -DMSB_FIRST
    STATIC_LINKING := 1
 else ifeq ($(platform), sncps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
    CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   CFLAGS += -DMSB_FIRST
    STATIC_LINKING := 1
 else ifeq ($(platform), xenon)
    TARGET := $(TARGET_NAME)_libretro_xenon360.a
@@ -105,6 +107,7 @@ else ifeq ($(platform), ngc)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
    CFLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
+   CFLAGS += -DMSB_FIRST
    STATIC_LINKING := 1
 
 else ifeq ($(platform), wii)
@@ -113,6 +116,7 @@ else ifeq ($(platform), wii)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__ -DHW_RVL
    CFLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
+   CFLAGS += -DMSB_FIRST
    STATIC_LINKING := 1
 
 else ifeq ($(platform), wiiu)
@@ -121,6 +125,7 @@ else ifeq ($(platform), wiiu)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar
    CFLAGS += -DGEKKO -DWIIU -mwup -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__ -DHW_RVL
    CFLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
+   CFLAGS += -DMSB_FIRST
    STATIC_LINKING := 1
 
 # (armv7 a7, hard point, neon based) ### 
