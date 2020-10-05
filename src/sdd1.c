@@ -41,15 +41,12 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
+#include <stdio.h>
 #include "snes9x.h"
 #include "memmap.h"
 #include "ppu.h"
 #include "sdd1.h"
 #include "display.h"
-
-#ifdef __linux
-//#include <unistd.h>
-#endif
 
 void S9xSetSDD1MemoryMap(uint32 bank, uint32 value)
 {

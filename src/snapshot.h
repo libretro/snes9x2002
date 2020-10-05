@@ -41,7 +41,6 @@
 #ifndef _SNAPSHOT_H_
 #define _SNAPSHOT_H_
 
-#include <stdio.h>
 #include "snes9x.h"
 
 #define SNAPSHOT_MAGIC "#!snes9x"

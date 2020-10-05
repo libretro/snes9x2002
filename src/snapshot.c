@@ -42,8 +42,14 @@
  * Nintendo Co., Limited and its subsidiary companies.
  */
 
-#if defined(__unix) || defined(__linux) || defined(__sun) || defined(__DJGPP)
+#include <stdio.h>
+#ifdef _WIN32
+#include <direct.h>
+#else
 #include <unistd.h>
+#endif
+
+#if defined(__unix) || defined(__linux) || defined(__sun) || defined(__DJGPP)
 #include <sys/types.h>
 #include <sys/stat.h>
 #endif
