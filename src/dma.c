@@ -132,58 +132,10 @@ void S9xDoDMA(uint8 Channel)
          }
          else
          {
-#if 1
             void* ptr = bsearch(&address, Memory.SDD1Index,
                                 Memory.SDD1Entries, 12, S9xCompareSDD1IndexEntries);
             if (ptr)
                in_sdd1_dma = *(uint32*)((uint8*) ptr + 4) + Memory.SDD1Data;
-#else
-            uint8* ptr = Memory.SDD1Index;
-
-            for (uint32 e = 0; e < Memory.SDD1Entries; e++, ptr += 12)
-            {
-               if (address == *(uint32*) ptr)
-               {
-                  in_sdd1_dma = *(uint32*)(ptr + 4) + Memory.SDD1Data;
-                  break;
-               }
-            }
-#endif
-
-            /*       if (!in_sdd1_dma)
-                     {
-                     // No matching decompressed data found. Must be some new
-                     // graphics not encountered before. Log it if it hasn't been
-                     // already.
-                     uint8 *p = Memory.SDD1LoggedData;
-                     bool8 found = FALSE;
-                     uint8 SDD1Bank = Memory.FillRAM [0x4804 + ((d->ABank - 0xc0) >> 4)] | 0xf0;
-
-                     for (uint32 i = 0; i < Memory.SDD1LoggedDataCount; i++, p += 8)
-                     {
-                        if (*p == d->ABank ||
-                        *(p + 1) == (d->AAddress >> 8) &&
-                        *(p + 2) == (d->AAddress & 0xff) &&
-                        *(p + 3) == (count >> 8) &&
-                        *(p + 4) == (count & 0xff) &&
-                        *(p + 7) == SDD1Bank)
-                        {
-                        found = TRUE;
-                        break;
-                        }
-                     }
-                     if (!found && Memory.SDD1LoggedDataCount < MEMMAP_MAX_SDD1_LOGGED_ENTRIES)
-                     {
-                        *p = d->ABank;
-                        *(p + 1) = d->AAddress >> 8;
-                        *(p + 2) = d->AAddress & 0xff;
-                        *(p + 3) = count >> 8;
-                        *(p + 4) = count & 0xff;
-                        *(p + 7) = SDD1Bank;
-                        Memory.SDD1LoggedDataCount += 1;
-                     }
-                     }
-            */
          }
       }
 

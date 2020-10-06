@@ -157,9 +157,6 @@ typedef struct
    uint8*  SDD1Index;
    uint8*  SDD1Data;
    uint32 SDD1Entries;
-   uint32 SDD1LoggedDataCountPrev;
-   uint32 SDD1LoggedDataCount;
-   uint8  SDD1LoggedData [MEMMAP_MAX_SDD1_LOGGED_ENTRIES];
    char ROMFilename [_MAX_PATH];
 } CMemory;
 
