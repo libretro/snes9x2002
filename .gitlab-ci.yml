@@ -49,5 +49,3 @@ android-x86:
   extends:
     - .core-defs
     - .libretro-android-jni-x86
-
-# Static
