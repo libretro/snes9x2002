@@ -43,7 +43,6 @@
  * Nintendo Co., Limited and its subsidiary companies.
  */
 
-#include <stdio.h>
 #include <stdint.h>
 #include <boolean.h>
 #ifdef _MSC_VER
@@ -705,7 +704,6 @@ const char *S9xBasename (const char *filename) { return emptyString; }
 
 void S9xMessage(int a, int b, const char* msg)
 {
-   fprintf(stderr, "%s\n", msg);
 }
 
 /* S9x weirdness. */
