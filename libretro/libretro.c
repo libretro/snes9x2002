@@ -318,7 +318,6 @@ static void snes_init (void)
    {
       MemoryDeinit();
       S9xDeinitAPU();
-      fprintf(stderr, "[libsnes]: Failed to init Memory or APU.\n");
       exit(1);
    }
 
@@ -343,10 +342,7 @@ static void snes_init (void)
    GFX.Delta = 1048576; //(GFX.SubScreen - GFX.Screen) >> 1;
 
    if (GFX.Delta != ((GFX.SubScreen - GFX.Screen) >> 1))
-   {
-      printf("BAD DELTA! (is %u, should be %u)\n", ((GFX.SubScreen - GFX.Screen) >> 1), GFX.Delta);
       exit(1);
-   }
 
    /* controller port 1 */
    //S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
@@ -591,20 +587,14 @@ bool retro_load_game(const struct retro_game_info *game)
    check_variables();
 
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-   {
-      fprintf(stderr, "[libretro]: RGB565 is not supported.\n");
       return false;
-   }
 
    /* Hack. S9x cannot do stuff from RAM. <_< */
    memstream_set_buffer((uint8_t*)game->data, game->size);
 
    loaded = LoadROM("");
    if (!loaded)
-   {
-      fprintf(stderr, "[libretro]: Rom loading failed...\n");
       return false;
-   }
 
    //S9xGraphicsInit();
    S9xReset();

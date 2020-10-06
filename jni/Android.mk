@@ -8,10 +8,6 @@ ARM_ASM        := 0
 DEFINES        :=
 COMMON_DEFINES :=
 
-ifeq ($(TARGET_ARCH),arm)
-  ARM_ASM := 1
-endif
-
 include $(ROOT_DIR)/Makefile.common
 
 COREFLAGS := $(DEFINES) $(COMMON_DEFINES) $(INCLUDES)
