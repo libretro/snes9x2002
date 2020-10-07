@@ -538,16 +538,15 @@ void retro_cheat_reset(void)
 
 void retro_cheat_set(unsigned index, bool enable, const char* in_code)
 {
+   /* TODO/FIXME - MSVC error C2057: expected constant expression -
+    * see clean_code[strlen(in_code)];
+    */
+#ifndef _MSC_VER
     uint32 address;
     uint8 byte;
     char clean_code[strlen(in_code)];
     int j =0;
     unsigned i;
-
-    /* TODO/FIXME - MSVC error C2057: expected constant expression -
-     * see clean_code[strlen(in_code)];
-     */
-
     for (i = 0; i < strlen(in_code); i++)          
     {
         switch (in_code[i])
@@ -576,6 +575,7 @@ void retro_cheat_set(unsigned index, bool enable, const char* in_code)
     else if ( S9xGameGenieToRaw(clean_code, &address, &byte) == NULL)
         S9xAddCheat(true, true, address, byte);
     /* else, silently ignore */
+#endif
 }
 
 bool retro_load_game(const struct retro_game_info *game)
