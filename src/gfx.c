@@ -362,6 +362,8 @@ bool8_32 S9xGraphicsInit(void)
    DrawHiResClippedTilePtr = DrawHiResClippedTile16;
    S9xFixColourBrightness();
 
+#if defined(USE_OLD_COLOUR_OPS)
+   /* Pre-1.60 colour operations */
    if (!(GFX.X2 = (uint16*) malloc(sizeof(uint16) * 0x10000)))
       return (FALSE);
 
@@ -476,6 +478,10 @@ bool8_32 S9xGraphicsInit(void)
       }
    }
 #endif
+#else
+   if (!(GFX.ZERO = (uint16_t*) malloc(sizeof(uint16_t) * 0x10000)))
+      return false;
+#endif
 
    // Build a lookup table that if the top bit of the color value is zero
    // then the value is zero, otherwise its just the value.
@@ -514,6 +520,8 @@ bool8_32 S9xGraphicsInit(void)
 void S9xGraphicsDeinit(void)
 {
    // Free any memory allocated in S9xGraphicsInit
+#if defined(USE_OLD_COLOUR_OPS)
+   /* Pre-1.60 colour operations */
    if (GFX.X2)
    {
       free((char*) GFX.X2);
@@ -524,6 +532,7 @@ void S9xGraphicsDeinit(void)
       free((char*) GFX.ZERO_OR_X2);
       GFX.ZERO_OR_X2 = NULL;
    }
+#endif
    if (GFX.ZERO)
    {
       free((char*) GFX.ZERO);

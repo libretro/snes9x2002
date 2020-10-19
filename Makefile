@@ -1,5 +1,6 @@
-DEBUG=0
-LAGFIX=1
+DEBUG              = 0
+LAGFIX             = 1
+USE_OLD_COLOUR_OPS = 0
 TARGET_NAME = snes9x2002
 
 ifeq ($(platform),)
@@ -219,10 +220,9 @@ else ifeq ($(platform), gcw0)
    AR = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ar
    fpic := -fPIC
    SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
-   DEFINES += -DFRAME_SKIP
-   CFLAGS += -std=c99 -ffast-math -march=mips32 -mtune=mips32r2 -mhard-float
+   CFLAGS += -std=c99 -fomit-frame-pointer -ffast-math -march=mips32 -mtune=mips32r2 -mhard-float
    CFLAGS += -fno-builtin -fno-exceptions
-   CFLAGS += -DPATH_MAX=256
+   CFLAGS += -DPATH_MAX=256 -DFAST_LSB_WORD_ACCESS
 
 # Windows MSVC 2010 x86
 else ifeq ($(platform), windows_msvc2010_x86)

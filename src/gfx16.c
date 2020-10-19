@@ -249,6 +249,7 @@ void DrawHiResTile16(uint32 Tile, uint32 Offset,
 
 bool8_32 S9xGraphicsInit()
 {
+   uint32 r, g, b;
    uint32 PixelOdd = 1;
    uint32 PixelEven = 2;
 
@@ -366,6 +367,8 @@ bool8_32 S9xGraphicsInit()
    DrawHiResClippedTilePtr = DrawHiResClippedTile16;
    S9xFixColourBrightness();
 
+#if defined(USE_OLD_COLOUR_OPS)
+   /* Pre-1.60 colour operations */
    if (!(GFX.X2 = (uint16*) malloc(sizeof(uint16) * 0x10000)))
       return (FALSE);
 
@@ -384,7 +387,6 @@ bool8_32 S9xGraphicsInit()
       }
       return (FALSE);
    }
-   uint32 r, g, b;
 
    // Build a lookup table that multiplies a packed RGB value by 2 with
    // saturation.
@@ -481,6 +483,10 @@ bool8_32 S9xGraphicsInit()
       }
    }
 #endif
+#else
+   if (!(GFX.ZERO = (uint16_t*) malloc(sizeof(uint16_t) * 0x10000)))
+      return false;
+#endif
 
    // Build a lookup table that if the top bit of the color value is zero
    // then the value is zero, otherwise its just the value.
@@ -519,6 +525,8 @@ bool8_32 S9xGraphicsInit()
 void S9xGraphicsDeinit(void)
 {
    // Free any memory allocated in S9xGraphicsInit
+#if defined(USE_OLD_COLOUR_OPS)
+   /* Pre-1.60 colour operations */
    if (GFX.X2)
    {
       free((char*) GFX.X2);
@@ -529,6 +537,7 @@ void S9xGraphicsDeinit(void)
       free((char*) GFX.ZERO_OR_X2);
       GFX.ZERO_OR_X2 = NULL;
    }
+#endif
    if (GFX.ZERO)
    {
       free((char*) GFX.ZERO);
