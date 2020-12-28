@@ -47,6 +47,10 @@ include:
   - project: 'libretro-infrastructure/ci-templates'
     file: '/wii-static.yml'
 
+  # Nintendo WiiU
+  - project: 'libretro-infrastructure/ci-templates'
+    file: '/wiiu-static.yml'
+
 # Stages for building
 stages:
   - build-prepare
@@ -124,4 +128,10 @@ libretro-build-ngc:
 libretro-build-wii:
   extends:
     - .libretro-wii-static-retroarch-master
+    - .core-defs
+
+# Nintendo WiiU
+libretro-build-wiiu:
+  extends:
+    - .libretro-wiiu-static-retroarch-master
     - .core-defs
