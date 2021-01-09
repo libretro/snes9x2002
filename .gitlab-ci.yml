@@ -63,6 +63,11 @@ include:
   - project: 'libretro-infrastructure/ci-templates'
     file: '/wiiu-static.yml'
 
+  #################################### MISC ##################################
+  # Emscripten
+  - project: 'libretro-infrastructure/ci-templates'
+    file: '/emscripten-static.yml'
+
 # Stages for building
 stages:
   - build-prepare
@@ -164,4 +169,11 @@ libretro-build-wii:
 libretro-build-wiiu:
   extends:
     - .libretro-wiiu-static-retroarch-master
+    - .core-defs
+
+#################################### MISC ##################################
+# Emscripten
+libretro-build-emscripten:
+  extends:
+    - .libretro-emscripten-static-retroarch-master
     - .core-defs
