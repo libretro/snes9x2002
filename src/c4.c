@@ -378,7 +378,6 @@ void C4Op1F()
    else
    {
       C41FAngleRes = (short)(_atan2(C41FYVal, C41FXVal) / 2);
-      C41FAngleRes = C41FAngleRes;
       if (C41FXVal < 0)
          C41FAngleRes += 0x100;
       C41FAngleRes &= 0x1FF;
