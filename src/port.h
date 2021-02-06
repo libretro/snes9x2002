@@ -110,7 +110,11 @@ typedef short        int16_32;
 #define VAR_CYCLES
 //#define SPC700_SHUTDOWN
 #define FASTCALL
+#if defined(PS2)
+#define PIXEL_FORMAT BGR555
+#else 
 #define PIXEL_FORMAT RGB565
+#endif
 #define CPU_SHUTDOWN
 #define PACKING __attribute__ ((packed))
 #define ALIGN_BY_ONE  __attribute__ ((aligned (1), packed))
