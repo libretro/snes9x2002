@@ -344,6 +344,8 @@ LIBRETRO_DIR := ./libretro
 
 ifeq ($(DEBUG), 1)
 DEFINES += -O0 -g
+else ifneq (,$(findstring msvc,$(platform)))
+DEFINES += -O2 -DNDEBUG=1
 else
 DEFINES += -O3 -DNDEBUG=1
 endif
