@@ -386,6 +386,14 @@ else
 DEFINES += -O3 -DNDEBUG=1
 endif
 
+ifneq (,$(findstring msvc,$(platform)))
+ifeq ($(DEBUG),1)
+DEFINES += -MTd
+else
+DEFINES += -MT
+endif
+endif
+
 LDFLAGS += $(LIBM)
 
 include Makefile.common
