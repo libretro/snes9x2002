@@ -47,12 +47,14 @@ else ifneq (,$(findstring ios,$(platform)))
    TARGET := $(TARGET_NAME)_libretro_ios.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
+   MINVERSION :=
+
    ifeq ($(IOSSDK),)
       IOSSDK := $(shell xcodebuild -version -sdk iphoneos Path)
    endif
 
    ifeq ($(platform),ios-arm64)
-		CC = cc -arch arm64 -isysroot $(IOSSDK)
+	CC = cc -arch arm64 -isysroot $(IOSSDK)
    	CXX = c++ -arch arm64 -isysroot $(IOSSDK)   
    else
    	CC = cc -arch armv7 -isysroot $(IOSSDK)
@@ -62,14 +64,12 @@ else ifneq (,$(findstring ios,$(platform)))
    ASM_CPU = 0
    ASM_SPC700 = 0
    ifeq ($(platform),$(filter $(platform),ios9 ios-arm64))
-      CC += -miphoneos-version-min=8.0
-      CXX += -miphoneos-version-min=8.0
-      PLATFORM_DEFINES := -miphoneos-version-min=8.0
+      MINVERSION += -miphoneos-version-min=8.0
    else
-      CC += -miphoneos-version-min=5.0
-      CXX += -miphoneos-version-min=5.0
-      PLATFORM_DEFINES := -miphoneos-version-min=5.0
+      MINVERSION += -miphoneos-version-min=5.0
    endif
+   CFLAGS += $(MINVERSION)
+   CXXFLAGS += $(MINVERSION)
 else ifeq ($(platform), tvos-arm64)
    TARGET := $(TARGET_NAME)_libretro_tvos.dylib
    fpic := -fPIC
@@ -80,6 +80,7 @@ else ifeq ($(platform), tvos-arm64)
    ARM_ASM = 0
    ASM_CPU = 0
    ASM_SPC700 = 0
+   CC = cc -arch arm64 -isysroot $(IOSSDK)
 else ifeq ($(platform), theos_ios)
    DEPLOYMENT_IOSVERSION = 5.0
    TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
