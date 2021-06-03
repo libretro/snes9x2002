@@ -88,6 +88,10 @@ static retro_input_state_t input_cb = NULL;
 static retro_audio_sample_batch_t audio_batch_cb = NULL;
 static retro_environment_t environ_cb = NULL;
 
+static uint8 *rom_buf              = NULL;
+static const uint8 *rom_data       = NULL;
+static size_t rom_size             = 0;
+
 static bool libretro_supports_bitmasks = false;
 
 static uint32 joys[5];
@@ -578,9 +582,10 @@ void retro_cheat_set(unsigned index, bool enable, const char* in_code)
 #endif
 }
 
-bool retro_load_game(const struct retro_game_info *game)
+bool retro_load_game(const struct retro_game_info *info)
 {
    bool8 loaded;
+   const struct retro_game_info_ext *info_ext = NULL;
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
 
    check_variables();
@@ -588,8 +593,37 @@ bool retro_load_game(const struct retro_game_info *game)
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
       return false;
 
+   /* Snes9x 2010 requires a persistent ROM data buffer */
+   rom_buf  = NULL;
+   rom_data = NULL;
+   rom_size = 0;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_GAME_INFO_EXT, &info_ext) &&
+       info_ext->persistent_data)
+   {
+      rom_data = (const uint8*)info_ext->data;
+      rom_size = info_ext->size;
+   }
+
+   /* If frontend does not support persistent
+    * content data, must create a copy */
+   if (!rom_data)
+   {
+      if (!info)
+         return false;
+
+      rom_size = info->size;
+      rom_buf  = (uint8*)malloc(rom_size);
+
+      if (!rom_buf)
+         return false;
+
+      memcpy(rom_buf, (const uint8*)info->data, rom_size);
+      rom_data = (const uint8*)rom_buf;
+   }
+
    /* Hack. S9x cannot do stuff from RAM. <_< */
-   memstream_set_buffer((uint8_t*)game->data, game->size);
+   memstream_set_buffer((uint8_t*)rom_data, rom_size);
 
    loaded = LoadROM("");
    if (!loaded)
@@ -618,7 +652,14 @@ bool retro_load_game_special(
 { return false; }
 
 void retro_unload_game (void)
-{ }
+{
+   if (rom_buf)
+      free(rom_buf);
+
+   rom_buf               = NULL;
+   rom_data              = NULL;
+   rom_size              = 0;
+}
 
 unsigned retro_get_region (void)
 { 
