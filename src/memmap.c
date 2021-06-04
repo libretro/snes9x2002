@@ -349,7 +349,7 @@ again:
    Memory.CalculatedSize = (TotalFileSize / 0x2000) * 0x2000;
    memset (Memory.ROM + Memory.CalculatedSize, 0, MAX_ROM_SIZE - Memory.CalculatedSize);
 
-   // Check for cherryroms.com DAIKAIJYUMONOGATARI2
+   // Check for altered DAIKAIJYUMONOGATARI2
 
    if (Memory.CalculatedSize == 0x500000 &&
          strncmp ((const char *)&Memory.ROM [0x40ffc0], "DAIKAIJYUMONOGATARI2", 20) == 0 &&
