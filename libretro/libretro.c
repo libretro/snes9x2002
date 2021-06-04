@@ -591,8 +591,7 @@ bool retro_load_game(const struct retro_game_info *game)
    /* Hack. S9x cannot do stuff from RAM. <_< */
    memstream_set_buffer((uint8_t*)game->data, game->size);
 
-   loaded = LoadROM("");
-   if (!loaded)
+   if (!(loaded = LoadROM()))
       return false;
 
    //S9xGraphicsInit();
@@ -691,7 +690,9 @@ const char *S9xStringInput(const char *message) { return NULL; }
 //bool S9xPollAxis(uint32 id, int16 *value) { return false; }
 
 void S9xExit() { exit(1); }
-bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size) {
+
+bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
+{
 	//so.sixteen_bit = 1;
 	so.stereo = TRUE;
 	//so.buffer_size = 534;
@@ -701,71 +702,4 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size) {
 
 const char *emptyString = "";
 const char *S9xBasename (const char *filename) { return emptyString; }
-
-void S9xMessage(int a, int b, const char* msg)
-{
-}
-
-/* S9x weirdness. */
-#ifndef _WIN32
-void _splitpath (const char * path, char * drive, char * dir, char * fname, char * ext)
-{
-	const char *slash, *dot;
-
-	slash = strrchr(path, SLASH_CHAR);
-	dot   = strrchr(path, '.');
-
-	if (dot && slash && dot < slash)
-		dot = NULL;
-
-	if (!slash)
-	{
-		*dir = 0;
-
-		strcpy(fname, path);
-
-		if (dot)
-		{
-			fname[dot - path] = 0;
-			strcpy(ext, dot + 1);
-		}
-		else
-			*ext = 0;
-	}
-	else
-	{
-		strcpy(dir, path);
-		dir[slash - path] = 0;
-
-		strcpy(fname, slash + 1);
-
-		if (dot)
-		{
-			fname[dot - slash - 1] = 0;
-			strcpy(ext, dot + 1);
-		}
-		else
-			*ext = 0;
-	}
-}
-
-void _makepath (char *path, const char * a, const char *dir, const char *fname, const char *ext)
-{
-   if (dir && *dir)
-   {
-      strcpy(path, dir);
-      strcat(path, SLASH_STR);
-   }
-   else
-      *path = 0;
-
-   strcat(path, fname);
-
-   if (ext && *ext)
-   {
-      strcat(path, ".");
-      strcat(path, ext);
-   }
-}
-#endif
-
+void S9xMessage(int a, int b, const char* msg) { }

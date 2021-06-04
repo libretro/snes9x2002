@@ -80,40 +80,40 @@
 #define MEMMAP_MASK (MEMMAP_BLOCK_SIZE - 1)
 #define MEMMAP_MAX_SDD1_LOGGED_ENTRIES (0x10000 / 8)
 
-bool8_32 LoadROM(const char*);
+bool8_32 LoadROM(void);
 void  InitROM(bool8_32);
-bool8_32 MemoryInit();
-void  MemoryDeinit();
-void  FreeSDD1Data();
+bool8_32 MemoryInit(void);
+void  MemoryDeinit(void);
+void  FreeSDD1Data(void);
 
-void WriteProtectROM();
-void FixROMSpeed();
-void MapRAM();
-void MapExtraRAM();
+void WriteProtectROM(void);
+void FixROMSpeed(void);
+void MapRAM(void);
+void MapExtraRAM(void);
 
-void LoROMMap();
-void LoROM24MBSMap();
-void SRAM512KLoROMMap();
-void SRAM1024KLoROMMap();
-void SufamiTurboLoROMMap();
-void HiROMMap();
-void SuperFXROMMap();
+void LoROMMap(void);
+void LoROM24MBSMap(void);
+void SRAM512KLoROMMap(void);
+void SRAM1024KLoROMMap(void);
+void SufamiTurboLoROMMap(void);
+void HiROMMap(void);
+void SuperFXROMMap(void);
 void TalesROMMap(bool8_32);
-void AlphaROMMap();
-void SA1ROMMap();
-void BSHiROMMap();
-void ApplyROMFixes();
+void AlphaROMMap(void);
+void SA1ROMMap(void);
+void BSHiROMMap(void);
+void ApplyROMFixes(void);
 
-const char* TVStandard();
-const char* Speed();
-const char* StaticRAMSize();
-const char* MapType();
-const char* MapMode();
-const char* KartContents();
-const char* Size();
-const char* Headers();
-const char* ROMID();
-const char* CompanyID();
+const char* TVStandard(void);
+const char* Speed(void);
+const char* StaticRAMSize(void);
+const char* MapType(void);
+const char* MapMode(void);
+const char* KartContents(void);
+const char* Size(void);
+const char* Headers(void);
+const char* ROMID(void);
+const char* CompanyID(void);
 uint32 caCRC32(uint8* array, uint32 size);
 
 enum
@@ -157,14 +157,13 @@ typedef struct
    uint8*  SDD1Index;
    uint8*  SDD1Data;
    uint32 SDD1Entries;
-   char ROMFilename [_MAX_PATH];
 } CMemory;
 
 extern CMemory Memory;
 extern uint8* SRAM;
 extern uint8* ROM;
 extern uint8* RegRAM;
-void S9xDeinterleaveMode2();
+void S9xDeinterleaveMode2(void);
 
 #ifdef NO_INLINE_SET_GET
 uint8 S9xGetByte(uint32 Address, struct SCPUState*);

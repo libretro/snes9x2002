@@ -289,20 +289,15 @@ void FreeSDD1Data ()
 /* LoadROM()                                                                                  */
 /* This function loads a Snes-Backup image                                                    */
 /**********************************************************************************************/
-bool8_32 LoadROM (const char *filename)
+bool8_32 LoadROM (void)
 {
    int hi_score, lo_score;
    int32 TotalFileSize = 0;
    unsigned long FileSize = 0;
    int retry_count = 0;
    STREAM ROMFile;
-   bool8_32 Interleaved = FALSE;
+   bool8_32 Interleaved = FALSE; 
    bool8_32 Tales = FALSE;
-   char dir [_MAX_PATH + 1];
-   char drive [_MAX_DRIVE + 1];
-   char name [_MAX_PATH + 1];
-   char ext [_MAX_PATH + 1];
-   char fname [_MAX_PATH + 1];
    int i;
 
    memset (&SNESGameFixes, 0, sizeof(SNESGameFixes));
@@ -313,87 +308,29 @@ bool8_32 LoadROM (const char *filename)
 
    Memory.CalculatedSize = 0;
 again:
-   _splitpath (filename, drive, dir, name, ext);
-   _makepath (fname, drive, dir, name, ext);
-
-#ifdef __WIN32__
-   memmove (&ext [0], &ext[1], 4);
-#endif
-
-
    {
+      int calc_size;
       uint8 *ptr;
-      bool8_32 more = FALSE;
 
-      if ((ROMFile = OPEN_STREAM (fname, "rb")) == NULL)
+      if ((ROMFile = OPEN_STREAM ("rb")) == NULL)
          return (FALSE);
 
-      strcpy (Memory.ROMFilename, fname);
-
       Memory.HeaderCount = 0;
-      ptr  = Memory.ROM;
-      more = FALSE;
+      ptr      = Memory.ROM;
 
-      do
+      FileSize = READ_STREAM (ptr, MAX_ROM_SIZE + 0x200 - (ptr - Memory.ROM), ROMFile);
+      CLOSE_STREAM (ROMFile);
+      calc_size = (FileSize / 0x2000) * 0x2000;
+
+      if ((FileSize - calc_size == 512 && !Settings.ForceNoHeader) ||
+            Settings.ForceHeader)
       {
-         int len;
-         int calc_size;
-
-         FileSize = READ_STREAM (ptr, MAX_ROM_SIZE + 0x200 - (ptr - Memory.ROM), ROMFile);
-         CLOSE_STREAM (ROMFile);
-         calc_size = (FileSize / 0x2000) * 0x2000;
-
-         if ((FileSize - calc_size == 512 && !Settings.ForceNoHeader) ||
-               Settings.ForceHeader)
-         {
-            memmove (ptr, ptr + 512, calc_size);
-            Memory.HeaderCount++;
-            FileSize -= 512;
-         }
-         ptr += FileSize;
-         TotalFileSize += FileSize;
-
-         if (ptr - Memory.ROM < MAX_ROM_SIZE + 0x200 &&
-               (isdigit (ext [0]) && ext [1] == 0 && ext [0] < '9'))
-         {
-            more = TRUE;
-            ext [0]++;
-#ifdef __WIN32__
-            memmove (&ext [1], &ext [0], 4);
-            ext [0] = '.';
-#endif
-            _makepath (fname, drive, dir, name, ext);
-         }
-         else
-            if (ptr - Memory.ROM < MAX_ROM_SIZE + 0x200 &&
-                  (((len = strlen (name)) == 7 || len == 8) &&
-                   strncasecmp (name, "sf", 2) == 0 &&
-                   isdigit (name [2]) && isdigit (name [3]) && isdigit (name [4]) &&
-                   isdigit (name [5]) && isalpha (name [len - 1])))
-            {
-               more = TRUE;
-               name [len - 1]++;
-#ifdef __WIN32__
-               memmove (&ext [1], &ext [0], 4);
-               ext [0] = '.';
-#endif
-               _makepath (fname, drive, dir, name, ext);
-            }
-            else
-               more = FALSE;
-      } while (more && (ROMFile = OPEN_STREAM (fname, "rb")) != NULL);
-   }
-
-   if (Memory.HeaderCount == 0)
-      S9xMessage (S9X_INFO, S9X_HEADERS_INFO, "No ROM file header found.");
-   else
-   {
-      if (Memory.HeaderCount == 1)
-         S9xMessage (S9X_INFO, S9X_HEADERS_INFO,
-               "Found ROM file header (and ignored it).");
-      else
-         S9xMessage (S9X_INFO, S9X_HEADERS_INFO,
-               "Found multiple ROM file headers (and ignored them).");
+         memmove (ptr, ptr + 512, calc_size);
+         Memory.HeaderCount++;
+         FileSize -= 512;
+      }
+      ptr           += FileSize;
+      TotalFileSize += FileSize;
    }
 
    hi_score = ScoreHiROM (FALSE);

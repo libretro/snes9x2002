@@ -53,7 +53,7 @@
 #define STREAM memstream_t *
 #define READ_STREAM(p, l, s)     memstream_read(s, p, l)
 #define WRITE_STREAM(p, l, s)    memstream_write(s, p, l)
-#define OPEN_STREAM(f, m)        memstream_open(0)
+#define OPEN_STREAM(m)           memstream_open(0)
 #define CLOSE_STREAM(s)          memstream_close(s)
 #define SEEK_STREAM(p,r,s)       memstream_seek(p,r,s)
 

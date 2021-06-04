@@ -408,11 +408,8 @@ static FreezeData SnapSA1 [] =
 };
 #endif
 
-//static char ROMFilename [_MAX_PATH];
-//static char SnapshotFilename [_MAX_PATH];
-
-static void Freeze();
-static int Unfreeze();
+static void Freeze(void);
+static int Unfreeze(void);
 void FreezeStruct(char* name, void* base, FreezeData* fields,
                   int num_fields);
 void FreezeBlock(char* name, uint8* block, int size);
@@ -488,8 +485,7 @@ static void Freeze()
    }
    sprintf(buffer, "%s:%04d\n", SNAPSHOT_MAGIC, SNAPSHOT_VERSION);
    statef_write(buffer, strlen(buffer));
-   sprintf(buffer, "NAM:%06d:%s%c", strlen(Memory.ROMFilename) + 1,
-           Memory.ROMFilename, 0);
+   strcpy(buffer, "NAM:1:0");
    statef_write(buffer, strlen(buffer) + 1);
    FreezeStruct("CPU", &CPU, SnapCPU, COUNT(SnapCPU));
    FreezeStruct("REG", &Registers, SnapRegisters, COUNT(SnapRegisters));
@@ -554,13 +550,6 @@ static int Unfreeze(void)
 
    if ((result = UnfreezeBlock("NAM", (uint8*) rom_filename, 512)) != SUCCESS)
       return (result);
-
-   if (strcasecmp(rom_filename, Memory.ROMFilename) != 0 &&
-         strcasecmp(S9xBasename(rom_filename), S9xBasename(Memory.ROMFilename)) != 0)
-   {
-      S9xMessage(S9X_WARNING, S9X_FREEZE_ROM_NAME,
-                 "Current loaded ROM image doesn't match that required by freeze-game file.");
-   }
 
    old_flags     = CPU.Flags;
 #ifdef USE_SA1
