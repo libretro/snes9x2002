@@ -82,24 +82,23 @@ void linearFree(void* mem);
 #define BTN_POINTER (RETRO_DEVICE_ID_JOYPAD_R + 1)
 #define BTN_POINTER2 (BTN_POINTER + 1)
 
-static retro_video_refresh_t video_cb = NULL;
-static retro_input_poll_t poll_cb = NULL;
-static retro_input_state_t input_cb = NULL;
+static retro_video_refresh_t video_cb            = NULL;
+static retro_input_poll_t poll_cb                = NULL;
+static retro_input_state_t input_cb              = NULL;
 static retro_audio_sample_batch_t audio_batch_cb = NULL;
-static retro_environment_t environ_cb = NULL;
+static retro_environment_t environ_cb            = NULL;
 
-static bool libretro_supports_bitmasks = false;
+static bool libretro_supports_bitmasks           = false;
 
 static uint32 joys[5];
 
-bool8 ROMAPUEnabled = 0;
-char currentWorkingDir[MAX_PATH+1] = {0};
-bool overclock_cycles = false;
+bool8 ROMAPUEnabled                              = 0;
+bool overclock_cycles                            = false;
 int one_c, slow_one_c, two_c;
 
-memstream_t *s_stream;
+static memstream_t *s_stream                     = NULL;
 
-int s_open(const char *fname, const char *mode)
+static int s_open(const char *fname, const char *mode)
 {
    unsigned writing = 0;
 
@@ -111,49 +110,30 @@ int s_open(const char *fname, const char *mode)
    return TRUE;
 }
 
-int s_read(void *p, int l)
-{
-   return memstream_read(s_stream, p, l);
-}
-
-int s_write(void *p, int l)
-{
-   return memstream_write(s_stream, p, l);
-}
-
-void s_close(void)
-{
-   memstream_close(s_stream);
-}
+static int s_read(void *p, int l) { return memstream_read(s_stream, p, l); }
+static int s_write(void *p, int l) { return memstream_write(s_stream, p, l); }
+static void s_close(void) { memstream_close(s_stream); s_stream = NULL; }
 
 int  (*statef_open)(const char *fname, const char *mode) = s_open;
 int  (*statef_read)(void *p, int l) = s_read;
 int  (*statef_write)(void *p, int l) = s_write;
 void (*statef_close)(void) = s_close;
 
-
-
 void *retro_get_memory_data(unsigned type)
 {
-   uint8_t* data;
-
    switch(type)
    {
       case RETRO_MEMORY_SAVE_RAM:
-         data = Memory.SRAM;
-         break;
+         return Memory.SRAM;
       case RETRO_MEMORY_SYSTEM_RAM:
-         data = Memory.RAM;
-         break;
+         return Memory.RAM;
       case RETRO_MEMORY_VIDEO_RAM:
-         data = Memory.VRAM;
-         break;
+         return Memory.VRAM;
       default:
-         data = NULL;
          break;
    }
 
-   return data;
+   return NULL;
 }
 
 size_t retro_get_memory_size(unsigned type)
@@ -232,9 +212,7 @@ static int16 audio_buf[0x10000];
 static unsigned avail;
 static float samplerate = 32040.5f;
 
-void S9xGenerateSound(void)
-{
-}
+void S9xGenerateSound(void) { }
 
 uint32 S9xReadJoypad(int which1)
 {
@@ -375,7 +353,7 @@ void retro_init (void)
       libretro_supports_bitmasks = true;
 }
 
-/* libsnes uses relative values for analogue devices. 
+/* libretro uses relative values for analogue devices. 
    S9x seems to use absolute values, but do convert these into relative values in the core. (Why?!)
    Hack around it. :) */
 
@@ -504,9 +482,7 @@ void retro_run (void)
 
 size_t retro_serialize_size (void)
 {
-   uint8_t *tmpbuf;
-
-   tmpbuf = (uint8_t*)malloc(5000000);
+   uint8_t *tmpbuf = (uint8_t*)malloc(5000000);
    memstream_set_buffer(tmpbuf, 5000000);
    S9xFreezeGame("");
    free(tmpbuf);
@@ -594,7 +570,9 @@ bool retro_load_game(const struct retro_game_info *game)
    if (!(loaded = LoadROM()))
       return false;
 
-   //S9xGraphicsInit();
+#if 0
+   S9xGraphicsInit();
+#endif
    S9xReset();
    CPU.APU_APUExecuting = Settings.APUEnabled = 1;
    Settings.SixteenBitSound = true;
@@ -616,8 +594,7 @@ bool retro_load_game_special(
 )
 { return false; }
 
-void retro_unload_game (void)
-{ }
+void retro_unload_game (void) { }
 
 unsigned retro_get_region (void)
 { 
@@ -664,22 +641,15 @@ bool8 S9xDeinitUpdate(int width, int height, bool8 sixteen_bit)
 
 
 /* Dummy functions that should probably be implemented correctly later. */
-const char* S9xGetFilename(const char* in) { return in; }
-const char* S9xGetFilenameInc(const char* in) { return in; }
-const char *S9xGetHomeDirectory() { return NULL; }
-const char *S9xGetSnapshotDirectory() { return NULL; }
-const char *S9xGetROMDirectory() { return NULL; }
-bool8 S9xInitUpdate() { return TRUE; }
+bool8 S9xInitUpdate(void) { return TRUE; }
 bool8 S9xContinueUpdate(int width, int height) { return TRUE; }
-void S9xSetPalette() {}
-void S9xLoadSDD1Data() {}
+void S9xSetPalette(void) {}
+void S9xLoadSDD1Data(void) {}
 bool8 S9xReadMousePosition (int which1_0_to_1, int* x, int* y, uint32* buttons) { return FALSE; }
 bool8 S9xReadSuperScopePosition (int* x, int* y, uint32* buttons) { return FALSE; }
-bool JustifierOffscreen() { return false; }
+bool JustifierOffscreen(void) { return false; }
 
 void S9xToggleSoundChannel (int channel) {}
-
-const char *S9xStringInput(const char *message) { return NULL; }
 
 //void Write16(uint16 v, uint8*& ptr) {}
 //uint16 Read16(const uint8*& ptr) { return 0; }
@@ -689,7 +659,7 @@ const char *S9xStringInput(const char *message) { return NULL; }
 //bool S9xPollPointer(uint32 id, int16 *x, int16 *y) { return false; }
 //bool S9xPollAxis(uint32 id, int16 *value) { return false; }
 
-void S9xExit() { exit(1); }
+void S9xExit(void) { exit(1); }
 
 bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
 {
@@ -700,6 +670,4 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
 	return TRUE;
 }
 
-const char *emptyString = "";
-const char *S9xBasename (const char *filename) { return emptyString; }
 void S9xMessage(int a, int b, const char* msg) { }
