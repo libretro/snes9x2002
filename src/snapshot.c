@@ -485,7 +485,7 @@ static void Freeze()
    }
    sprintf(buffer, "%s:%04d\n", SNAPSHOT_MAGIC, SNAPSHOT_VERSION);
    statef_write(buffer, strlen(buffer));
-   strcpy(buffer, "NAM:1:0");
+	strcpy(buffer, "NAM:000001:");
    statef_write(buffer, strlen(buffer) + 1);
    FreezeStruct("CPU", &CPU, SnapCPU, COUNT(SnapCPU));
    FreezeStruct("REG", &Registers, SnapRegisters, COUNT(SnapRegisters));
