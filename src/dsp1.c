@@ -588,7 +588,7 @@ void DSP1SetByte(uint8 byte, uint16 address)
                   Op11m = (int16)(DSP1.parameters [0] | (DSP1.parameters[1] << 8));
                   Op11Zr = (int16)(DSP1.parameters [2] | (DSP1.parameters[3] << 8));
                   Op11Yr = (int16)(DSP1.parameters [4] | (DSP1.parameters[5] << 8));
-                  Op11Xr = (int16)(DSP1.parameters [7] | (DSP1.parameters[7] << 8));
+                  Op11Xr = (int16)(DSP1.parameters [6] | (DSP1.parameters[7] << 8));
 
                   DSPOp11();
                   break;
