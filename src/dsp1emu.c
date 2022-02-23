@@ -255,11 +255,19 @@ void DSP1_Inverse(short Coefficient, short Exponent, short* iCoefficient, short*
       }
 
       // Step Three: Normalize
+#ifdef __GNUC__
+      {
+          const int shift = __builtin_clz(Coefficient) - (8 * sizeof(int) - 15);
+          Coefficient <<= shift;
+          Exponent -= shift;
+      }
+#else
       while (Coefficient < 0x4000)
       {
          Coefficient <<= 1;
          Exponent--;
       }
+#endif
 
       // Step Four: Special Case
       if (Coefficient == 0x4000)
@@ -395,8 +403,17 @@ short DSP1_Cos(short Angle)
 
 void DSP1_Normalize(short m, short* Coefficient, short* Exponent)
 {
-   short i = 0x4000;
    short e = 0;
+
+#ifdef __GNUC__
+   int n = m < 0 ? ~m : m;
+
+   if (n == 0)
+      e = 15;
+   else
+      e = __builtin_clz(n) - (8 * sizeof(int) - 15);
+#else
+   short i = 0x4000;
 
    if (m < 0)
       while ((m & i) && i)
@@ -410,6 +427,7 @@ void DSP1_Normalize(short m, short* Coefficient, short* Exponent)
          i >>= 1;
          e++;
       }
+#endif
 
    if (e > 0)
       *Coefficient = m * DSP1ROM[(0x21 + e) & 1023] << 1;
@@ -423,8 +441,17 @@ void DSP1_Normalizefloat(int Product, short* Coefficient, short* Exponent)
 {
    short n = Product & 0x7fff;
    short m = Product >> 15;
-   short i = 0x4000;
    short e = 0;
+
+#ifdef __GNUC__
+   short t = m < 0 ? ~m : m;
+
+   if (t == 0)
+      e = 15;
+   else
+      e = __builtin_clz(t) - (8 * sizeof(int) - 15);
+#else
+   short i = 0x4000;
 
    if (m < 0)
       while ((m & i) && i)
@@ -438,6 +465,7 @@ void DSP1_Normalizefloat(int Product, short* Coefficient, short* Exponent)
          i >>= 1;
          e++;
       }
+#endif
 
    if (e > 0)
    {
@@ -447,6 +475,14 @@ void DSP1_Normalizefloat(int Product, short* Coefficient, short* Exponent)
          *Coefficient += n * DSP1ROM[(0x0040 - e) & 1023] >> 15;
       else
       {
+#ifdef __GNUC__
+         t = m < 0 ? ~(n | 0x8000) : n;
+
+         if (t == 0)
+            e += 15;
+         else
+            e += __builtin_clz(t) - (8 * sizeof(int) - 15);
+#else
          i = 0x4000;
 
          if (m < 0)
@@ -461,6 +497,7 @@ void DSP1_Normalizefloat(int Product, short* Coefficient, short* Exponent)
                i >>= 1;
                e++;
             }
+#endif
 
          if (e > 15)
             *Coefficient = n * DSP1ROM[(0x0012 + e) & 1023] << 1;
