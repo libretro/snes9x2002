@@ -90,6 +90,7 @@
 *******************************************************************************/
 #include "fxemu.h"
 #include "fxinst.h"
+#include "memmap.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -245,28 +246,23 @@ static INLINE void fx_readRegisterSpace()
 {
    int i;
    uint8* p;
-   static uint32 avHeight[] = { 128, 160, 192, 256 };
-   static uint32 avMult[] = { 16, 32, 32, 64 };
+   static const uint32 avHeight[] = { 128, 160, 192, 256 };
+   static const uint32 avMult[] = { 16, 32, 32, 64 };
 
    GSU.vErrorCode = 0;
 
    /* Update R0-R15 */
    p = GSU.pvRegisters;
-   for (i = 0; i < 16; i++)
-   {
-      GSU.avReg[i] = *p++;
-      GSU.avReg[i] += ((uint32)(*p++)) << 8;
-   }
+   for (i = 0; i < 16; i++, p += 2)
+      GSU.avReg[i] = (uint32)READ_WORD(p);
 
    /* Update other registers */
    p = GSU.pvRegisters;
-   GSU.vStatusReg = (uint32)p[GSU_SFR];
-   GSU.vStatusReg |= ((uint32)p[GSU_SFR + 1]) << 8;
+   GSU.vStatusReg = (uint32)READ_WORD(&p[GSU_SFR]);
    GSU.vPrgBankReg = (uint32)p[GSU_PBR];
    GSU.vRomBankReg = (uint32)p[GSU_ROMBR];
    GSU.vRamBankReg = ((uint32)p[GSU_RAMBR]) & (FX_RAM_BANKS - 1);
-   GSU.vCacheBaseReg = (uint32)p[GSU_CBR];
-   GSU.vCacheBaseReg |= ((uint32)p[GSU_CBR + 1]) << 8;
+   GSU.vCacheBaseReg = (uint32)READ_WORD(&p[GSU_CBR]);
 
    /* Update status register variables */
    GSU.vZero = !(GSU.vStatusReg & FLG_Z);
@@ -459,11 +455,8 @@ static INLINE void fx_writeRegisterSpace()
    uint8* p;
 
    p = GSU.pvRegisters;
-   for (i = 0; i < 16; i++)
-   {
-      *p++ = (uint8)GSU.avReg[i];
-      *p++ = (uint8)(GSU.avReg[i] >> 8);
-   }
+   for (i = 0; i < 16; i++, p += 2)
+      WRITE_WORD(p, GSU.avReg[i]);
 
    /* Update status register */
    if (USEX16(GSU.vZero) == 0) SF(Z);
@@ -476,13 +469,11 @@ static INLINE void fx_writeRegisterSpace()
    else CF(CY);
 
    p = GSU.pvRegisters;
-   p[GSU_SFR] = (uint8)GSU.vStatusReg;
-   p[GSU_SFR + 1] = (uint8)(GSU.vStatusReg >> 8);
+   WRITE_WORD(&p[GSU_SFR], GSU.vStatusReg);
    p[GSU_PBR] = (uint8)GSU.vPrgBankReg;
    p[GSU_ROMBR] = (uint8)GSU.vRomBankReg;
    p[GSU_RAMBR] = (uint8)GSU.vRamBankReg;
-   p[GSU_CBR] = (uint8)GSU.vCacheBaseReg;
-   p[GSU_CBR + 1] = (uint8)(GSU.vCacheBaseReg >> 8);
+   WRITE_WORD(&p[GSU_CBR], GSU.vCacheBaseReg);
 
    fx_restoreCache();
 }
