@@ -122,7 +122,6 @@ void S9xUpdateHTimer()
 void S9xFixColourBrightness()
 {
    IPPU.XB = mul_brightness [PPU.Brightness];
-   if (Settings.SixteenBit)
    {
       unsigned int i;
       for (i = 0; i < 256; i++)

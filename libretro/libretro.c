@@ -763,7 +763,7 @@ unsigned retro_get_region (void)
    return Settings.PAL ? RETRO_REGION_PAL : RETRO_REGION_NTSC; 
 }
 
-bool8 S9xDeinitUpdate(int width, int height, bool8 sixteen_bit)
+bool8 S9xDeinitUpdate(int width, int height)
 {
 	int y;
 
@@ -803,7 +803,6 @@ bool8 S9xDeinitUpdate(int width, int height, bool8 sixteen_bit)
 
 
 /* Dummy functions that should probably be implemented correctly later. */
-bool8 S9xInitUpdate(void) { return TRUE; }
 bool8 S9xContinueUpdate(int width, int height) { return TRUE; }
 void S9xSetPalette(void) {}
 void S9xLoadSDD1Data(void) {}
