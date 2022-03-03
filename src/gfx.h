@@ -313,8 +313,7 @@ extern SGFX GFX;
 
 bool8_32 S9xGraphicsInit();
 void S9xGraphicsDeinit();
-bool8_32 S9xInitUpdate(void);
-bool8_32 S9xDeinitUpdate(int Width, int Height, bool8_32 sixteen_bit);
+bool8_32 S9xDeinitUpdate(int Width, int Height);
 void S9xSetPalette();
 void S9xSyncSpeed();
 
