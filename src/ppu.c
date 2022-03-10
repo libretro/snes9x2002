@@ -257,8 +257,13 @@ void S9xSetCPU(uint8 byte, uint16 Address)
          // Multiplicand
          uint32 res = Memory.FillRAM[0x4202] * byte;
 
+#if defined FAST_LSB_WORD_ACCESS || defined FAST_ALIGNED_LSB_WORD_ACCESS
+         // assume malloc'd memory is 2-byte aligned
+         *((uint16 *) &Memory.FillRAM[0x4216]) = res;
+#else
          Memory.FillRAM[0x4216] = (uint8) res;
          Memory.FillRAM[0x4217] = (uint8)(res >> 8);
+#endif
          break;
       }
       case 0x4204 :
@@ -268,15 +273,26 @@ void S9xSetCPU(uint8 byte, uint16 Address)
       case 0x4206 :
       {
          // Divisor
+#if defined FAST_LSB_WORD_ACCESS || defined FAST_ALIGNED_LSB_WORD_ACCESS
+         // assume malloc'd memory is 2-byte aligned
+         uint16 a = *((uint16 *) &Memory.FillRAM[0x4204]);
+#else
          uint16 a =
             Memory.FillRAM[0x4204] + (Memory.FillRAM[0x4205] << 8);
+#endif
          uint16 div = byte ? a / byte : 0xffff;
          uint16 rem = byte ? a % byte : a;
 
+#if defined FAST_LSB_WORD_ACCESS || defined FAST_ALIGNED_LSB_WORD_ACCESS
+         // assume malloc'd memory is 2-byte aligned
+         *((uint16 *) &Memory.FillRAM[0x4214]) = div;
+         *((uint16 *) &Memory.FillRAM[0x4216]) = rem;
+#else
          Memory.FillRAM[0x4214] = (uint8) div;
          Memory.FillRAM[0x4215] = div >> 8;
          Memory.FillRAM[0x4216] = (uint8) rem;
          Memory.FillRAM[0x4217] = rem >> 8;
+#endif
          break;
       }
       case 0x4207 :

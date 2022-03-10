@@ -255,8 +255,8 @@ else ifeq ($(platform), miyoo)
    ASM_CPU = 0
    ASM_SPC700 = 0
    SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
-   FLAGS += -fomit-frame-pointer -ffast-math -march=armv5te -mtune=arm926ej-s
-   FLAGS += -fno-unroll-loops
+   CFLAGS += -fomit-frame-pointer -ffast-math -fno-unroll-loops -flto -mcpu=arm926ej-s
+   CFLAGS += -DFAST_ALIGNED_LSB_WORD_ACCESS
 
 # Windows MSVC 2010 x64
 else ifeq ($(platform), windows_msvc2010_x64)
