@@ -96,10 +96,22 @@ bool8 ROMAPUEnabled                              = 0;
 bool overclock_cycles                            = false;
 int one_c, slow_one_c, two_c;
 
-static unsigned frameskip_type                   = 0;
+typedef enum
+{
+   FRAMESKIP_NONE = 0,
+   FRAMESKIP_AUTO,
+   FRAMESKIP_AUTO_THRESHOLD,
+   FRAMESKIP_FIXED_INTERVAL
+} frameskip_type_t;
+
+/* Maximum number of consecutive frames that
+ * can be skipped */
+#define FRAMESKIP_MAX 30
+
+static frameskip_type_t frameskip_type           = FRAMESKIP_NONE;
 static unsigned frameskip_threshold              = 0;
-static uint16_t frameskip_counter                = 0;
 static unsigned frameskip_interval               = 0;
+static uint16_t frameskip_counter                = 0;
 
 static bool retro_audio_buff_active              = false;
 static unsigned retro_audio_buff_occupancy       = 0;
@@ -230,20 +242,34 @@ static void retro_audio_buff_status_cb(
 
 static void retro_set_audio_buff_status_cb(void)
 {
-   if (frameskip_type > 0)
+   if (frameskip_type == FRAMESKIP_NONE)
    {
-      struct retro_audio_buffer_status_callback buf_status_cb;
+      environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
+      retro_audio_latency = 0;
+   }
+   else
+   {
+      bool calculate_audio_latency = true;
 
-      buf_status_cb.callback = retro_audio_buff_status_cb;
-      if (!environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK,
-            &buf_status_cb))
-      {
-         retro_audio_buff_active    = false;
-         retro_audio_buff_occupancy = 0;
-         retro_audio_buff_underrun  = false;
-         retro_audio_latency        = 0;
-      }
+      if (frameskip_type == FRAMESKIP_FIXED_INTERVAL)
+         environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
       else
+      {
+         struct retro_audio_buffer_status_callback buf_status_cb;
+         buf_status_cb.callback = retro_audio_buff_status_cb;
+
+         if (!environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK,
+               &buf_status_cb))
+         {
+            retro_audio_buff_active    = false;
+            retro_audio_buff_occupancy = 0;
+            retro_audio_buff_underrun  = false;
+            retro_audio_latency        = 0;
+            calculate_audio_latency    = false;
+         }
+      }
+
+      if (calculate_audio_latency)
       {
          /* Frameskip is enabled - increase frontend
           * audio latency to minimise potential
@@ -257,13 +283,9 @@ static void retro_set_audio_buff_status_cb(void)
          retro_audio_latency = (retro_audio_latency + 0x1F) & ~0x1F;
       }
    }
-   else
-   {
-      environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
-      retro_audio_latency = 0;
-   }
 
    update_audio_latency = true;
+   frameskip_counter    = 0;
 }
 
 #define VIDEO_REFRESH_RATE_PAL  (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE * SNES_MAX_PAL_VCOUNTER))
@@ -434,7 +456,7 @@ void retro_init (void)
 {
    static const struct retro_variable vars[] =
    {
-      { "snes9x2002_frameskip", "Frameskip ; disabled|auto|threshold" },
+      { "snes9x2002_frameskip", "Frameskip ; disabled|auto|auto_threshold|fixed_interval" },
       { "snes9x2002_frameskip_threshold", "Frameskip Threshold (%); 30|40|50|60" },
       { "snes9x2002_frameskip_interval", "Frameskip Interval; 1|2|3|4|5|6|7|8|9" },
       { "snes9x2002_overclock_cycles", "Reduce Slowdown (Hack, Unsafe, Restart); disabled|compatible|max" },
@@ -483,8 +505,9 @@ void retro_deinit(void)
    audio_out_buffer_deinit();
 
    libretro_supports_bitmasks = false;
-   frameskip_type             = 0;
+   frameskip_type             = FRAMESKIP_NONE;
    frameskip_threshold        = 0;
+   frameskip_interval         = 0;
    frameskip_counter          = 0;
    retro_audio_buff_active    = false;
    retro_audio_buff_occupancy = 0;
@@ -534,20 +557,22 @@ static void report_buttons (void)
 static void check_variables(bool first_run)
 {
    struct retro_variable var;
-   bool prev_frameskip_type;
+   frameskip_type_t prev_frameskip_type;
 
    var.key = "snes9x2002_frameskip";
    var.value = NULL;
 
    prev_frameskip_type = frameskip_type;
-   frameskip_type      = 0;
+   frameskip_type      = FRAMESKIP_NONE;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "auto") == 0)
-         frameskip_type = 1;
-      if (strcmp(var.value, "threshold") == 0)
-         frameskip_type = 2;
+         frameskip_type = FRAMESKIP_AUTO;
+      else if (strcmp(var.value, "auto_threshold") == 0)
+         frameskip_type = FRAMESKIP_AUTO_THRESHOLD;
+      else if (strcmp(var.value, "fixed_interval") == 0)
+         frameskip_type = FRAMESKIP_FIXED_INTERVAL;
    }
 
    var.key = "snes9x2002_frameskip_threshold";
@@ -570,32 +595,30 @@ static void check_variables(bool first_run)
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "compatible") == 0)
       {
-        if (strcmp(var.value, "compatible") == 0)
-        {
-           overclock_cycles = true;
-           one_c = 4;
-           slow_one_c = 5;
-           two_c = 6;
-        }
-        else if (strcmp(var.value, "max") == 0)
-        {
-           overclock_cycles = true;
-           one_c = 3;
-           slow_one_c = 3;
-           two_c = 3;
-        }
-        else
-          overclock_cycles = false;
+         overclock_cycles = true;
+         one_c = 4;
+         slow_one_c = 5;
+         two_c = 6;
       }
+      else if (strcmp(var.value, "max") == 0)
+      {
+         overclock_cycles = true;
+         one_c = 3;
+         slow_one_c = 3;
+         two_c = 3;
+      }
+      else
+         overclock_cycles = false;
+   }
 
    /* Reinitialise frameskipping, if required */
    if (!first_run &&
        (frameskip_type != prev_frameskip_type))
       retro_set_audio_buff_status_cb();
 }
-
-//#define FRAME_SKIP
 
 void retro_run (void)
 {
@@ -604,45 +627,61 @@ void retro_run (void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
       check_variables(false);
 
-#ifdef FRAME_SKIP
-   IPPU.RenderThisFrame = !IPPU.RenderThisFrame;
-#else
    IPPU.RenderThisFrame = TRUE;
-#endif
 
    /* Check whether current frame should
     * be skipped */
-   if ((frameskip_type > 0) &&
-       retro_audio_buff_active &&
-       IPPU.RenderThisFrame)
+   if (frameskip_type != FRAMESKIP_NONE)
    {
-      bool skip_frame;
+      bool skip_frame = false;
 
       switch (frameskip_type)
       {
-         case 1: /* auto */
-            skip_frame = retro_audio_buff_underrun;
+         case FRAMESKIP_AUTO:
+            skip_frame = retro_audio_buff_active &&
+                  retro_audio_buff_underrun;
+
+            if (!skip_frame ||
+                (frameskip_counter >= FRAMESKIP_MAX))
+            {
+               skip_frame        = false;
+               frameskip_counter = 0;
+            }
+            else
+               frameskip_counter++;
+
             break;
-         case 2: /* threshold */
-            skip_frame = (retro_audio_buff_occupancy < frameskip_threshold);
+         case FRAMESKIP_AUTO_THRESHOLD:
+            skip_frame = retro_audio_buff_active &&
+                  (retro_audio_buff_occupancy < frameskip_threshold);
+
+            if (!skip_frame ||
+                (frameskip_counter >= FRAMESKIP_MAX))
+            {
+               skip_frame        = false;
+               frameskip_counter = 0;
+            }
+            else
+               frameskip_counter++;
+
+            break;
+         case FRAMESKIP_FIXED_INTERVAL:
+            if (frameskip_counter < frameskip_interval)
+            {
+               skip_frame = true;
+               frameskip_counter++;
+            }
+            else
+            {
+               skip_frame        = false;
+               frameskip_counter = 0;
+            }
             break;
          default:
-            skip_frame = false;
             break;
       }
 
-      if (skip_frame)
-      {
-         if(frameskip_counter < frameskip_interval)
-         {
-            IPPU.RenderThisFrame = false;
-            frameskip_counter++;
-         }
-         else
-            frameskip_counter = 0;
-      }
-      else
-         frameskip_counter = 0;
+      IPPU.RenderThisFrame = skip_frame ? FALSE : TRUE;
    }
 
    /* If frameskip/timing settings have changed,
@@ -663,10 +702,8 @@ void retro_run (void)
    S9xMainLoop();
 //   asm_S9xMainLoop();
 
-#ifdef FRAME_SKIP
-   if(!IPPU.RenderThisFrame)
+   if (!IPPU.RenderThisFrame)
       video_cb(NULL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX_PITCH);
-#endif
 
    audio_upload_samples();
 }
