@@ -130,7 +130,7 @@ static int ScoreLoROM (bool8_32 skip_header)
 	
 static char *Safe (const char *s)
 {
-   int i;
+   int i, len;
    static char *safe = NULL;
    static int safe_len = 0;
 
@@ -145,7 +145,7 @@ static char *Safe (const char *s)
       return NULL;
    }
 
-   int len = strlen (s);
+   len = strlen (s);
 
    if (!safe || len + 1 > safe_len)
    {
