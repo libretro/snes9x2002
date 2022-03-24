@@ -178,7 +178,7 @@ else ifeq ($(platform), ps2)
 	AR = mips64r5900el-ps2-elf-ar$(EXE_EXT)
 	STATIC_LINKING = 1
 	LOAD_FROM_MEMORY_TEST = 0
-   CFLAGS += -DPS2 -G0 -DFRAME_SKIP -fomit-frame-pointer -ffast-math
+   CFLAGS += -DPS2 -G0 -fomit-frame-pointer -ffast-math
 	STATIC_LINKING := 1
 
 else ifeq ($(platform), psp1)

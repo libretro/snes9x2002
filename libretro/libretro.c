@@ -58,6 +58,7 @@
 
 #include <libretro.h>
 #include <streams/memory_stream.h>
+#include "libretro_core_options.h"
 
 #include "../src/snes9x.h"
 #include "../src/memmap.h"
@@ -96,10 +97,22 @@ bool8 ROMAPUEnabled                              = 0;
 bool overclock_cycles                            = false;
 int one_c, slow_one_c, two_c;
 
-static unsigned frameskip_type                   = 0;
+typedef enum
+{
+   FRAMESKIP_NONE = 0,
+   FRAMESKIP_AUTO,
+   FRAMESKIP_AUTO_THRESHOLD,
+   FRAMESKIP_FIXED_INTERVAL
+} frameskip_type_t;
+
+/* Maximum number of consecutive frames that
+ * can be skipped */
+#define FRAMESKIP_MAX 30
+
+static frameskip_type_t frameskip_type           = FRAMESKIP_NONE;
 static unsigned frameskip_threshold              = 0;
-static uint16_t frameskip_counter                = 0;
 static unsigned frameskip_interval               = 0;
+static uint16_t frameskip_counter                = 0;
 
 static bool retro_audio_buff_active              = false;
 static unsigned retro_audio_buff_occupancy       = 0;
@@ -208,7 +221,12 @@ static bool use_overscan;
 
 void retro_set_environment(retro_environment_t cb)
 {
+   bool option_cats_supported = false;
+
    environ_cb = cb;
+
+   libretro_set_core_options(environ_cb,
+		   &option_cats_supported);
 }
 
 void retro_get_system_info(struct retro_system_info *info)
@@ -230,30 +248,39 @@ static void retro_audio_buff_status_cb(
 
 static void retro_set_audio_buff_status_cb(void)
 {
-   if (frameskip_type > 0)
+   if (frameskip_type == FRAMESKIP_NONE)
    {
-      struct retro_audio_buffer_status_callback buf_status_cb;
+      environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
+      retro_audio_latency = 0;
+   }
+   else
+   {
+      bool calculate_audio_latency = true;
 
-      buf_status_cb.callback = retro_audio_buff_status_cb;
-      if (!environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK,
-            &buf_status_cb))
-      {
-         retro_audio_buff_active    = false;
-         retro_audio_buff_occupancy = 0;
-         retro_audio_buff_underrun  = false;
-         retro_audio_latency        = 0;
-      }
+      if (frameskip_type == FRAMESKIP_FIXED_INTERVAL)
+         environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
       else
+      {
+         struct retro_audio_buffer_status_callback buf_status_cb;
+         buf_status_cb.callback = retro_audio_buff_status_cb;
+
+         if (!environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK,
+               &buf_status_cb))
+         {
+            retro_audio_buff_active    = false;
+            retro_audio_buff_occupancy = 0;
+            retro_audio_buff_underrun  = false;
+            retro_audio_latency        = 0;
+            calculate_audio_latency    = false;
+         }
+      }
+
+      if (calculate_audio_latency)
       {
          /* Frameskip is enabled - increase frontend
           * audio latency to minimise potential
           * buffer underruns */
          uint32_t frame_time_usec = Settings.FrameTime;
-
-         if (Settings.ForceNTSC)
-            frame_time_usec = Settings.FrameTimeNTSC;
-         if (Settings.ForcePAL)
-            frame_time_usec = Settings.FrameTimePAL;
 
          /* Set latency to 6x current frame time... */
          retro_audio_latency = (unsigned)(6 * frame_time_usec / 1000);
@@ -262,18 +289,56 @@ static void retro_set_audio_buff_status_cb(void)
          retro_audio_latency = (retro_audio_latency + 0x1F) & ~0x1F;
       }
    }
-   else
-   {
-      environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
-      retro_audio_latency = 0;
-   }
 
    update_audio_latency = true;
+   frameskip_counter    = 0;
 }
 
-static int16 audio_buf[0x10000];
-static unsigned avail;
-static float samplerate = 32040.5f;
+#define VIDEO_REFRESH_RATE_PAL  (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE * SNES_MAX_PAL_VCOUNTER))
+#define VIDEO_REFRESH_RATE_NTSC (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE * SNES_MAX_NTSC_VCOUNTER))
+#define AUDIO_SAMPLE_RATE       32040
+
+static int16_t *audio_out_buffer       = NULL;
+static float audio_samples_per_frame   = 0.0f;
+static float audio_samples_accumulator = 0.0f;
+
+static void audio_out_buffer_init(void)
+{
+   float refresh_rate        = (float)((Settings.PAL) ?
+         VIDEO_REFRESH_RATE_PAL : VIDEO_REFRESH_RATE_NTSC);
+   float samples_per_frame   = (float)AUDIO_SAMPLE_RATE / refresh_rate;
+   size_t buffer_size        = ((size_t)samples_per_frame + 1) << 1;
+
+   audio_out_buffer          = (int16_t *)malloc(buffer_size * sizeof(int16_t));
+   audio_samples_per_frame   = samples_per_frame;
+   audio_samples_accumulator = 0.0f;
+}
+
+static void audio_out_buffer_deinit(void)
+{
+   if (audio_out_buffer)
+      free(audio_out_buffer);
+
+   audio_out_buffer          = NULL;
+   audio_samples_per_frame   = 0.0f;
+   audio_samples_accumulator = 0.0f;
+}
+
+static void audio_upload_samples(void)
+{
+   size_t available_frames    = (size_t)audio_samples_per_frame;
+   audio_samples_accumulator += audio_samples_per_frame -
+         (float)available_frames;
+
+   if (audio_samples_accumulator > 1.0f)
+   {
+      available_frames          += 1;
+      audio_samples_accumulator -= 1.0f;
+   }
+
+   S9xMixSamples(audio_out_buffer, available_frames << 1);
+   audio_batch_cb(audio_out_buffer, available_frames);
+}
 
 void S9xGenerateSound(void) { }
 
@@ -290,21 +355,16 @@ void retro_set_controller_port_device(unsigned in_port, unsigned device)
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   info->geometry.base_width = SNES_WIDTH;
-   info->geometry.base_height = SNES_HEIGHT;
-   info->geometry.max_width = 512;
-   info->geometry.max_height = 512;
-
-   if(PPU.ScreenHeight == SNES_HEIGHT_EXTENDED)
-      info->geometry.base_height = SNES_HEIGHT_EXTENDED;
-
-   if (!Settings.PAL)
-      info->timing.fps = 21477272.0 / 357366.0;
-   else
-      info->timing.fps = 21281370.0 / 425568.0;
-
-   info->timing.sample_rate = samplerate;
+   info->geometry.base_width   = SNES_WIDTH;
+   info->geometry.base_height  = (PPU.ScreenHeight == SNES_HEIGHT_EXTENDED) ?
+         SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+   info->geometry.max_width    = 512;
+   info->geometry.max_height   = 512;
    info->geometry.aspect_ratio = 4.0f / 3.0f;
+
+   info->timing.sample_rate   = AUDIO_SAMPLE_RATE;
+   info->timing.fps           = Settings.PAL ?
+         VIDEO_REFRESH_RATE_PAL : VIDEO_REFRESH_RATE_NTSC;
 }
 
 static void snes_init (void)
@@ -313,7 +373,7 @@ static void snes_init (void)
 
    memset(&Settings, 0, sizeof(Settings));
 	Settings.JoystickEnabled = FALSE;
-	Settings.SoundPlaybackRate = samplerate;
+	Settings.SoundPlaybackRate = AUDIO_SAMPLE_RATE;
 	Settings.Stereo = TRUE;
 	Settings.SoundBufferSize = 0;
 	Settings.CyclesPercentage = 100;
@@ -400,20 +460,10 @@ static void snes_init (void)
 
 void retro_init (void)
 {
-   static const struct retro_variable vars[] =
-   {
-      { "snes9x2002_frameskip", "Frameskip ; disabled|auto|threshold" },
-      { "snes9x2002_frameskip_threshold", "Frameskip Threshold (%); 30|40|50|60" },
-      { "snes9x2002_frameskip_interval", "Frameskip Interval; 1|2|3|4|5|6|7|8|9" },
-      { "snes9x2002_overclock_cycles", "Reduce Slowdown (Hack, Unsafe, Restart); disabled|compatible|max" },
-      { NULL, NULL },
-   };
-
    if (!environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &use_overscan))
 	   use_overscan = FALSE;
 
    snes_init();
-   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_INPUT_BITMASKS, NULL))
       libretro_supports_bitmasks = true;
@@ -448,9 +498,12 @@ void retro_deinit(void)
 
    GFX.SubZBuffer_buffer = NULL;
 
+   audio_out_buffer_deinit();
+
    libretro_supports_bitmasks = false;
-   frameskip_type             = 0;
+   frameskip_type             = FRAMESKIP_NONE;
    frameskip_threshold        = 0;
+   frameskip_interval         = 0;
    frameskip_counter          = 0;
    retro_audio_buff_active    = false;
    retro_audio_buff_occupancy = 0;
@@ -500,28 +553,28 @@ static void report_buttons (void)
 static void check_variables(bool first_run)
 {
    struct retro_variable var;
-   bool prev_force_ntsc;
-   bool prev_force_pal;
-   bool prev_frameskip_type;
+   frameskip_type_t prev_frameskip_type;
 
    var.key = "snes9x2002_frameskip";
    var.value = NULL;
 
    prev_frameskip_type = frameskip_type;
-   frameskip_type      = 0;
+   frameskip_type      = FRAMESKIP_NONE;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "auto") == 0)
-         frameskip_type = 1;
-      if (strcmp(var.value, "threshold") == 0)
-         frameskip_type = 2;
+         frameskip_type = FRAMESKIP_AUTO;
+      else if (strcmp(var.value, "auto_threshold") == 0)
+         frameskip_type = FRAMESKIP_AUTO_THRESHOLD;
+      else if (strcmp(var.value, "fixed_interval") == 0)
+         frameskip_type = FRAMESKIP_FIXED_INTERVAL;
    }
 
    var.key = "snes9x2002_frameskip_threshold";
    var.value = NULL;
 
-   frameskip_threshold = 30;
+   frameskip_threshold = 33;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
       frameskip_threshold = strtol(var.value, NULL, 10);
@@ -537,35 +590,31 @@ static void check_variables(bool first_run)
    var.key = "snes9x2002_overclock_cycles";
    var.value = NULL;
 
+   overclock_cycles = false;
+
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "compatible") == 0)
       {
-        if (strcmp(var.value, "compatible") == 0)
-        {
-           overclock_cycles = true;
-           one_c = 4;
-           slow_one_c = 5;
-           two_c = 6;
-        }
-        else if (strcmp(var.value, "max") == 0)
-        {
-           overclock_cycles = true;
-           one_c = 3;
-           slow_one_c = 3;
-           two_c = 3;
-        }
-        else
-          overclock_cycles = false;
+         overclock_cycles = true;
+         one_c = 4;
+         slow_one_c = 5;
+         two_c = 6;
       }
+      else if (strcmp(var.value, "max") == 0)
+      {
+         overclock_cycles = true;
+         one_c = 3;
+         slow_one_c = 3;
+         two_c = 3;
+      }
+   }
 
    /* Reinitialise frameskipping, if required */
    if (!first_run &&
-       ((frameskip_type     != prev_frameskip_type) ||
-        (Settings.ForceNTSC != prev_force_ntsc)     ||
-        (Settings.ForcePAL  != prev_force_pal)))
+       (frameskip_type != prev_frameskip_type))
       retro_set_audio_buff_status_cb();
 }
-
-//#define FRAME_SKIP
 
 void retro_run (void)
 {
@@ -574,45 +623,61 @@ void retro_run (void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
       check_variables(false);
 
-#ifdef FRAME_SKIP
-   IPPU.RenderThisFrame = !IPPU.RenderThisFrame;
-#else
    IPPU.RenderThisFrame = TRUE;
-#endif
 
    /* Check whether current frame should
     * be skipped */
-   if ((frameskip_type > 0) &&
-       retro_audio_buff_active &&
-       IPPU.RenderThisFrame)
+   if (frameskip_type != FRAMESKIP_NONE)
    {
-      bool skip_frame;
+      bool skip_frame = false;
 
       switch (frameskip_type)
       {
-         case 1: /* auto */
-            skip_frame = retro_audio_buff_underrun;
+         case FRAMESKIP_AUTO:
+            skip_frame = retro_audio_buff_active &&
+                  retro_audio_buff_underrun;
+
+            if (!skip_frame ||
+                (frameskip_counter >= FRAMESKIP_MAX))
+            {
+               skip_frame        = false;
+               frameskip_counter = 0;
+            }
+            else
+               frameskip_counter++;
+
             break;
-         case 2: /* threshold */
-            skip_frame = (retro_audio_buff_occupancy < frameskip_threshold);
+         case FRAMESKIP_AUTO_THRESHOLD:
+            skip_frame = retro_audio_buff_active &&
+                  (retro_audio_buff_occupancy < frameskip_threshold);
+
+            if (!skip_frame ||
+                (frameskip_counter >= FRAMESKIP_MAX))
+            {
+               skip_frame        = false;
+               frameskip_counter = 0;
+            }
+            else
+               frameskip_counter++;
+
+            break;
+         case FRAMESKIP_FIXED_INTERVAL:
+            if (frameskip_counter < frameskip_interval)
+            {
+               skip_frame = true;
+               frameskip_counter++;
+            }
+            else
+            {
+               skip_frame        = false;
+               frameskip_counter = 0;
+            }
             break;
          default:
-            skip_frame = false;
             break;
       }
 
-      if (skip_frame)
-      {
-         if(frameskip_counter < frameskip_interval)
-         {
-            IPPU.RenderThisFrame = false;
-            frameskip_counter++;
-         }
-         else
-            frameskip_counter = 0;
-      }
-      else
-         frameskip_counter = 0;
+      IPPU.RenderThisFrame = skip_frame ? FALSE : TRUE;
    }
 
    /* If frameskip/timing settings have changed,
@@ -632,13 +697,11 @@ void retro_run (void)
 
    S9xMainLoop();
 //   asm_S9xMainLoop();
-   S9xMixSamples(audio_buf, avail);
-   audio_batch_cb((int16_t *) audio_buf, avail >> 1);
 
-#ifdef FRAME_SKIP
-   if(!IPPU.RenderThisFrame)
+   if (!IPPU.RenderThisFrame)
       video_cb(NULL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX_PITCH);
-#endif
+
+   audio_upload_samples();
 }
 
 size_t retro_serialize_size (void)
@@ -715,6 +778,81 @@ void retro_cheat_set(unsigned index, bool enable, const char* in_code)
 #endif
 }
 
+static void set_input_descriptors(void)
+{
+   struct retro_input_descriptor desc[] =
+   {
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,   "D-Pad Left" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,     "D-Pad Up" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,   "D-Pad Down" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT,  "D-Pad Right" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,      "B" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,      "A" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,      "X" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,      "Y" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,      "L" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,      "R" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,  "Start" },
+
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,   "D-Pad Left" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,     "D-Pad Up" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,   "D-Pad Down" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT,  "D-Pad Right" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,      "B" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,      "A" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,      "X" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,      "Y" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,      "L" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,      "R" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,  "Start" },
+
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,   "D-Pad Left" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,     "D-Pad Up" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,   "D-Pad Down" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT,  "D-Pad Right" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,      "B" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,      "A" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,      "X" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,      "Y" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,      "L" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,      "R" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,  "Start" },
+
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,   "D-Pad Left" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,     "D-Pad Up" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,   "D-Pad Down" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT,  "D-Pad Right" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,      "B" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,      "A" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,      "X" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,      "Y" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,      "L" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,      "R" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,  "Start" },
+
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,   "D-Pad Left" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,     "D-Pad Up" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,   "D-Pad Down" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT,  "D-Pad Right" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,      "B" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,      "A" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,      "X" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,      "Y" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,      "L" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,      "R" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,  "Start" },
+
+      { 0 },
+   };
+
+   environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
+}
+
 bool retro_load_game(const struct retro_game_info *game)
 {
    bool8 loaded;
@@ -724,6 +862,8 @@ bool retro_load_game(const struct retro_game_info *game)
 
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
       return false;
+
+   set_input_descriptors();
 
    /* Hack. S9x cannot do stuff from RAM. <_< */
    memstream_set_buffer((uint8_t*)game->data, game->size);
@@ -738,14 +878,10 @@ bool retro_load_game(const struct retro_game_info *game)
    CPU.APU_APUExecuting = Settings.APUEnabled = 1;
    Settings.SixteenBitSound = true;
    so.stereo = Settings.Stereo;
-   so.playback_rate = Settings.SoundPlaybackRate;
-   S9xSetPlaybackRate(so.playback_rate);
+   S9xSetPlaybackRate(Settings.SoundPlaybackRate);
    S9xSetSoundMute(FALSE);
 
-   avail = (int) (samplerate / (Settings.PAL ? 50 : 60)) << 1;
-
-   memset(audio_buf, 0, sizeof(audio_buf));
-
+   audio_out_buffer_init();
    retro_set_audio_buff_status_cb();
    return true;
 }
@@ -821,14 +957,4 @@ void S9xToggleSoundChannel (int channel) {}
 //bool S9xPollAxis(uint32 id, int16 *value) { return false; }
 
 void S9xExit(void) { exit(1); }
-
-bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
-{
-	//so.sixteen_bit = 1;
-	so.stereo = TRUE;
-	//so.buffer_size = 534;
-	so.playback_rate = samplerate;
-	return TRUE;
-}
-
 void S9xMessage(int a, int b, const char* msg) { }
