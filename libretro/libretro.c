@@ -58,6 +58,7 @@
 
 #include <libretro.h>
 #include <streams/memory_stream.h>
+#include "libretro_core_options.h"
 
 #include "../src/snes9x.h"
 #include "../src/memmap.h"
@@ -220,7 +221,12 @@ static bool use_overscan;
 
 void retro_set_environment(retro_environment_t cb)
 {
+   bool option_cats_supported = false;
+
    environ_cb = cb;
+
+   libretro_set_core_options(environ_cb,
+		   &option_cats_supported);
 }
 
 void retro_get_system_info(struct retro_system_info *info)
@@ -454,20 +460,10 @@ static void snes_init (void)
 
 void retro_init (void)
 {
-   static const struct retro_variable vars[] =
-   {
-      { "snes9x2002_frameskip", "Frameskip ; disabled|auto|auto_threshold|fixed_interval" },
-      { "snes9x2002_frameskip_threshold", "Frameskip Threshold (%); 30|40|50|60" },
-      { "snes9x2002_frameskip_interval", "Frameskip Interval; 1|2|3|4|5|6|7|8|9" },
-      { "snes9x2002_overclock_cycles", "Reduce Slowdown (Hack, Unsafe, Restart); disabled|compatible|max" },
-      { NULL, NULL },
-   };
-
    if (!environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &use_overscan))
 	   use_overscan = FALSE;
 
    snes_init();
-   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_INPUT_BITMASKS, NULL))
       libretro_supports_bitmasks = true;
@@ -578,7 +574,7 @@ static void check_variables(bool first_run)
    var.key = "snes9x2002_frameskip_threshold";
    var.value = NULL;
 
-   frameskip_threshold = 30;
+   frameskip_threshold = 33;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
       frameskip_threshold = strtol(var.value, NULL, 10);
@@ -593,6 +589,8 @@ static void check_variables(bool first_run)
 
    var.key = "snes9x2002_overclock_cycles";
    var.value = NULL;
+
+   overclock_cycles = false;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -610,8 +608,6 @@ static void check_variables(bool first_run)
          slow_one_c = 3;
          two_c = 3;
       }
-      else
-         overclock_cycles = false;
    }
 
    /* Reinitialise frameskipping, if required */
