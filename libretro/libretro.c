@@ -250,11 +250,6 @@ static void retro_set_audio_buff_status_cb(void)
           * buffer underruns */
          uint32_t frame_time_usec = Settings.FrameTime;
 
-         if (Settings.ForceNTSC)
-            frame_time_usec = Settings.FrameTimeNTSC;
-         if (Settings.ForcePAL)
-            frame_time_usec = Settings.FrameTimePAL;
-
          /* Set latency to 6x current frame time... */
          retro_audio_latency = (unsigned)(6 * frame_time_usec / 1000);
 
@@ -271,9 +266,51 @@ static void retro_set_audio_buff_status_cb(void)
    update_audio_latency = true;
 }
 
-static int16 audio_buf[0x10000];
-static unsigned avail;
-static float samplerate = 32040.5f;
+#define VIDEO_REFRESH_RATE_PAL  (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE * SNES_MAX_PAL_VCOUNTER))
+#define VIDEO_REFRESH_RATE_NTSC (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE * SNES_MAX_NTSC_VCOUNTER))
+#define AUDIO_SAMPLE_RATE       32040
+
+static int16_t *audio_out_buffer       = NULL;
+static float audio_samples_per_frame   = 0.0f;
+static float audio_samples_accumulator = 0.0f;
+
+static void audio_out_buffer_init(void)
+{
+   float refresh_rate        = (float)((Settings.PAL) ?
+         VIDEO_REFRESH_RATE_PAL : VIDEO_REFRESH_RATE_NTSC);
+   float samples_per_frame   = (float)AUDIO_SAMPLE_RATE / refresh_rate;
+   size_t buffer_size        = ((size_t)samples_per_frame + 1) << 1;
+
+   audio_out_buffer          = (int16_t *)malloc(buffer_size * sizeof(int16_t));
+   audio_samples_per_frame   = samples_per_frame;
+   audio_samples_accumulator = 0.0f;
+}
+
+static void audio_out_buffer_deinit(void)
+{
+   if (audio_out_buffer)
+      free(audio_out_buffer);
+
+   audio_out_buffer          = NULL;
+   audio_samples_per_frame   = 0.0f;
+   audio_samples_accumulator = 0.0f;
+}
+
+static void audio_upload_samples(void)
+{
+   size_t available_frames    = (size_t)audio_samples_per_frame;
+   audio_samples_accumulator += audio_samples_per_frame -
+         (float)available_frames;
+
+   if (audio_samples_accumulator > 1.0f)
+   {
+      available_frames          += 1;
+      audio_samples_accumulator -= 1.0f;
+   }
+
+   S9xMixSamples(audio_out_buffer, available_frames << 1);
+   audio_batch_cb(audio_out_buffer, available_frames);
+}
 
 void S9xGenerateSound(void) { }
 
@@ -290,21 +327,16 @@ void retro_set_controller_port_device(unsigned in_port, unsigned device)
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   info->geometry.base_width = SNES_WIDTH;
-   info->geometry.base_height = SNES_HEIGHT;
-   info->geometry.max_width = 512;
-   info->geometry.max_height = 512;
-
-   if(PPU.ScreenHeight == SNES_HEIGHT_EXTENDED)
-      info->geometry.base_height = SNES_HEIGHT_EXTENDED;
-
-   if (!Settings.PAL)
-      info->timing.fps = 21477272.0 / 357366.0;
-   else
-      info->timing.fps = 21281370.0 / 425568.0;
-
-   info->timing.sample_rate = samplerate;
+   info->geometry.base_width   = SNES_WIDTH;
+   info->geometry.base_height  = (PPU.ScreenHeight == SNES_HEIGHT_EXTENDED) ?
+         SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+   info->geometry.max_width    = 512;
+   info->geometry.max_height   = 512;
    info->geometry.aspect_ratio = 4.0f / 3.0f;
+
+   info->timing.sample_rate   = AUDIO_SAMPLE_RATE;
+   info->timing.fps           = Settings.PAL ?
+         VIDEO_REFRESH_RATE_PAL : VIDEO_REFRESH_RATE_NTSC;
 }
 
 static void snes_init (void)
@@ -313,7 +345,7 @@ static void snes_init (void)
 
    memset(&Settings, 0, sizeof(Settings));
 	Settings.JoystickEnabled = FALSE;
-	Settings.SoundPlaybackRate = samplerate;
+	Settings.SoundPlaybackRate = AUDIO_SAMPLE_RATE;
 	Settings.Stereo = TRUE;
 	Settings.SoundBufferSize = 0;
 	Settings.CyclesPercentage = 100;
@@ -448,6 +480,8 @@ void retro_deinit(void)
 
    GFX.SubZBuffer_buffer = NULL;
 
+   audio_out_buffer_deinit();
+
    libretro_supports_bitmasks = false;
    frameskip_type             = 0;
    frameskip_threshold        = 0;
@@ -500,8 +534,6 @@ static void report_buttons (void)
 static void check_variables(bool first_run)
 {
    struct retro_variable var;
-   bool prev_force_ntsc;
-   bool prev_force_pal;
    bool prev_frameskip_type;
 
    var.key = "snes9x2002_frameskip";
@@ -559,9 +591,7 @@ static void check_variables(bool first_run)
 
    /* Reinitialise frameskipping, if required */
    if (!first_run &&
-       ((frameskip_type     != prev_frameskip_type) ||
-        (Settings.ForceNTSC != prev_force_ntsc)     ||
-        (Settings.ForcePAL  != prev_force_pal)))
+       (frameskip_type != prev_frameskip_type))
       retro_set_audio_buff_status_cb();
 }
 
@@ -632,13 +662,13 @@ void retro_run (void)
 
    S9xMainLoop();
 //   asm_S9xMainLoop();
-   S9xMixSamples(audio_buf, avail);
-   audio_batch_cb((int16_t *) audio_buf, avail >> 1);
 
 #ifdef FRAME_SKIP
    if(!IPPU.RenderThisFrame)
       video_cb(NULL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX_PITCH);
 #endif
+
+   audio_upload_samples();
 }
 
 size_t retro_serialize_size (void)
@@ -738,14 +768,10 @@ bool retro_load_game(const struct retro_game_info *game)
    CPU.APU_APUExecuting = Settings.APUEnabled = 1;
    Settings.SixteenBitSound = true;
    so.stereo = Settings.Stereo;
-   so.playback_rate = Settings.SoundPlaybackRate;
-   S9xSetPlaybackRate(so.playback_rate);
+   S9xSetPlaybackRate(Settings.SoundPlaybackRate);
    S9xSetSoundMute(FALSE);
 
-   avail = (int) (samplerate / (Settings.PAL ? 50 : 60)) << 1;
-
-   memset(audio_buf, 0, sizeof(audio_buf));
-
+   audio_out_buffer_init();
    retro_set_audio_buff_status_cb();
    return true;
 }
@@ -821,14 +847,4 @@ void S9xToggleSoundChannel (int channel) {}
 //bool S9xPollAxis(uint32 id, int16 *value) { return false; }
 
 void S9xExit(void) { exit(1); }
-
-bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
-{
-	//so.sixteen_bit = 1;
-	so.stereo = TRUE;
-	//so.buffer_size = 534;
-	so.playback_rate = samplerate;
-	return TRUE;
-}
-
 void S9xMessage(int a, int b, const char* msg) { }
