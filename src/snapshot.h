@@ -56,4 +56,6 @@ bool8 S9xUnfreezeGame(const char* filename);
 bool8 Snapshot(const char* filename);
 bool8 S9xLoadSnapshot(const char* filename);
 
+int32 SnapshotSize(void);
+
 #endif
