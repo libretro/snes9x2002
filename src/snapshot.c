@@ -923,4 +923,67 @@ int UnfreezeBlock(char* name, uint8* block, int size)
    return (SUCCESS);
 }
 
+static int32 BlockSize(char *name, int data_size)
+{
+   char buffer [512];
+   sprintf(buffer, "%s:%06d:", name, data_size);
+   return strlen(buffer) + data_size;
+}
 
+static int32 StructSize(char* name, FreezeData* fields,
+                      int num_fields)
+{
+   // Work out the size of the required block
+   int len = 0;
+   int i;
+
+   for (i = 0; i < num_fields; i++)
+   {
+      if (fields [i].offset + FreezeSize(fields [i].size,
+                                         fields [i].type) > len)
+         len = fields [i].offset + FreezeSize(fields [i].size,
+                                              fields [i].type);
+   }
+
+   return BlockSize(name, len);
+}
+
+int32 SnapshotSize(void)
+{
+   char buffer[1024];
+   int32 len = 0;
+
+   sprintf(buffer, "%s:%04d\n", SNAPSHOT_MAGIC, SNAPSHOT_VERSION);
+   len += strlen(buffer);
+   strcpy(buffer, "NAM:000001:");
+   len += strlen(buffer) + 1;
+
+   len += StructSize("CPU", SnapCPU, COUNT(SnapCPU));
+   len += StructSize("REG", SnapRegisters, COUNT(SnapRegisters));
+   len += StructSize("PPU", SnapPPU, COUNT(SnapPPU));
+   len += StructSize("DMA", SnapDMA, COUNT(SnapDMA));
+
+   // RAM and VRAM
+   len += BlockSize("VRA", 0x10000);
+   len += BlockSize("RAM", 0x20000);
+   len += BlockSize("SRA", 0x20000);
+   len += BlockSize("FIL", 0x8000);
+   if (Settings.APUEnabled)
+   {
+      // APU
+      len += StructSize("APU", SnapAPU, COUNT(SnapAPU));
+      len += StructSize("ARE", SnapAPURegisters, COUNT(SnapAPURegisters));
+
+      len += BlockSize("ARA", 0x10000);
+      len += StructSize("SOU", SnapSoundData, COUNT(SnapSoundData));
+   }
+#ifdef USE_SA1
+   if (Settings.SA1)
+   {
+      len += StructSize("SA1", SnapSA1, COUNT(SnapSA1));
+      len += StructSize("SAR", SnapSA1Registers, COUNT(SnapSA1Registers));
+   }
+#endif
+
+   return len;
+}
