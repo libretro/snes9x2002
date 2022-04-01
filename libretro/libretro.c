@@ -597,6 +597,15 @@ static void check_variables(bool first_run)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
       frameskip_interval = strtol(var.value, NULL, 10);
 
+   var.key = "snes9x2002_transparency";
+   var.value = NULL;
+
+   Settings.Transparency = true;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      if (strcmp(var.value, "disabled") == 0)
+         Settings.Transparency = false;
+
    var.key = "snes9x2002_low_pass_filter";
    var.value = NULL;
 
