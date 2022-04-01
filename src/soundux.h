@@ -169,6 +169,8 @@ void S9xStartSample(int channel);
 
 void S9xMixSamples(signed short* buffer, int sample_count);
 void S9xMixSamplesO(signed short* buffer, int sample_count, int sample_offset);
+void S9xMixSamplesLowPass(signed short* buffer, int sample_count, int low_pass_range);
+void S9xMixSamplesLowPassO(signed short* buffer, int sample_count, int low_pass_range, int sample_offset);
 void S9xSetPlaybackRate(uint32 rate);
 bool8 S9xInitSound(void);
 #endif
@@ -197,11 +199,7 @@ extern unsigned long KeyOffERate[10];
 
 #define FIXED_POINT 0x10000UL
 #define CLIP8(v) \
-if ((v) < -128) \
-    (v) = -128; \
-else \
-if ((v) > 127) \
-    (v) = 127
+(v) = (((v) <= -128) ? -128 : (((v) >= 127) ? 127 : (v)))
 
 static INLINE void S9xSetSoundMute(bool8 mute)
 {

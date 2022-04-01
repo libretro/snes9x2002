@@ -49,12 +49,15 @@
 #include <errno.h>
 //#include <fcntl.h>
 
+#include "snes9x.h"
+#include "soundux.h"
+#include "apu.h"
+#include "memmap.h"
+#include "cpuexec.h"
+#include "asmmemfuncs.h"
+
 #define CLIP16(v) \
-if ((v) < -32768) \
-    (v) = -32768; \
-else \
-if ((v) > 32767) \
-    (v) = 32767
+(v) = (((v) <= -32768) ? -32768 : (((v) >= 32767) ? 32767 : (v)))
 
 #define CLIP16_latch(v,l) \
 if ((v) < -32768) \
@@ -64,29 +67,7 @@ if ((v) > 32767) \
 { (v) = 32767; (l)++; }
 
 #define CLIP24(v) \
-if ((v) < -8388608) \
-    (v) = -8388608; \
-else \
-if ((v) > 8388607) \
-    (v) = 8388607
-
-/*
-#define CLIP8(v) \
-if ((v) < -128) \
-    (v) = -128; \
-else \
-if ((v) > 127) \
-    (v) = 127
-*/
-
-
-#include "snes9x.h"
-#include "soundux.h"
-#include "apu.h"
-#include "memmap.h"
-#include "cpuexec.h"
-#include "asmmemfuncs.h"
-
+(v) = (((v) <= -8388608) ? -8388608 : (((v) >= 8388607) ? 8388607 : (v)))
 
 static int wave[SOUND_BUFFER_SIZE];
 
@@ -118,6 +99,14 @@ void DecodeBlockAsm(int8*, int16*, int32*, int32*);
 #define LAST_SAMPLE 0xffffff
 #define JUST_PLAYED_LAST_SAMPLE(c) ((c)->sample_pointer >= LAST_SAMPLE)
 
+/* Used by S9xMixSamplesLowPassO() to store the
+ * last output samples for the next iteration
+ * of the low pass filter. This should go in
+ * the SSoundData struct, but doing so would
+ * break compatibility with existing save
+ * states (with little in the way of tangible
+ * benefits) */
+static int MixOutputPrev[2];
 
 static INLINE void S9xAPUSetEndOfSample(int i, Channel* ch)
 {
@@ -1121,6 +1110,247 @@ void S9xMixSamplesO(signed short* buffer, int sample_count, int sample_offset)
 END_OF_FUNCTION(S9xMixSamplesO);
 #endif
 
+void S9xMixSamplesLowPass(signed short* buffer, int sample_count, int low_pass_range)
+{
+   S9xMixSamplesLowPassO(buffer, sample_count, low_pass_range, 0);
+}
+
+void S9xMixSamplesLowPassO(signed short* buffer, int sample_count, int low_pass_range, int sample_offset)
+{
+   // 16-bit sound only
+   int J;
+
+   /* Single-pole low-pass filter (6 dB/octave) */
+   int low_pass_factor_a = low_pass_range;
+   int low_pass_factor_b = 0x10000 - low_pass_factor_a;
+
+   buffer += sample_offset;
+
+   if (so.mute_sound)
+   {
+      memset16((uint16_t*)buffer, 0, sample_count);
+      return;
+   }
+
+   memset32((uint32_t*)MixBuffer, 0, sample_count);
+   if (SoundData.echo_enable)
+      memset32((uint32_t*)EchoBuffer, 0, sample_count);
+
+   if (so.stereo)
+      MixStereo(sample_count);
+   else
+      MixMono(sample_count);
+
+   /* Mix and convert waveforms */
+   if (SoundData.echo_enable && SoundData.echo_buffer_size)
+   {
+      if (so.stereo)
+      {
+         int l, r;
+         int master_vol_l = SoundData.master_volume[0];
+         int master_vol_r = SoundData.master_volume[1];
+         int echo_vol_l = SoundData.echo_volume[0];
+         int echo_vol_r = SoundData.echo_volume[1];
+         int *low_pass_l = &MixOutputPrev[0];
+         int *low_pass_r = &MixOutputPrev[1];
+
+         // 16-bit stereo sound with echo enabled ...
+         if (SoundData.no_filter)
+         {
+            // ... but no filter defined.
+            for (J = 0; J < sample_count; J += 2)
+            {
+               int E = Echo [SoundData.echo_ptr];
+
+               Echo[SoundData.echo_ptr++] = (E * SoundData.echo_feedback) / 128 + EchoBuffer[J];
+               Echo[SoundData.echo_ptr++] = (E * SoundData.echo_feedback) / 128 + EchoBuffer[J + 1];
+
+               if (SoundData.echo_ptr >= SoundData.echo_buffer_size)
+                  SoundData.echo_ptr = 0;
+
+               l = (MixBuffer[J]   * master_vol_l + E * echo_vol_l) / VOL_DIV16;
+               r = (MixBuffer[J + 1] * master_vol_r + E * echo_vol_r) / VOL_DIV16;
+
+               CLIP16(l);
+               CLIP16(r);
+
+               /* Apply low-pass filter */
+               (*low_pass_l) = ((*low_pass_l) * low_pass_factor_a) + (l * low_pass_factor_b);
+               (*low_pass_r) = ((*low_pass_r) * low_pass_factor_a) + (r * low_pass_factor_b);
+               /* 16.16 fixed point */
+               (*low_pass_l) >>= 16;
+               (*low_pass_r) >>= 16;
+
+               buffer[J]     = (signed short)(*low_pass_l);
+               buffer[J + 1] = (signed short)(*low_pass_r);
+            }
+         }
+         else
+         {
+            // ... with filter defined.
+            for (J = 0; J < sample_count; J += 2)
+            {
+               int E = Echo [SoundData.echo_ptr];
+
+               Loop [(Z - 0) & 15] = E;
+
+               E =  E                    * FilterTaps [0];
+               E += Loop [(Z -  2) & 15] * FilterTaps [1];
+               E += Loop [(Z -  4) & 15] * FilterTaps [2];
+               E += Loop [(Z -  6) & 15] * FilterTaps [3];
+               E += Loop [(Z -  8) & 15] * FilterTaps [4];
+               E += Loop [(Z - 10) & 15] * FilterTaps [5];
+               E += Loop [(Z - 12) & 15] * FilterTaps [6];
+               E += Loop [(Z - 14) & 15] * FilterTaps [7];
+               E /= 128;
+               Z++;
+
+               Echo[SoundData.echo_ptr++] = (E * SoundData.echo_feedback) / 128 + EchoBuffer[J];
+               Echo[SoundData.echo_ptr++] = (E * SoundData.echo_feedback) / 128 + EchoBuffer[J + 1];
+
+               if (SoundData.echo_ptr >= SoundData.echo_buffer_size)
+                  SoundData.echo_ptr = 0;
+
+               l = (MixBuffer[J]   * master_vol_l + E * echo_vol_l) / VOL_DIV16;
+               r = (MixBuffer[J + 1] * master_vol_r + E * echo_vol_r) / VOL_DIV16;
+
+               CLIP16(l);
+               CLIP16(r);
+
+               /* Apply low-pass filter */
+               (*low_pass_l) = ((*low_pass_l) * low_pass_factor_a) + (l * low_pass_factor_b);
+               (*low_pass_r) = ((*low_pass_r) * low_pass_factor_a) + (r * low_pass_factor_b);
+               /* 16.16 fixed point */
+               (*low_pass_l) >>= 16;
+               (*low_pass_r) >>= 16;
+
+               buffer[J]     = (signed short)(*low_pass_l);
+               buffer[J + 1] = (signed short)(*low_pass_r);
+            }
+         }
+      }
+      else
+      {
+         int I;
+         int master_vol_l = SoundData.master_volume[0];
+         int echo_vol_l = SoundData.echo_volume[0];
+         int *low_pass_l = &MixOutputPrev[0];
+
+         // 16-bit mono sound with echo enabled...
+         if (SoundData.no_filter)
+         {
+            // ... no filter defined
+            for (J = 0; J < sample_count; J++)
+            {
+               int E = Echo [SoundData.echo_ptr];
+
+               Echo[SoundData.echo_ptr++] = (E * SoundData.echo_feedback) / 128 + EchoBuffer[J];
+
+               if (SoundData.echo_ptr >= SoundData.echo_buffer_size)
+                  SoundData.echo_ptr = 0;
+
+               I = (MixBuffer[J] * master_vol_l + E * echo_vol_l) / VOL_DIV16;
+               CLIP16(I);
+
+               /* Apply low-pass filter */
+               (*low_pass_l) = ((*low_pass_l) * low_pass_factor_a) + (I * low_pass_factor_b);
+               /* 16.16 fixed point */
+               (*low_pass_l) >>= 16;
+
+               buffer[J] = (signed short)(*low_pass_l);
+            }
+         }
+         else
+         {
+            // ... with filter defined
+            for (J = 0; J < sample_count; J++)
+            {
+               int E = Echo [SoundData.echo_ptr];
+
+               Loop [(Z - 0) & 7] = E;
+               E =  E                  * FilterTaps [0];
+               E += Loop [(Z - 1) & 7] * FilterTaps [1];
+               E += Loop [(Z - 2) & 7] * FilterTaps [2];
+               E += Loop [(Z - 3) & 7] * FilterTaps [3];
+               E += Loop [(Z - 4) & 7] * FilterTaps [4];
+               E += Loop [(Z - 5) & 7] * FilterTaps [5];
+               E += Loop [(Z - 6) & 7] * FilterTaps [6];
+               E += Loop [(Z - 7) & 7] * FilterTaps [7];
+               E /= 128;
+               Z++;
+
+               Echo[SoundData.echo_ptr++] = (E * SoundData.echo_feedback) / 128 + EchoBuffer[J];
+
+               if (SoundData.echo_ptr >= SoundData.echo_buffer_size)
+                  SoundData.echo_ptr = 0;
+
+               I = (MixBuffer[J] * master_vol_l + E * echo_vol_l) / VOL_DIV16;
+               CLIP16(I);
+
+               /* Apply low-pass filter */
+               (*low_pass_l) = ((*low_pass_l) * low_pass_factor_a) + (I * low_pass_factor_b);
+               /* 16.16 fixed point */
+               (*low_pass_l) >>= 16;
+
+               buffer[J] = (signed short)(*low_pass_l);
+            }
+         }
+      }
+   }
+   else
+   {
+      int l, master_vol_l = SoundData.master_volume[0];
+      int *low_pass_l = &MixOutputPrev[0];
+
+      if (so.stereo)
+      {
+         int r, master_vol_r = SoundData.master_volume[1];
+         int *low_pass_r = &MixOutputPrev[1];
+
+         // 16-bit stereo sound, no echo
+         for (J = 0; J < sample_count; J += 2)
+         {
+            l = (MixBuffer[J]   * master_vol_l) / VOL_DIV16;
+            r = (MixBuffer[J + 1] * master_vol_r) / VOL_DIV16;
+
+            CLIP16(l);
+            CLIP16(r);
+
+            /* Apply low-pass filter */
+            (*low_pass_l) = ((*low_pass_l) * low_pass_factor_a) + (l * low_pass_factor_b);
+            (*low_pass_r) = ((*low_pass_r) * low_pass_factor_a) + (r * low_pass_factor_b);
+            /* 16.16 fixed point */
+            (*low_pass_l) >>= 16;
+            (*low_pass_r) >>= 16;
+
+            buffer[J]     = (signed short)(*low_pass_l);
+            buffer[J + 1] = (signed short)(*low_pass_r);
+         }
+      }
+      else
+      {
+         // 16-bit mono sound, no echo
+         for (J = 0; J < sample_count; J++)
+         {
+            l = (MixBuffer[J] * master_vol_l) / VOL_DIV16;
+
+            CLIP16(l);
+
+            /* Apply low-pass filter */
+            (*low_pass_l) = ((*low_pass_l) * low_pass_factor_a) + (l * low_pass_factor_b);
+            /* 16.16 fixed point */
+            (*low_pass_l) >>= 16;
+
+            buffer[J] = (signed short)(*low_pass_l);
+         }
+      }
+   }
+}
+
+#ifdef __DJGPP
+END_OF_FUNCTION(S9xMixSamplesLowPassO);
+#endif
+
 void S9xResetSound(bool8 full)
 {
    int i;
@@ -1190,6 +1420,8 @@ void S9xResetSound(bool8 full)
    SoundData.master_volume_right = 127;
    SoundData.master_volume [0] = SoundData.master_volume [1] = 127;
    SoundData.no_filter = TRUE;
+
+   memset(MixOutputPrev, 0, sizeof(MixOutputPrev));
 }
 
 
