@@ -122,6 +122,20 @@ struct retro_core_option_v2_definition option_defs_us[] = {
       "1"
    },
    {
+      "snes9x2002_transparency",
+      "Transparency Effects",
+      NULL,
+      "Disable to improve frame rate at the expense of rendering accuracy.",
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled",  NULL },
+         { NULL, NULL },
+      },
+      "enabled"
+   },
+   {
       "snes9x2002_low_pass_filter",
       "Audio Filter",
       NULL,
