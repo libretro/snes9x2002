@@ -302,6 +302,9 @@ static int16_t *audio_out_buffer       = NULL;
 static float audio_samples_per_frame   = 0.0f;
 static float audio_samples_accumulator = 0.0f;
 
+static bool audio_low_pass_enabled  = false;
+static int32_t audio_low_pass_range = (60 * 65536) / 100;
+
 static void audio_out_buffer_init(void)
 {
    float refresh_rate        = (float)((Settings.PAL) ?
@@ -336,7 +339,12 @@ static void audio_upload_samples(void)
       audio_samples_accumulator -= 1.0f;
    }
 
-   S9xMixSamples(audio_out_buffer, available_frames << 1);
+   if (audio_low_pass_enabled)
+      S9xMixSamplesLowPass(audio_out_buffer,
+            available_frames << 1, audio_low_pass_range);
+   else
+      S9xMixSamples(audio_out_buffer, available_frames << 1);
+
    audio_batch_cb(audio_out_buffer, available_frames);
 }
 
@@ -510,6 +518,8 @@ void retro_deinit(void)
    retro_audio_buff_underrun  = false;
    retro_audio_latency        = 0;
    update_audio_latency       = false;
+   audio_low_pass_enabled     = false;
+   audio_low_pass_range       = (60 * 65536) / 100;
 }
 
 void retro_reset (void)
@@ -586,6 +596,23 @@ static void check_variables(bool first_run)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
       frameskip_interval = strtol(var.value, NULL, 10);
+
+   var.key = "snes9x2002_low_pass_filter";
+   var.value = NULL;
+
+   audio_low_pass_enabled = false;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      if (strcmp(var.value, "enabled") == 0)
+         audio_low_pass_enabled = true;
+
+   var.key = "snes9x2002_low_pass_range";
+   var.value = NULL;
+
+   audio_low_pass_range = (60 * 0x10000) / 100;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      audio_low_pass_range = (strtol(var.value, NULL, 10) * 0x10000) / 100;
 
    var.key = "snes9x2002_overclock_cycles";
    var.value = NULL;
