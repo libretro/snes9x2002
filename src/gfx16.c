@@ -353,8 +353,6 @@ bool8_32 S9xGraphicsInit()
 
    GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
    GFX.DepthDelta = GFX.SubZBuffer - GFX.ZBuffer;
-   //GFX.InfoStringTimeout = 0;
-   //GFX.InfoString = NULL;
 
    PPU.BG_Forced = 0;
    IPPU.OBJChanged = TRUE;
@@ -703,11 +701,6 @@ void S9xEndScreenRefresh()
        }
    */
 }
-
-void S9xSetInfoString(const char* string)
-{
-}
-
 
 
 int TileRenderer;

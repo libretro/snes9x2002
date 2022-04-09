@@ -42,21 +42,11 @@
 #define _DISPLAY_H_
 
 // Routines the port specific code has to implement
-void S9xSetPalette(void);
 uint32 S9xReadJoypad(int which1_0_to_4);
 bool8_32 S9xReadMousePosition(int which1_0_to_1, int* x, int* y, uint32* buttons);
 bool8_32 S9xReadSuperScopePosition(int* x, int* y, uint32* buttons);
 
-void S9xInitDisplay(int argc, char** argv);
-void S9xDeinitDisplay(void);
-void S9xInitInputDevices(void);
-void S9xSetTitle(const char* title);
-void S9xProcessEvents(bool8_32 block);
-void S9xPutImage(int width, int height);
 void S9xToggleSoundChannel(int channel);
-void S9xSetInfoString(const char* string);
 void S9xNextController(void);
-
-const char* S9xGetSRAMFilename(void);
 
 #endif

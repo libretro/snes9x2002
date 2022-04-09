@@ -385,20 +385,6 @@ void S9xExit(void);
 void S9xMessage(int type, int number, const char* message);
 void S9xLoadSDD1Data(void);
 
-enum
-{
-   PAUSE_NETPLAY_CONNECT = (1 << 0),
-   PAUSE_TOGGLE_FULL_SCREEN = (1 << 1),
-   PAUSE_EXIT = (1 << 2),
-   PAUSE_MENU = (1 << 3),
-   PAUSE_INACTIVE_WINDOW = (1 << 4),
-   PAUSE_WINDOW_ICONISED = (1 << 5),
-   PAUSE_RESTORE_GUI = (1 << 6),
-   PAUSE_FREEZE_FILE = (1 << 7)
-};
-void S9xSetPause(uint32 mask);
-void S9xClearPause(uint32 mask);
-
 #ifndef MAX_PATH
 #define MAX_PATH           255
 #endif

@@ -302,8 +302,6 @@ void S9xDrawScanLine(uint8 Line);
 void S9xEndScreenRefresh();
 void S9xSetupOBJ();
 void S9xUpdateScreen();
-//extern void (*S9xUpdateScreen)();
-//void SelectUpdateScreen();
 void RenderLine(uint8 line);
 void S9xBuildDirectColourMaps();
 
@@ -314,7 +312,6 @@ extern SGFX GFX;
 bool8_32 S9xGraphicsInit();
 void S9xGraphicsDeinit();
 bool8_32 S9xDeinitUpdate(int Width, int Height);
-void S9xSetPalette();
 void S9xSyncSpeed();
 
 #ifdef GFX_MULTI_FORMAT

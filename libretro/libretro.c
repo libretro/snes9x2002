@@ -977,21 +977,12 @@ bool8 S9xDeinitUpdate(int width, int height)
 
 /* Dummy functions that should probably be implemented correctly later. */
 bool8 S9xContinueUpdate(int width, int height) { return TRUE; }
-void S9xSetPalette(void) {}
 void S9xLoadSDD1Data(void) {}
 bool8 S9xReadMousePosition (int which1_0_to_1, int* x, int* y, uint32* buttons) { return FALSE; }
 bool8 S9xReadSuperScopePosition (int* x, int* y, uint32* buttons) { return FALSE; }
 bool JustifierOffscreen(void) { return false; }
 
 void S9xToggleSoundChannel (int channel) {}
-
-//void Write16(uint16 v, uint8*& ptr) {}
-//uint16 Read16(const uint8*& ptr) { return 0; }
-
-//void S9xHandlePortCommand(s9xcommand_t cmd, int16 data1, int16 data2) {}
-//bool S9xPollButton(uint32 id, bool *pressed) { return false; }
-//bool S9xPollPointer(uint32 id, int16 *x, int16 *y) { return false; }
-//bool S9xPollAxis(uint32 id, int16 *value) { return false; }
 
 void S9xExit(void) { exit(1); }
 void S9xMessage(int a, int b, const char* msg) { }
