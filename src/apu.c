@@ -194,22 +194,6 @@ static INLINE void S9xSetFrequencyModulationEnable(uint8 byte)
    SoundData.pitch_mod = byte & (0xFE);//~1;
 }
 
-static INLINE int S9xGetEnvelopeHeight(int channel)
-{
-   if ((Settings.SoundEnvelopeHeightReading ||
-         SNESGameFixes.SoundEnvelopeHeightReading2) &&
-         SoundData.channels[channel].state != SOUND_SILENT &&
-         SoundData.channels[channel].state != SOUND_GAIN)
-      return (SoundData.channels[channel].envx);
-
-   //siren fix from XPP
-   if (SNESGameFixes.SoundEnvelopeHeightReading2 &&
-         SoundData.channels[channel].state != SOUND_SILENT)
-      return (SoundData.channels[channel].envx);
-
-   return (0);
-}
-
 static INLINE void S9xSetSoundHertz(int channel, int hertz)
 {
    SoundData.channels[channel].hertz = hertz;
@@ -978,8 +962,6 @@ uint8 S9xGetAPUDSP()
    case APU_ENVX + 0x60:
    case APU_ENVX + 0x70:
       return 0;
-   //    return ((uint8) S9xGetEnvelopeHeight (reg >> 4));
-
    case APU_ENDX:
       // To fix speech in Magical Drop 2 6/11/00
       // APU.DSP [APU_ENDX] = 0;
