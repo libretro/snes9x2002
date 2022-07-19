@@ -306,7 +306,6 @@ typedef struct
    bool8  SixteenBitSound;
    int    SoundBufferSize;
    int    SoundMixInterval;
-   bool8  SoundEnvelopeHeightReading;
    bool8  DisableSoundEcho;
    bool8  DisableSampleCaching;
    bool8  DisableMasterVolume;
@@ -365,7 +364,6 @@ typedef struct
    uint8 Old_Read0x4200;
    uint8 _0x213E_ReturnValue;
    uint8 TouhaidenControllerFix;
-   uint8 SoundEnvelopeHeightReading2;
    uint8 SRAMInitialValue;
    uint8 Uniracers;
    uint8 Flintstones;

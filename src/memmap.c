@@ -475,14 +475,6 @@ again:
             "ROM image is in interleaved format - converting...");
 
       nblocks = Memory.CalculatedSize >> 16;
-#if 0
-      int step = 64;
-
-      while (nblocks <= step)
-         step >>= 1;
-
-      nblocks = step;
-#endif
 
       if (Tales)
       {
@@ -2402,8 +2394,6 @@ void ApplyROMFixes ()
 	}
     }
 
-    if (strcmp (Memory.ROMName, "FURAI NO SIREN") == 0)
-	SNESGameFixes.SoundEnvelopeHeightReading2 = TRUE;
 #if 0
     if(strcmp (ROMName, "XBAND JAPANESE MODEM") == 0)
     {
