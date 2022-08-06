@@ -141,7 +141,7 @@ else ifeq ($(platform), wiiu)
 
 # (armv7 a7, hard point, neon based) ### 
 # NESC, SNESC, C64 mini 
-else ifeq ($(platform), classic_armv7_a7)
+else ifeq ($(platform),$(filter $(platform),classic_armv7_a7 unix-armv7-hardfloat-neon))
 	TARGET := $(TARGET_NAME)_libretro.so
 	fpic := -fPIC
 	SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
