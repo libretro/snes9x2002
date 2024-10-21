@@ -70,6 +70,7 @@ else ifneq (,$(findstring ios,$(platform)))
    endif
    CFLAGS += $(MINVERSION)
    CXXFLAGS += $(MINVERSION)
+   LDFLAGS += $(MINVERSION)
 else ifeq ($(platform), tvos-arm64)
    TARGET := $(TARGET_NAME)_libretro_tvos.dylib
    fpic := -fPIC
@@ -81,6 +82,10 @@ else ifeq ($(platform), tvos-arm64)
    ASM_CPU = 0
    ASM_SPC700 = 0
    CC = cc -arch arm64 -isysroot $(IOSSDK)
+   MINVERSION += -mappletvos-version-min=11.0
+   CFLAGS += $(MINVERSION)
+   CXXFLAGS += $(MINVERSION)
+   LDFLAGS += $(MINVERSION)
 else ifeq ($(platform), theos_ios)
    DEPLOYMENT_IOSVERSION = 5.0
    TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
