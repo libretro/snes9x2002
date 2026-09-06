@@ -206,7 +206,7 @@ else ifeq ($(platform), vita)
    CC = $(VITASDK)/bin/arm-vita-eabi-gcc$(EXE_EXT)
    CXX = $(VITASDK)/bin/arm-vita-eabi-g++$(EXE_EXT)
    AR = $(VITASDK)/bin/arm-vita-eabi-ar$(EXE_EXT)
-   ARM_ASM = 1
+   ARM_ASM = 0
    ASM_CPU = 0
    ASM_SPC700 = 0
    CFLAGS += -march=armv7-a -mfloat-abi=hard
